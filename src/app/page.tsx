@@ -1,7 +1,7 @@
 "use client";
 
 import { Authenticated, Unauthenticated } from "convex/react";
-import { TaskList } from "./TaskList";
+import { TopicList } from "./TopicList";
 
 export default function Home() {
   return (
@@ -10,7 +10,7 @@ export default function Home() {
         <div>login required</div>
       </Unauthenticated>
       <Authenticated>
-        <TaskList />
+        <TopicList />
       </Authenticated>
     </>
   );
