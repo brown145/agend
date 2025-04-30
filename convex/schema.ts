@@ -8,6 +8,15 @@ export default defineSchema({
     completed: v.boolean(),
     createdAt: v.number(),
     createdBy: v.string(),
+    meetingId: v.id("meetings"),
+  })
+    .index("by_createdBy", ["createdBy"])
+    .index("by_meetingId", ["meetingId"]),
+
+  meetings: defineTable({
+    title: v.string(),
+    createdAt: v.number(),
+    createdBy: v.string(),
   }).index("by_createdBy", ["createdBy"]),
 
   tasks: defineTable({

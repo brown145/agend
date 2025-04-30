@@ -1,9 +1,11 @@
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
 
-export const list = query({
-  args: {},
-  handler: async (ctx) => {
+export const listByMeeting = query({
+  args: {
+    meetingId: v.id("meetings"),
+  },
+  handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity();
     if (!identity) {
       throw new Error("Not authenticated");
@@ -11,10 +13,11 @@ export const list = query({
 
     const userId = identity.subject;
 
-    // Get all discussions for this user
+    // Get all discussions for this meeting
     const discussions = await ctx.db
       .query("discussions")
-      .withIndex("by_createdBy", (q) => q.eq("createdBy", userId))
+      .withIndex("by_meetingId", (q) => q.eq("meetingId", args.meetingId))
+      .filter((q) => q.eq(q.field("createdBy"), userId))
       .collect();
 
     // For each discussion, check if all its topics are completed
@@ -42,19 +45,31 @@ export const list = query({
 });
 
 export const create = mutation({
-  handler: async (ctx) => {
+  args: {
+    meetingId: v.id("meetings"),
+  },
+  handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity();
     if (!identity) {
       throw new Error("Not authenticated");
     }
 
-    // Use the subject from identity as the userId
     const userId = identity.subject;
+
+    // Verify the meeting exists and belongs to the user
+    const meeting = await ctx.db.get(args.meetingId);
+    if (!meeting) {
+      throw new Error("Meeting not found");
+    }
+    if (meeting.createdBy !== userId) {
+      throw new Error("Not authorized to create discussion in this meeting");
+    }
 
     return await ctx.db.insert("discussions", {
       completed: false,
       createdAt: Date.now(),
       createdBy: userId,
+      meetingId: args.meetingId,
     });
   },
 });

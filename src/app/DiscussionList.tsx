@@ -6,8 +6,12 @@ import { api } from "../../convex/_generated/api";
 import { Id } from "../../convex/_generated/dataModel";
 import { TopicList } from "./TopicList";
 
-export const DiscussionList = () => {
-  const discussionList = useQuery(api.discussions.list);
+interface DiscussionListProps {
+  meetingId: Id<"meetings">;
+}
+
+export const DiscussionList = ({ meetingId }: DiscussionListProps) => {
+  const discussionList = useQuery(api.discussions.listByMeeting, { meetingId });
   return (
     <div className="flex flex-col gap-2">
       {discussionList?.map(({ _id, createdAt, completed, metadata }) => (
@@ -25,7 +29,7 @@ export const DiscussionList = () => {
         </div>
       ))}
       {discussionList?.length === 0 && <div>No discussions</div>}
-      <AddDiscussion />
+      <AddDiscussion meetingId={meetingId} />
     </div>
   );
 };
@@ -62,12 +66,16 @@ const Discussion = ({
   );
 };
 
-const AddDiscussion = () => {
+interface AddDiscussionProps {
+  meetingId: Id<"meetings">;
+}
+
+const AddDiscussion = ({ meetingId }: AddDiscussionProps) => {
   const createDiscussion = useMutation(api.discussions.create);
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    createDiscussion();
+    createDiscussion({ meetingId });
   };
 
   return (

@@ -1,7 +1,7 @@
 "use client";
 
 import { Authenticated, Unauthenticated } from "convex/react";
-import { DiscussionList } from "./DiscussionList";
+import { MeetingList } from "./MeetingList";
 
 export default function Home() {
   return (
@@ -11,7 +11,7 @@ export default function Home() {
       </Unauthenticated>
       <Authenticated>
         <div className="px-2">
-          <DiscussionList />
+          <MeetingList />
         </div>
       </Authenticated>
     </>
