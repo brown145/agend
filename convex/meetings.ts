@@ -1,20 +1,23 @@
 import { v } from "convex/values";
+import { api } from "./_generated/api";
+import { Doc, Id } from "./_generated/dataModel";
 import { mutation, query } from "./_generated/server";
 
 export const list = query({
   args: {},
-  handler: async (ctx) => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) {
-      throw new Error("Not authenticated");
+  handler: async (ctx): Promise<Doc<"meetings">[]> => {
+    const userId: Id<"users"> | null = await ctx.runQuery(
+      api.users.findUser,
+      {},
+    );
+    if (!userId) {
+      throw new Error("User not found");
     }
 
-    const userId = identity.subject;
-
     // Get all meetings for this user
-    const meetings = await ctx.db
+    const meetings: Doc<"meetings">[] = await ctx.db
       .query("meetings")
-      .withIndex("by_createdBy", (q) => q.eq("createdBy", userId))
+      .withIndex("by_owner", (q) => q.eq("owner", userId))
       .collect();
 
     return meetings;
@@ -25,18 +28,15 @@ export const create = mutation({
   args: {
     title: v.string(),
   },
-  handler: async (ctx, args) => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) {
-      throw new Error("Not authenticated");
-    }
-
-    const userId = identity.subject;
+  handler: async (ctx, args): Promise<Id<"meetings">> => {
+    const userId: Id<"users"> = await ctx.runMutation(api.users.ensureUser, {});
 
     return await ctx.db.insert("meetings", {
       title: args.title,
       createdAt: Date.now(),
       createdBy: userId,
+      owner: userId,
+      attendees: [userId],
     });
   },
 });
@@ -47,12 +47,7 @@ export const update = mutation({
     title: v.string(),
   },
   handler: async (ctx, args) => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) {
-      throw new Error("Not authenticated");
-    }
-
-    const userId = identity.subject;
+    const userId: Id<"users"> = await ctx.runMutation(api.users.ensureUser, {});
 
     // Get the meeting to verify ownership
     const meeting = await ctx.db.get(args.id);

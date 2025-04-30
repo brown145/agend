@@ -1,22 +1,25 @@
 import { v } from "convex/values";
+import { api } from "./_generated/api";
+import { Doc, Id } from "./_generated/dataModel";
 import { mutation, query } from "./_generated/server";
 
 export const listByDiscussion = query({
   args: {
     discussionId: v.id("discussions"),
   },
-  handler: async (ctx, args) => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) {
-      throw new Error("Not authenticated");
+  handler: async (ctx, args): Promise<Doc<"topics">[]> => {
+    const userId: Id<"users"> | null = await ctx.runQuery(
+      api.users.findUser,
+      {},
+    );
+    if (!userId) {
+      throw new Error("User not found");
     }
-
-    const userId = identity.subject;
 
     // Get all topics for this user in the specified discussion
     const topics = await ctx.db
       .query("topics")
-      .withIndex("by_createdBy", (q) => q.eq("createdBy", userId))
+      .withIndex("by_owner", (q) => q.eq("owner", userId))
       .filter((q) => q.eq(q.field("discussionId"), args.discussionId))
       .collect();
 
@@ -49,18 +52,13 @@ export const create = mutation({
     discussionId: v.id("discussions"),
   },
   handler: async (ctx, args) => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) {
-      throw new Error("Not authenticated");
-    }
-
-    // Use the subject from identity as the userId
-    const userId = identity.subject;
+    const userId: Id<"users"> = await ctx.runMutation(api.users.ensureUser, {});
 
     return await ctx.db.insert("topics", {
       completed: false,
       createdAt: Date.now(),
       createdBy: userId,
+      owner: userId,
       text: args.text,
       discussionId: args.discussionId,
     });
@@ -73,12 +71,7 @@ export const update = mutation({
     id: v.id("topics"),
   },
   handler: async (ctx, args) => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) {
-      throw new Error("Not authenticated");
-    }
-
-    const userId = identity.subject;
+    const userId: Id<"users"> = await ctx.runMutation(api.users.ensureUser, {});
 
     // Get the topic to verify ownership
     const topic = await ctx.db.get(args.id);

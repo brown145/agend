@@ -1,17 +1,20 @@
 import { v } from "convex/values";
+import { api } from "./_generated/api";
+import { Doc, Id } from "./_generated/dataModel";
 import { mutation, query } from "./_generated/server";
 
 export const listByMeeting = query({
   args: {
     meetingId: v.id("meetings"),
   },
-  handler: async (ctx, args) => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) {
-      throw new Error("Not authenticated");
+  handler: async (ctx, args): Promise<Doc<"discussions">[]> => {
+    const userId: Id<"users"> | null = await ctx.runQuery(
+      api.users.findUser,
+      {},
+    );
+    if (!userId) {
+      throw new Error("User not found");
     }
-
-    const userId = identity.subject;
 
     // Get all discussions for this meeting
     const discussions = await ctx.db
@@ -49,12 +52,7 @@ export const create = mutation({
     meetingId: v.id("meetings"),
   },
   handler: async (ctx, args) => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) {
-      throw new Error("Not authenticated");
-    }
-
-    const userId = identity.subject;
+    const userId: Id<"users"> = await ctx.runMutation(api.users.ensureUser, {});
 
     // Verify the meeting exists and belongs to the user
     const meeting = await ctx.db.get(args.meetingId);
@@ -80,12 +78,7 @@ export const update = mutation({
     id: v.id("discussions"),
   },
   handler: async (ctx, args) => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) {
-      throw new Error("Not authenticated");
-    }
-
-    const userId = identity.subject;
+    const userId: Id<"users"> = await ctx.runMutation(api.users.ensureUser, {});
 
     // Get the discussion to verify ownership
     const discussion = await ctx.db.get(args.id);

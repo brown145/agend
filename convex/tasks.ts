@@ -1,22 +1,25 @@
 import { v } from "convex/values";
+import { api } from "./_generated/api";
+import { Doc, Id } from "./_generated/dataModel";
 import { mutation, query } from "./_generated/server";
 
 export const listByTopic = query({
   args: {
     topicId: v.id("topics"),
   },
-  handler: async (ctx, args) => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) {
-      throw new Error("Not authenticated");
+  handler: async (ctx, args): Promise<Doc<"tasks">[]> => {
+    const userId: Id<"users"> | null = await ctx.runQuery(
+      api.users.findUser,
+      {},
+    );
+    if (!userId) {
+      throw new Error("User not found");
     }
-
-    const userId = identity.subject;
 
     // Use the index to efficiently query tasks for this user and topic
     return await ctx.db
       .query("tasks")
-      .withIndex("by_createdBy", (q) => q.eq("createdBy", userId))
+      .withIndex("by_owner", (q) => q.eq("owner", userId))
       .filter((q) => q.eq(q.field("topicId"), args.topicId))
       .collect();
   },
@@ -28,18 +31,13 @@ export const create = mutation({
     text: v.string(),
   },
   handler: async (ctx, args) => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) {
-      throw new Error("Not authenticated");
-    }
-
-    // Use the subject from identity as the userId
-    const userId = identity.subject;
+    const userId: Id<"users"> = await ctx.runMutation(api.users.ensureUser, {});
 
     return await ctx.db.insert("tasks", {
       completed: false,
       createdAt: Date.now(),
       createdBy: userId,
+      owner: userId,
       text: args.text,
       topicId: args.topicId,
     });
@@ -52,12 +50,7 @@ export const update = mutation({
     id: v.id("tasks"),
   },
   handler: async (ctx, args) => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) {
-      throw new Error("Not authenticated");
-    }
-
-    const userId = identity.subject;
+    const userId: Id<"users"> = await ctx.runMutation(api.users.ensureUser, {});
 
     // Get the task to verify ownership
     const task = await ctx.db.get(args.id);

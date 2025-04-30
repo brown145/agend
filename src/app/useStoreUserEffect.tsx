@@ -8,7 +8,7 @@ export function useStoreUserEffect() {
   const { isLoading, isAuthenticated } = useConvexAuth();
   const { user } = useUser();
   const [userId, setUserId] = useState<Id<"users"> | null>(null);
-  const storeUser = useMutation(api.users.store);
+  const ensureUser = useMutation(api.users.ensureUser);
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -16,13 +16,13 @@ export function useStoreUserEffect() {
     }
 
     async function createUser() {
-      const id = await storeUser();
+      const id = await ensureUser();
       setUserId(id);
     }
 
     createUser();
     return () => setUserId(null);
-  }, [isAuthenticated, storeUser, user?.id]);
+  }, [isAuthenticated, ensureUser, user?.id]);
 
   return {
     isLoading: isLoading || (isAuthenticated && userId === null),
