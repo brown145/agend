@@ -7,26 +7,30 @@ import { api } from "../../convex/_generated/api";
 import { Id } from "../../convex/_generated/dataModel";
 import { TaskList } from "./TaskList";
 
-export const TopicList = () => {
-  const topicList = useQuery(api.topics.list);
+export const TopicList = ({
+  discussionId,
+}: {
+  discussionId: Id<"discussions">;
+}) => {
+  const topicList = useQuery(api.topics.listByDiscussion, { discussionId });
   return (
-    <div>
-      <AddTopic />
-      <hr className="my-4" />
+    <div className="flex flex-col gap-2">
       {topicList?.map(({ _id, text, completed, metadata }) => (
-        <div key={_id}>
+        <div
+          key={_id}
+          className="border-l-2 border-solid border-emerald-500 pl-2"
+        >
           <Topic
             completed={completed ?? false}
             id={_id}
             tasksCompleted={metadata?.tasksCompleted ?? false}
             text={text}
           />
-          <div className="ml-4">
-            <TaskList topicId={_id} />
-          </div>
+          <TaskList topicId={_id} />
         </div>
       ))}
       {topicList?.length === 0 && <div>No topics</div>}
+      <AddTopic discussionId={discussionId} />
     </div>
   );
 };
@@ -58,13 +62,13 @@ const Topic = ({
   );
 };
 
-const AddTopic = () => {
+const AddTopic = ({ discussionId }: { discussionId: Id<"discussions"> }) => {
   const [text, setText] = useState("");
   const createTopic = useMutation(api.topics.create);
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    createTopic({ text });
+    createTopic({ text, discussionId });
     setText("");
   };
 
@@ -76,7 +80,10 @@ const AddTopic = () => {
         type="text"
         value={text}
       />
-      <button className="bg-gray-500 text-white rounded-md p-1" type="submit">
+      <button
+        className="bg-emerald-500 text-white rounded-md p-1"
+        type="submit"
+      >
         Add topic
       </button>
     </form>

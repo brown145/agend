@@ -4,11 +4,10 @@ import { v } from "convex/values";
 export default defineSchema({
   authVerifiers: defineTable({ signature: v.string() }),
 
-  topics: defineTable({
+  discussions: defineTable({
     completed: v.boolean(),
     createdAt: v.number(),
     createdBy: v.string(),
-    text: v.string(),
   }).index("by_createdBy", ["createdBy"]),
 
   tasks: defineTable({
@@ -20,4 +19,14 @@ export default defineSchema({
   })
     .index("by_createdBy", ["createdBy"])
     .index("by_topicId", ["topicId"]),
+
+  topics: defineTable({
+    completed: v.boolean(),
+    createdAt: v.number(),
+    createdBy: v.string(),
+    discussionId: v.id("discussions"),
+    text: v.string(),
+  })
+    .index("by_createdBy", ["createdBy"])
+    .index("by_discussionId", ["discussionId"]),
 });

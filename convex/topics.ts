@@ -1,9 +1,11 @@
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
 
-export const list = query({
-  args: {},
-  handler: async (ctx) => {
+export const listByDiscussion = query({
+  args: {
+    discussionId: v.id("discussions"),
+  },
+  handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity();
     if (!identity) {
       throw new Error("Not authenticated");
@@ -11,10 +13,11 @@ export const list = query({
 
     const userId = identity.subject;
 
-    // Get all topics for this user
+    // Get all topics for this user in the specified discussion
     const topics = await ctx.db
       .query("topics")
       .withIndex("by_createdBy", (q) => q.eq("createdBy", userId))
+      .filter((q) => q.eq(q.field("discussionId"), args.discussionId))
       .collect();
 
     // For each topic, check if all its tasks are completed
@@ -43,6 +46,7 @@ export const list = query({
 export const create = mutation({
   args: {
     text: v.string(),
+    discussionId: v.id("discussions"),
   },
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity();
@@ -58,6 +62,7 @@ export const create = mutation({
       createdAt: Date.now(),
       createdBy: userId,
       text: args.text,
+      discussionId: args.discussionId,
     });
   },
 });
