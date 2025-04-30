@@ -5,8 +5,14 @@ import { useState } from "react";
 import { api } from "../../convex/_generated/api";
 import { Id } from "../../convex/_generated/dataModel";
 
-export const TaskList = ({ topicId }: { topicId: Id<"topics"> }) => {
-  const taskList = useQuery(api.tasks.listByTopic, { topicId });
+export const TaskList = ({
+  meetingId,
+  topicId,
+}: {
+  meetingId: Id<"meetings">;
+  topicId: Id<"topics">;
+}) => {
+  const taskList = useQuery(api.tasks.listByTopic, { topicId, meetingId });
   return (
     <main>
       {taskList?.map(({ _id, text, completed }) => (
@@ -18,7 +24,7 @@ export const TaskList = ({ topicId }: { topicId: Id<"topics"> }) => {
         </div>
       ))}
       {taskList?.length === 0 && <div>No tasks</div>}
-      <AddTask topicId={topicId} />
+      <AddTask meetingId={meetingId} topicId={topicId} />
     </main>
   );
 };
@@ -46,13 +52,19 @@ const Task = ({
   );
 };
 
-const AddTask = ({ topicId }: { topicId: Id<"topics"> }) => {
+const AddTask = ({
+  meetingId,
+  topicId,
+}: {
+  meetingId: Id<"meetings">;
+  topicId: Id<"topics">;
+}) => {
   const [text, setText] = useState("");
   const createTask = useMutation(api.tasks.create);
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    createTask({ topicId, text });
+    createTask({ meetingId, topicId, text });
     setText("");
   };
 

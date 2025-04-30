@@ -3,11 +3,17 @@ import { api } from "./_generated/api";
 import { Doc, Id } from "./_generated/dataModel";
 import { mutation, query } from "./_generated/server";
 
+type DiscussionWithMetadata = Doc<"discussions"> & {
+  metadata: {
+    topicsCompleted: boolean;
+  };
+};
+
 export const listByMeeting = query({
   args: {
     meetingId: v.id("meetings"),
   },
-  handler: async (ctx, args): Promise<Doc<"discussions">[]> => {
+  handler: async (ctx, args): Promise<DiscussionWithMetadata[]> => {
     const userId: Id<"users"> | null = await ctx.runQuery(
       api.users.findUser,
       {},
@@ -16,11 +22,20 @@ export const listByMeeting = query({
       throw new Error("User not found");
     }
 
+    // Get the meeting to verify attendance
+    const meeting = await ctx.db.get(args.meetingId);
+    if (!meeting) {
+      throw new Error("Meeting not found");
+    }
+
+    if (!meeting.attendees.includes(userId)) {
+      throw new Error("Not authorized to view discussions in this meeting");
+    }
+
     // Get all discussions for this meeting
     const discussions = await ctx.db
       .query("discussions")
       .withIndex("by_meetingId", (q) => q.eq("meetingId", args.meetingId))
-      .filter((q) => q.eq(q.field("createdBy"), userId))
       .collect();
 
     // For each discussion, check if all its topics are completed
@@ -28,8 +43,11 @@ export const listByMeeting = query({
       discussions.map(async (discussion) => {
         const topics = await ctx.db
           .query("topics")
-          .withIndex("by_createdBy", (q) => q.eq("createdBy", userId))
-          .filter((q) => q.eq(q.field("discussionId"), discussion._id))
+          .withIndex("by_meetingId_discussionId", (q) =>
+            q
+              .eq("meetingId", args.meetingId)
+              .eq("discussionId", discussion._id),
+          )
           .collect();
 
         const topicsCompleted = topics.every((topic) => topic.completed);
@@ -80,14 +98,18 @@ export const update = mutation({
   handler: async (ctx, args) => {
     const userId: Id<"users"> = await ctx.runMutation(api.users.ensureUser, {});
 
-    // Get the discussion to verify ownership
+    // Get the discussion to verify meeting access
     const discussion = await ctx.db.get(args.id);
     if (!discussion) {
       throw new Error("Discussion not found");
     }
 
-    // Verify the user owns this discussion
-    if (discussion.createdBy !== userId) {
+    const meeting = await ctx.db.get(discussion.meetingId);
+    if (!meeting) {
+      throw new Error("Meeting not found");
+    }
+
+    if (!meeting.attendees.includes(userId)) {
       throw new Error("Not authorized to update this discussion");
     }
 

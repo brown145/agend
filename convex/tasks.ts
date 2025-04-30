@@ -6,6 +6,7 @@ import { mutation, query } from "./_generated/server";
 export const listByTopic = query({
   args: {
     topicId: v.id("topics"),
+    meetingId: v.id("meetings"),
   },
   handler: async (ctx, args): Promise<Doc<"tasks">[]> => {
     const userId: Id<"users"> | null = await ctx.runQuery(
@@ -19,14 +20,16 @@ export const listByTopic = query({
     // Use the index to efficiently query tasks for this user and topic
     return await ctx.db
       .query("tasks")
-      .withIndex("by_owner", (q) => q.eq("owner", userId))
-      .filter((q) => q.eq(q.field("topicId"), args.topicId))
+      .withIndex("by_meetingId_topicId", (q) =>
+        q.eq("meetingId", args.meetingId).eq("topicId", args.topicId),
+      )
       .collect();
   },
 });
 
 export const create = mutation({
   args: {
+    meetingId: v.id("meetings"),
     topicId: v.id("topics"),
     text: v.string(),
   },
@@ -37,6 +40,7 @@ export const create = mutation({
       completed: false,
       createdAt: Date.now(),
       createdBy: userId,
+      meetingId: args.meetingId,
       owner: userId,
       text: args.text,
       topicId: args.topicId,
@@ -58,8 +62,13 @@ export const update = mutation({
       throw new Error("Task not found");
     }
 
-    // Verify the user owns this task
-    if (task.createdBy !== userId) {
+    const meeting = await ctx.db.get(task.meetingId);
+
+    if (!meeting) {
+      throw new Error("Meeting not found");
+    }
+
+    if (!meeting.attendees.includes(userId)) {
       throw new Error("Not authorized to update this task");
     }
 

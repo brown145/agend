@@ -27,24 +27,26 @@ export default defineSchema({
     completed: v.boolean(),
     createdAt: v.number(),
     createdBy: v.id("users"),
+    meetingId: v.id("meetings"),
     owner: v.id("users"),
     text: v.string(),
     topicId: v.id("topics"),
   })
     .index("by_createdBy", ["createdBy"])
-    .index("by_owner", ["owner"])
-    .index("by_topicId", ["topicId"]),
+    .index("by_meetingId_topicId", ["meetingId", "topicId"])
+    .index("by_owner", ["owner"]),
 
   topics: defineTable({
     completed: v.boolean(),
     createdAt: v.number(),
     createdBy: v.id("users"),
     discussionId: v.id("discussions"),
+    meetingId: v.id("meetings"),
     owner: v.id("users"),
     text: v.string(),
   })
     .index("by_createdBy", ["createdBy"])
-    .index("by_discussionId", ["discussionId"])
+    .index("by_meetingId_discussionId", ["meetingId", "discussionId"])
     .index("by_owner", ["owner"]),
 
   users: defineTable({

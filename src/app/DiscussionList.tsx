@@ -25,7 +25,7 @@ export const DiscussionList = ({ meetingId }: DiscussionListProps) => {
             completed={completed}
             topicsCompleted={metadata.topicsCompleted}
           />
-          <TopicList discussionId={_id} />
+          <TopicList discussionId={_id} meetingId={meetingId} />
         </div>
       ))}
       {discussionList?.length === 0 && <div>No discussions</div>}
