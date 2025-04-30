@@ -28,13 +28,15 @@ export const listByDiscussion = query({
       throw new Error("Discussion not found");
     }
 
-    // Get the meeting to verify attendance
-    const meeting = await ctx.db.get(discussion.meetingId);
-    if (!meeting) {
-      throw new Error("Meeting not found");
-    }
+    // Check if user is an attendee using meetingAttendance table
+    const attendance = await ctx.db
+      .query("meetingAttendance")
+      .withIndex("by_meetingId_userId", (q) =>
+        q.eq("meetingId", discussion.meetingId).eq("userId", userId),
+      )
+      .first();
 
-    if (!meeting.attendees.includes(userId)) {
+    if (!attendance) {
       throw new Error("Not authorized to view topics in this discussion");
     }
 
@@ -87,13 +89,15 @@ export const create = mutation({
       throw new Error("Discussion not found");
     }
 
-    // Get the meeting to verify attendance
-    const meeting = await ctx.db.get(discussion.meetingId);
-    if (!meeting) {
-      throw new Error("Meeting not found");
-    }
+    // Check if user is an attendee using meetingAttendance table
+    const attendance = await ctx.db
+      .query("meetingAttendance")
+      .withIndex("by_meetingId_userId", (q) =>
+        q.eq("meetingId", discussion.meetingId).eq("userId", userId),
+      )
+      .first();
 
-    if (!meeting.attendees.includes(userId)) {
+    if (!attendance) {
       throw new Error("Not authorized to create topics in this discussion");
     }
 
@@ -123,12 +127,15 @@ export const update = mutation({
       throw new Error("Topic not found");
     }
 
-    const meeting = await ctx.db.get(topic.meetingId);
-    if (!meeting) {
-      throw new Error("Meeting not found");
-    }
+    // Check if user is an attendee using meetingAttendance table
+    const attendance = await ctx.db
+      .query("meetingAttendance")
+      .withIndex("by_meetingId_userId", (q) =>
+        q.eq("meetingId", topic.meetingId).eq("userId", userId),
+      )
+      .first();
 
-    if (!meeting.attendees.includes(userId)) {
+    if (!attendance) {
       throw new Error("Not authorized to update this topic");
     }
 

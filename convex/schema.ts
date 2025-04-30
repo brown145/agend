@@ -14,7 +14,6 @@ export default defineSchema({
     .index("by_meetingId", ["meetingId"]),
 
   meetings: defineTable({
-    attendees: v.array(v.id("users")),
     createdAt: v.number(),
     createdBy: v.id("users"),
     owner: v.id("users"),
@@ -22,6 +21,15 @@ export default defineSchema({
   })
     .index("by_createdBy", ["createdBy"])
     .index("by_owner", ["owner"]),
+
+  meetingAttendance: defineTable({
+    meetingId: v.id("meetings"),
+    userId: v.id("users"),
+    createdAt: v.number(),
+  })
+    .index("by_meetingId", ["meetingId"])
+    .index("by_meetingId_userId", ["meetingId", "userId"])
+    .index("by_userId", ["userId"]),
 
   tasks: defineTable({
     completed: v.boolean(),

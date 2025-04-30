@@ -17,6 +17,18 @@ export const listByTopic = query({
       throw new Error("User not found");
     }
 
+    // Check if user is an attendee of the meeting
+    const attendance = await ctx.db
+      .query("meetingAttendance")
+      .withIndex("by_meetingId_userId", (q) =>
+        q.eq("meetingId", args.meetingId).eq("userId", userId),
+      )
+      .first();
+
+    if (!attendance) {
+      throw new Error("Not authorized to view tasks in this meeting");
+    }
+
     // Use the index to efficiently query tasks for this user and topic
     return await ctx.db
       .query("tasks")
@@ -62,13 +74,15 @@ export const update = mutation({
       throw new Error("Task not found");
     }
 
-    const meeting = await ctx.db.get(task.meetingId);
+    // Check if user is an attendee using meetingAttendance table
+    const attendance = await ctx.db
+      .query("meetingAttendance")
+      .withIndex("by_meetingId_userId", (q) =>
+        q.eq("meetingId", task.meetingId).eq("userId", userId),
+      )
+      .first();
 
-    if (!meeting) {
-      throw new Error("Meeting not found");
-    }
-
-    if (!meeting.attendees.includes(userId)) {
+    if (!attendance) {
       throw new Error("Not authorized to update this task");
     }
 

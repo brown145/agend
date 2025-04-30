@@ -28,6 +28,9 @@ export const MeetingList = () => {
 const Meeting = ({ id, title }: { id: Id<"meetings">; title: string }) => {
   const [isEditing, setIsEditing] = useState(false);
   const updateMeeting = useMutation(api.meetings.update);
+  const attendance = useQuery(api.meetingAttendance.listUsersByMeeting, {
+    meetingId: id,
+  });
 
   const handleSave = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -65,14 +68,19 @@ const Meeting = ({ id, title }: { id: Id<"meetings">; title: string }) => {
   }
 
   return (
-    <div className="flex gap-2 items-center">
-      <div className="text-xl font-semibold">{title}</div>
-      <button
-        onClick={() => setIsEditing(true)}
-        className="text-sm text-gray-500 hover:text-gray-700"
-      >
-        Edit
-      </button>
+    <div className="flex flex-col gap-2">
+      <div className="flex gap-2 items-center">
+        <div className="text-xl font-semibold">{title}</div>
+        <button
+          onClick={() => setIsEditing(true)}
+          className="text-sm text-gray-500 hover:text-gray-700"
+        >
+          Edit
+        </button>
+      </div>
+      <div className="flex gap-2 items-center">
+        {attendance?.map((user) => <div key={user._id}>{user.name}</div>)}
+      </div>
     </div>
   );
 };
