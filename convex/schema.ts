@@ -38,4 +38,12 @@ export default defineSchema({
   })
     .index("by_createdBy", ["createdBy"])
     .index("by_discussionId", ["discussionId"]),
+
+  users: defineTable({
+    name: v.string(),
+    email: v.string(),
+    tokenIdentifier: v.string(),
+  })
+    .index("by_token", ["tokenIdentifier"])
+    .index("by_email", ["email"]),
 });

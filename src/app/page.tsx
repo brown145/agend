@@ -2,6 +2,7 @@
 
 import { Authenticated, Unauthenticated } from "convex/react";
 import { MeetingList } from "./MeetingList";
+import { StoreUser } from "./useStoreUserEffect";
 
 export default function Home() {
   return (
@@ -11,6 +12,7 @@ export default function Home() {
       </Unauthenticated>
       <Authenticated>
         <div className="px-2">
+          <StoreUser />
           <MeetingList />
         </div>
       </Authenticated>

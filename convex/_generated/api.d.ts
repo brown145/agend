@@ -17,6 +17,7 @@ import type * as discussions from "../discussions.js";
 import type * as meetings from "../meetings.js";
 import type * as tasks from "../tasks.js";
 import type * as topics from "../topics.js";
+import type * as users from "../users.js";
 
 /**
  * A utility for referencing Convex functions in your app's API.
@@ -31,6 +32,7 @@ declare const fullApi: ApiFromModules<{
   meetings: typeof meetings;
   tasks: typeof tasks;
   topics: typeof topics;
+  users: typeof users;
 }>;
 export declare const api: FilterApi<
   typeof fullApi,
