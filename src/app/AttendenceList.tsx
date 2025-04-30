@@ -9,7 +9,7 @@ export const AttendenceList = ({
   meetingId: Id<"meetings">;
 }) => {
   const [isEditing, setIsEditing] = useState(false);
-  const attendance = useQuery(api.meetingAttendance.listUsersByMeeting, {
+  const attendance = useQuery(api.users.listByMeeting, {
     meetingId,
   });
   const canEdit = useQuery(api.meetings.canEdit, { meetingId });

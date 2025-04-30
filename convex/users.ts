@@ -1,4 +1,6 @@
 // convex/users.ts
+import { v } from "convex/values";
+import { api } from "./_generated/api";
 import { Doc, Id } from "./_generated/dataModel";
 import { mutation, query } from "./_generated/server";
 
@@ -11,6 +13,39 @@ export const list = query({
     }
 
     return await ctx.db.query("users").collect();
+  },
+});
+
+export const listByMeeting = query({
+  args: {
+    meetingId: v.id("meetings"),
+  },
+  handler: async (ctx, args) => {
+    const canView = await ctx.runQuery(api.meetings.canView, {
+      meetingId: args.meetingId,
+    });
+
+    if (!canView) {
+      throw new Error("Not authorized to view this meeting");
+    }
+
+    const attendance = await ctx.db
+      .query("meetingAttendance")
+      .withIndex("by_meetingId", (q) => q.eq("meetingId", args.meetingId))
+      .collect();
+
+    // Get all users from the attendance records
+    const users = await Promise.all(
+      attendance.map(async (record) => {
+        const user = await ctx.db.get(record.userId);
+        return user;
+      }),
+    );
+
+    // Filter out any null values in case users were deleted
+    return users.filter(
+      (user): user is NonNullable<typeof user> => user !== null,
+    );
   },
 });
 
