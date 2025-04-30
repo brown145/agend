@@ -4,6 +4,7 @@ import { useMutation, useQuery } from "convex/react";
 import { useState } from "react";
 import { api } from "../../convex/_generated/api";
 import { Id } from "../../convex/_generated/dataModel";
+import { AttendenceList } from "./AttendenceList";
 import { DiscussionList } from "./DiscussionList";
 
 export const MeetingList = () => {
@@ -28,9 +29,7 @@ export const MeetingList = () => {
 const Meeting = ({ id, title }: { id: Id<"meetings">; title: string }) => {
   const [isEditing, setIsEditing] = useState(false);
   const updateMeeting = useMutation(api.meetings.update);
-  const attendance = useQuery(api.meetingAttendance.listUsersByMeeting, {
-    meetingId: id,
-  });
+  const canEdit = useQuery(api.meetings.canEdit, { meetingId: id });
 
   const handleSave = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -42,27 +41,32 @@ const Meeting = ({ id, title }: { id: Id<"meetings">; title: string }) => {
 
   if (isEditing) {
     return (
-      <form onSubmit={handleSave} className="flex gap-2 items-center">
-        <input
-          type="text"
-          name="title"
-          defaultValue={title}
-          className="border-2 border-gray-300 rounded-md p-1"
-          autoFocus
-        />
-        <button
-          type="submit"
-          className="bg-emerald-800 text-white rounded-md px-2 py-1 text-sm"
-        >
-          Save
-        </button>
-        <button
-          type="button"
-          onClick={() => setIsEditing(false)}
-          className="bg-gray-500 text-white rounded-md px-2 py-1 text-sm"
-        >
-          Cancel
-        </button>
+      <form onSubmit={handleSave} className="flex flex-col gap-4">
+        <div className="flex gap-2 items-center">
+          <input
+            type="text"
+            name="title"
+            defaultValue={title}
+            className="border-2 border-gray-300 rounded-md p-1"
+            autoFocus
+          />
+          <button
+            type="submit"
+            className="bg-emerald-800 text-white rounded-md px-2 py-1 text-sm"
+          >
+            Save
+          </button>
+          <button
+            type="button"
+            onClick={() => setIsEditing(false)}
+            className="bg-gray-500 text-white rounded-md px-2 py-1 text-sm"
+          >
+            Cancel
+          </button>
+        </div>
+        <div className="flex flex-col gap-2">
+          <div className="font-semibold">Attendees</div>
+        </div>
       </form>
     );
   }
@@ -71,16 +75,16 @@ const Meeting = ({ id, title }: { id: Id<"meetings">; title: string }) => {
     <div className="flex flex-col gap-2">
       <div className="flex gap-2 items-center">
         <div className="text-xl font-semibold">{title}</div>
-        <button
-          onClick={() => setIsEditing(true)}
-          className="text-sm text-gray-500 hover:text-gray-700"
-        >
-          Edit
-        </button>
+        {canEdit && (
+          <button
+            onClick={() => setIsEditing(true)}
+            className="text-sm text-gray-500 hover:text-gray-700"
+          >
+            Edit
+          </button>
+        )}
       </div>
-      <div className="flex gap-2 items-center">
-        {attendance?.map((user) => <div key={user._id}>{user.name}</div>)}
-      </div>
+      <AttendenceList meetingId={id} />
     </div>
   );
 };

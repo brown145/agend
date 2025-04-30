@@ -30,6 +30,28 @@ export const list = query({
   },
 });
 
+export const canEdit = query({
+  args: {
+    meetingId: v.id("meetings"),
+  },
+  handler: async (ctx, args): Promise<boolean> => {
+    const userId: Id<"users"> | null = await ctx.runQuery(
+      api.users.findUser,
+      {},
+    );
+    if (!userId) {
+      throw new Error("User not found");
+    }
+
+    // Get the meeting to verify ownership
+    const meeting = await ctx.db.get(args.meetingId);
+    if (!meeting) {
+      throw new Error("Meeting not found");
+    }
+
+    return meeting.createdBy === userId;
+  },
+});
 export const create = mutation({
   args: {
     title: v.string(),
@@ -62,16 +84,11 @@ export const update = mutation({
     title: v.string(),
   },
   handler: async (ctx, args) => {
-    const userId: Id<"users"> = await ctx.runMutation(api.users.ensureUser, {});
+    const canEdit = await ctx.runQuery(api.meetings.canEdit, {
+      meetingId: args.id,
+    });
 
-    // Get the meeting to verify ownership
-    const meeting = await ctx.db.get(args.id);
-    if (!meeting) {
-      throw new Error("Meeting not found");
-    }
-
-    // Verify the user owns this meeting
-    if (meeting.createdBy !== userId) {
+    if (!canEdit) {
       throw new Error("Not authorized to update this meeting");
     }
 

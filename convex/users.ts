@@ -1,6 +1,18 @@
 // convex/users.ts
-import { Id } from "./_generated/dataModel";
+import { Doc, Id } from "./_generated/dataModel";
 import { mutation, query } from "./_generated/server";
+
+export const list = query({
+  args: {},
+  handler: async (ctx): Promise<Doc<"users">[]> => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      throw new Error("Not authenticated");
+    }
+
+    return await ctx.db.query("users").collect();
+  },
+});
 
 export const ensureUser = mutation({
   args: {},
