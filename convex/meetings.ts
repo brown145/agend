@@ -43,15 +43,41 @@ export const canEdit = query({
       throw new Error("User not found");
     }
 
-    // Get the meeting to verify ownership
-    const meeting = await ctx.db.get(args.meetingId);
-    if (!meeting) {
-      throw new Error("Meeting not found");
-    }
+    const attendance = await ctx.db
+      .query("meetingAttendance")
+      .withIndex("by_meetingId_userId", (q) =>
+        q.eq("meetingId", args.meetingId).eq("userId", userId),
+      )
+      .first();
 
-    return meeting.createdBy === userId;
+    return !!attendance;
   },
 });
+
+export const canView = query({
+  args: {
+    meetingId: v.id("meetings"),
+  },
+  handler: async (ctx, args): Promise<boolean> => {
+    const userId: Id<"users"> | null = await ctx.runQuery(
+      api.users.findUser,
+      {},
+    );
+    if (!userId) {
+      throw new Error("User not found");
+    }
+
+    const attendance = await ctx.db
+      .query("meetingAttendance")
+      .withIndex("by_meetingId_userId", (q) =>
+        q.eq("meetingId", args.meetingId).eq("userId", userId),
+      )
+      .first();
+
+    return !!attendance;
+  },
+});
+
 export const create = mutation({
   args: {
     title: v.string(),

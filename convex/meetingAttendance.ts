@@ -8,18 +8,12 @@ export const listUsersByMeeting = query({
     meetingId: v.id("meetings"),
   },
   handler: async (ctx, args) => {
-    const userId: Id<"users"> | null = await ctx.runQuery(
-      api.users.findUser,
-      {},
-    );
-    if (!userId) {
-      throw new Error("User not found");
-    }
+    const canView = await ctx.runQuery(api.meetings.canView, {
+      meetingId: args.meetingId,
+    });
 
-    // Get the meeting to verify ownership
-    const meeting = await ctx.db.get(args.meetingId);
-    if (!meeting) {
-      throw new Error("Meeting not found");
+    if (!canView) {
+      throw new Error("Not authorized to view this meeting");
     }
 
     const attendance = await ctx.db

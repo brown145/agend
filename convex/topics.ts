@@ -14,30 +14,17 @@ export const listByDiscussion = query({
     discussionId: v.id("discussions"),
   },
   handler: async (ctx, args): Promise<TopicWithMetadata[]> => {
-    const userId: Id<"users"> | null = await ctx.runQuery(
-      api.users.findUser,
-      {},
-    );
-    if (!userId) {
-      throw new Error("User not found");
-    }
-
-    // Get the discussion to find the meeting
     const discussion = await ctx.db.get(args.discussionId);
     if (!discussion) {
       throw new Error("Discussion not found");
     }
 
-    // Check if user is an attendee using meetingAttendance table
-    const attendance = await ctx.db
-      .query("meetingAttendance")
-      .withIndex("by_meetingId_userId", (q) =>
-        q.eq("meetingId", discussion.meetingId).eq("userId", userId),
-      )
-      .first();
+    const canView = await ctx.runQuery(api.meetings.canView, {
+      meetingId: discussion.meetingId,
+    });
 
-    if (!attendance) {
-      throw new Error("Not authorized to view topics in this discussion");
+    if (!canView) {
+      throw new Error("Not authorized to view topics in this meeting");
     }
 
     // Get all topics for this discussion
@@ -119,24 +106,17 @@ export const update = mutation({
     id: v.id("topics"),
   },
   handler: async (ctx, args) => {
-    const userId: Id<"users"> = await ctx.runMutation(api.users.ensureUser, {});
-
-    // Get the topic to verify meeting access
     const topic = await ctx.db.get(args.id);
     if (!topic) {
       throw new Error("Topic not found");
     }
 
-    // Check if user is an attendee using meetingAttendance table
-    const attendance = await ctx.db
-      .query("meetingAttendance")
-      .withIndex("by_meetingId_userId", (q) =>
-        q.eq("meetingId", topic.meetingId).eq("userId", userId),
-      )
-      .first();
+    const canEdit = await ctx.runQuery(api.meetings.canEdit, {
+      meetingId: topic.meetingId,
+    });
 
-    if (!attendance) {
-      throw new Error("Not authorized to update this topic");
+    if (!canEdit) {
+      throw new Error("Not authorized to update this meeting");
     }
 
     return await ctx.db.patch(args.id, {

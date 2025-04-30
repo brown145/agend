@@ -9,23 +9,11 @@ export const listByTopic = query({
     meetingId: v.id("meetings"),
   },
   handler: async (ctx, args): Promise<Doc<"tasks">[]> => {
-    const userId: Id<"users"> | null = await ctx.runQuery(
-      api.users.findUser,
-      {},
-    );
-    if (!userId) {
-      throw new Error("User not found");
-    }
+    const canView = await ctx.runQuery(api.meetings.canView, {
+      meetingId: args.meetingId,
+    });
 
-    // Check if user is an attendee of the meeting
-    const attendance = await ctx.db
-      .query("meetingAttendance")
-      .withIndex("by_meetingId_userId", (q) =>
-        q.eq("meetingId", args.meetingId).eq("userId", userId),
-      )
-      .first();
-
-    if (!attendance) {
+    if (!canView) {
       throw new Error("Not authorized to view tasks in this meeting");
     }
 
@@ -66,24 +54,18 @@ export const update = mutation({
     id: v.id("tasks"),
   },
   handler: async (ctx, args) => {
-    const userId: Id<"users"> = await ctx.runMutation(api.users.ensureUser, {});
-
     // Get the task to verify ownership
     const task = await ctx.db.get(args.id);
     if (!task) {
       throw new Error("Task not found");
     }
 
-    // Check if user is an attendee using meetingAttendance table
-    const attendance = await ctx.db
-      .query("meetingAttendance")
-      .withIndex("by_meetingId_userId", (q) =>
-        q.eq("meetingId", task.meetingId).eq("userId", userId),
-      )
-      .first();
+    const canEdit = await ctx.runQuery(api.meetings.canEdit, {
+      meetingId: task.meetingId,
+    });
 
-    if (!attendance) {
-      throw new Error("Not authorized to update this task");
+    if (!canEdit) {
+      throw new Error("Not authorized to update this meeting");
     }
 
     return await ctx.db.patch(args.id, {
