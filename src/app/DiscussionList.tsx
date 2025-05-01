@@ -14,14 +14,14 @@ export const DiscussionList = ({ meetingId }: DiscussionListProps) => {
   const discussionList = useQuery(api.discussions.listByMeeting, { meetingId });
   return (
     <div className="flex flex-col gap-2">
-      {discussionList?.map(({ _id, createdAt, completed, metadata }) => (
+      {discussionList?.map(({ _id, _creationTime, completed, metadata }) => (
         <div
           key={_id}
           className="border-l-2 border-solid border-emerald-700 pl-2"
         >
           <Discussion
             id={_id}
-            createdAt={createdAt}
+            createdAt={_creationTime}
             completed={completed}
             topicsCompleted={metadata.topicsCompleted}
           />

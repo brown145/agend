@@ -38,7 +38,6 @@ export const create = mutation({
 
     return await ctx.db.insert("tasks", {
       completed: false,
-      createdAt: Date.now(),
       createdBy: userId,
       meetingId: args.meetingId,
       owner: userId,

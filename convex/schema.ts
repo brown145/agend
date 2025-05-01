@@ -6,7 +6,6 @@ export default defineSchema({
 
   discussions: defineTable({
     completed: v.boolean(),
-    createdAt: v.number(),
     createdBy: v.id("users"),
     meetingId: v.id("meetings"),
   })
@@ -14,7 +13,6 @@ export default defineSchema({
     .index("by_meetingId", ["meetingId"]),
 
   meetings: defineTable({
-    createdAt: v.number(),
     createdBy: v.id("users"),
     owner: v.id("users"),
     title: v.string(),
@@ -25,7 +23,6 @@ export default defineSchema({
   meetingAttendance: defineTable({
     meetingId: v.id("meetings"),
     userId: v.id("users"),
-    createdAt: v.number(),
   })
     .index("by_meetingId", ["meetingId"])
     .index("by_meetingId_userId", ["meetingId", "userId"])
@@ -33,7 +30,6 @@ export default defineSchema({
 
   tasks: defineTable({
     completed: v.boolean(),
-    createdAt: v.number(),
     createdBy: v.id("users"),
     meetingId: v.id("meetings"),
     owner: v.id("users"),
@@ -46,7 +42,6 @@ export default defineSchema({
 
   topics: defineTable({
     completed: v.boolean(),
-    createdAt: v.number(),
     createdBy: v.id("users"),
     discussionId: v.id("discussions"),
     meetingId: v.id("meetings"),

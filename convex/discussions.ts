@@ -73,7 +73,6 @@ export const create = mutation({
 
     return await ctx.db.insert("discussions", {
       completed: false,
-      createdAt: Date.now(),
       createdBy: userId,
       meetingId: args.meetingId,
     });

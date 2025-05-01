@@ -65,7 +65,6 @@ export const update = mutation({
           ctx.db.insert("meetingAttendance", {
             meetingId: args.id,
             userId,
-            createdAt: Date.now(),
           }),
         ),
       );
