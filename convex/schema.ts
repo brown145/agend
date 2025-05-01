@@ -28,6 +28,11 @@ export default defineSchema({
     .index("by_meetingId_userId", ["meetingId", "userId"])
     .index("by_userId", ["userId"]),
 
+  organizations: defineTable({
+    createdBy: v.id("users"),
+    name: v.string(),
+  }).index("by_createdBy", ["createdBy"]),
+
   tasks: defineTable({
     completed: v.boolean(),
     createdBy: v.id("users"),
@@ -55,8 +60,10 @@ export default defineSchema({
   users: defineTable({
     email: v.string(),
     name: v.string(),
+    organizationId: v.optional(v.id("organizations")),
     tokenIdentifier: v.string(),
   })
     .index("by_email", ["email"])
+    .index("by_organizationId", ["organizationId"])
     .index("by_token", ["tokenIdentifier"]),
 });

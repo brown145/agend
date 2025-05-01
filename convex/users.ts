@@ -1,18 +1,30 @@
-// convex/users.ts
 import { v } from "convex/values";
 import { api } from "./_generated/api";
 import { Doc, Id } from "./_generated/dataModel";
 import { mutation, query } from "./_generated/server";
 
-export const list = query({
+export const listUsersInOrganization = query({
   args: {},
   handler: async (ctx): Promise<Doc<"users">[]> => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) {
-      throw new Error("Not authenticated");
+    const user: Doc<"users"> | null = await ctx.runQuery(
+      api.users.findUser,
+      {},
+    );
+
+    if (!user) {
+      throw new Error("User not found");
     }
 
-    return await ctx.db.query("users").collect();
+    if (!user.organizationId) {
+      throw new Error("User is not part of an organization");
+    }
+
+    return await ctx.db
+      .query("users")
+      .withIndex("by_organizationId", (q) =>
+        q.eq("organizationId", user.organizationId),
+      )
+      .collect();
   },
 });
 

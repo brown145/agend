@@ -50,7 +50,7 @@ const EditAttendance = ({
   onSave: () => void;
 }) => {
   const updateMeetingAttendance = useMutation(api.meetingAttendance.update);
-  const allUsers = useQuery(api.users.list);
+  const orgUsers = useQuery(api.users.listUsersInOrganization);
 
   const handleSave = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -62,7 +62,7 @@ const EditAttendance = ({
 
   return (
     <form onSubmit={handleSave} className="flex flex-col gap-4">
-      {allUsers?.map((user) => (
+      {orgUsers?.map((user) => (
         <div key={user._id} className="flex items-center gap-2">
           <input
             type="checkbox"
