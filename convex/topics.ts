@@ -67,8 +67,8 @@ export const create = mutation({
     text: v.string(),
     discussionId: v.id("discussions"),
   },
-  handler: async (ctx, args) => {
-    const userId: Id<"users"> = await ctx.runMutation(api.users.ensureUser, {});
+  handler: async (ctx, args): Promise<Id<"topics">> => {
+    const user = await ctx.runQuery(api.users.findUser, {});
 
     // Get the discussion to find the meeting
     const discussion = await ctx.db.get(args.discussionId);
@@ -80,7 +80,7 @@ export const create = mutation({
     const attendance = await ctx.db
       .query("meetingAttendance")
       .withIndex("by_meetingId_userId", (q) =>
-        q.eq("meetingId", discussion.meetingId).eq("userId", userId),
+        q.eq("meetingId", discussion.meetingId).eq("userId", user._id),
       )
       .first();
 
@@ -90,9 +90,9 @@ export const create = mutation({
 
     return await ctx.db.insert("topics", {
       completed: false,
-      createdBy: userId,
+      createdBy: user._id,
       meetingId: discussion.meetingId,
-      owner: userId,
+      owner: user._id,
       text: args.text,
       discussionId: args.discussionId,
     });

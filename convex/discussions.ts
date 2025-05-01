@@ -59,21 +59,21 @@ export const create = mutation({
   args: {
     meetingId: v.id("meetings"),
   },
-  handler: async (ctx, args) => {
-    const userId: Id<"users"> = await ctx.runMutation(api.users.ensureUser, {});
+  handler: async (ctx, args): Promise<Id<"discussions">> => {
+    const user = await ctx.runQuery(api.users.findUser, {});
 
     // Verify the meeting exists and belongs to the user
     const meeting = await ctx.db.get(args.meetingId);
     if (!meeting) {
       throw new Error("Meeting not found");
     }
-    if (meeting.createdBy !== userId) {
+    if (meeting.createdBy !== user._id) {
       throw new Error("Not authorized to create discussion in this meeting");
     }
 
     return await ctx.db.insert("discussions", {
       completed: false,
-      createdBy: userId,
+      createdBy: user._id,
       meetingId: args.meetingId,
     });
   },

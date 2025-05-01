@@ -87,7 +87,7 @@ export const ensureUser = mutation({
 
 export const findUser = query({
   args: {},
-  handler: async (ctx): Promise<Id<"users"> | null> => {
+  handler: async (ctx): Promise<Doc<"users">> => {
     const identity = await ctx.auth.getUserIdentity();
     if (!identity) {
       throw new Error("Not authenticated");
@@ -101,6 +101,10 @@ export const findUser = query({
       )
       .unique();
 
-    return user?._id ?? null;
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    return user;
   },
 });

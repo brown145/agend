@@ -33,14 +33,14 @@ export const create = mutation({
     topicId: v.id("topics"),
     text: v.string(),
   },
-  handler: async (ctx, args) => {
-    const userId: Id<"users"> = await ctx.runMutation(api.users.ensureUser, {});
+  handler: async (ctx, args): Promise<Id<"tasks">> => {
+    const user = await ctx.runQuery(api.users.findUser, {});
 
     return await ctx.db.insert("tasks", {
       completed: false,
-      createdBy: userId,
+      createdBy: user._id,
       meetingId: args.meetingId,
-      owner: userId,
+      owner: user._id,
       text: args.text,
       topicId: args.topicId,
     });

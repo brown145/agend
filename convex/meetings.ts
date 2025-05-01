@@ -6,18 +6,18 @@ import { mutation, query } from "./_generated/server";
 export const list = query({
   args: {},
   handler: async (ctx): Promise<Doc<"meetings">[]> => {
-    const userId: Id<"users"> | null = await ctx.runQuery(
+    const user: Doc<"users"> | null = await ctx.runQuery(
       api.users.findUser,
       {},
     );
-    if (!userId) {
+    if (!user) {
       throw new Error("User not found");
     }
 
     // Get all meetings where user is an attendee using the meetingAttendance table
     const attendanceRecords = await ctx.db
       .query("meetingAttendance")
-      .withIndex("by_userId", (q) => q.eq("userId", userId))
+      .withIndex("by_userId", (q) => q.eq("userId", user._id))
       .collect();
 
     // Get the meetings for these attendance records
@@ -35,18 +35,18 @@ export const canEdit = query({
     meetingId: v.id("meetings"),
   },
   handler: async (ctx, args): Promise<boolean> => {
-    const userId: Id<"users"> | null = await ctx.runQuery(
+    const user: Doc<"users"> | null = await ctx.runQuery(
       api.users.findUser,
       {},
     );
-    if (!userId) {
+    if (!user) {
       throw new Error("User not found");
     }
 
     const attendance = await ctx.db
       .query("meetingAttendance")
       .withIndex("by_meetingId_userId", (q) =>
-        q.eq("meetingId", args.meetingId).eq("userId", userId),
+        q.eq("meetingId", args.meetingId).eq("userId", user._id),
       )
       .first();
 
@@ -59,18 +59,18 @@ export const canView = query({
     meetingId: v.id("meetings"),
   },
   handler: async (ctx, args): Promise<boolean> => {
-    const userId: Id<"users"> | null = await ctx.runQuery(
+    const user: Doc<"users"> | null = await ctx.runQuery(
       api.users.findUser,
       {},
     );
-    if (!userId) {
+    if (!user) {
       throw new Error("User not found");
     }
 
     const attendance = await ctx.db
       .query("meetingAttendance")
       .withIndex("by_meetingId_userId", (q) =>
-        q.eq("meetingId", args.meetingId).eq("userId", userId),
+        q.eq("meetingId", args.meetingId).eq("userId", user._id),
       )
       .first();
 
@@ -83,19 +83,19 @@ export const create = mutation({
     title: v.string(),
   },
   handler: async (ctx, args): Promise<Id<"meetings">> => {
-    const userId: Id<"users"> = await ctx.runMutation(api.users.ensureUser, {});
+    const user = await ctx.runQuery(api.users.findUser, {});
 
     // Create the meeting
     const meetingId = await ctx.db.insert("meetings", {
       title: args.title,
-      createdBy: userId,
-      owner: userId,
+      createdBy: user._id,
+      owner: user._id,
     });
 
     // Create the attendance record
     await ctx.db.insert("meetingAttendance", {
       meetingId,
-      userId,
+      userId: user._id,
     });
 
     return meetingId;
