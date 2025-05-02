@@ -8,14 +8,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import {
-  SignedIn,
-  SignedOut,
-  SignInButton,
-  SignUpButton,
-  useAuth,
-  UserButton,
-} from "@clerk/nextjs";
+import { SignedIn, useAuth, UserButton } from "@clerk/nextjs";
 import { useQuery } from "convex/react";
 import { ChevronsUpDown, Plus, Settings, Squirrel } from "lucide-react";
 import Link from "next/link";
@@ -55,30 +48,35 @@ export const NavigationBar = () => {
           <Squirrel className="h-6 w-6" />
         </div>
 
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 px-2">
-              <div className="flex items-center gap-0.5">
-                {organization?.name ?? "Organization"}
-                <ChevronsUpDown className="h-4 w-4" />
-              </div>
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="start">
-            <DropdownMenuItem key={organization?._id ?? "organization"} asChild>
-              <Link href="/settings" className="flex items-center">
-                {organization?.name ?? "Organization"}
-              </Link>
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem asChild>
-              <Link href="/settings" className="flex items-center">
-                <Settings className="h-4 w-4 mr-2" />
-                Settings
-              </Link>
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        {organization && (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="h-8 px-2">
+                <div className="flex items-center gap-0.5">
+                  {organization?.name ?? "Organization"}
+                  <ChevronsUpDown className="h-4 w-4" />
+                </div>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start">
+              <DropdownMenuItem
+                key={organization?._id ?? "organization"}
+                asChild
+              >
+                <Link href="/settings" className="flex items-center">
+                  {organization?.name ?? "Organization"}
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem asChild>
+                <Link href="/settings" className="flex items-center">
+                  <Settings className="h-4 w-4 mr-2" />
+                  Settings
+                </Link>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        )}
 
         {meetings.length > 0 && (
           <>
@@ -144,10 +142,6 @@ export const NavigationBar = () => {
         )}
       </div>
 
-      <SignedOut>
-        <SignInButton />
-        <SignUpButton />
-      </SignedOut>
       <SignedIn>
         <UserButton />
       </SignedIn>
