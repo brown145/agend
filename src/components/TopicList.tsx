@@ -1,10 +1,10 @@
 "use client";
 
+import { cn } from "@/lib/utils";
 import { useMutation, useQuery } from "convex/react";
 import { useState } from "react";
-import { twMerge } from "tailwind-merge";
-import { api } from "../../../../convex/_generated/api";
-import { Id } from "../../../../convex/_generated/dataModel";
+import { api } from "../../convex/_generated/api";
+import { Id } from "../../convex/_generated/dataModel";
 import { TaskList } from "./TaskList";
 
 export const TopicList = ({
@@ -57,7 +57,7 @@ const Topic = ({
         onChange={() => updateTopic({ id, completed: !completed })}
         type="checkbox"
       />
-      <div className={twMerge(completed && tasksCompleted && "line-through")}>
+      <div className={cn(completed && tasksCompleted && "line-through")}>
         {text}
       </div>
     </div>

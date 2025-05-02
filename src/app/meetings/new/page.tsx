@@ -1,7 +1,7 @@
 "use client";
 
+import { AddMeeting } from "@/components/AddMeeting";
 import { redirect } from "next/navigation";
-import { AddMeeting } from "../_components/AddMeeting";
 
 export default function MeetingsNewPage() {
   const handleSubmit = (id: string) => {

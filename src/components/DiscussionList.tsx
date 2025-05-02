@@ -1,9 +1,9 @@
 "use client";
 
+import { cn } from "@/lib/utils";
 import { useMutation, useQuery } from "convex/react";
-import { twMerge } from "tailwind-merge";
-import { api } from "../../../../convex/_generated/api";
-import { Id } from "../../../../convex/_generated/dataModel";
+import { api } from "../../convex/_generated/api";
+import { Id } from "../../convex/_generated/dataModel";
 import { TopicList } from "./TopicList";
 
 interface DiscussionListProps {
@@ -50,7 +50,7 @@ const Discussion = ({
   return (
     <div className="flex gap-2 items-center">
       <div
-        className={twMerge(
+        className={cn(
           "text-lg flex gap-2 items-center",
           completed && topicsCompleted && "line-through",
         )}

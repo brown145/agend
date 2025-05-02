@@ -1,11 +1,11 @@
 "use client";
 
+import { DiscussionList } from "@/components/DiscussionList";
+import { MeetingDetails } from "@/components/MeetingDetails";
 import { useQuery } from "convex/react";
 import { useParams } from "next/navigation";
 import { api } from "../../../../convex/_generated/api";
 import { Id } from "../../../../convex/_generated/dataModel";
-import { DiscussionList } from "../_components/DiscussionList";
-import { MeetingDetails } from "../_components/MeetingDetails";
 
 export default function MeetingsPage() {
   const params = useParams();
