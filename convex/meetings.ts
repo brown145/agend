@@ -30,6 +30,22 @@ export const list = query({
   },
 });
 
+export const details = query({
+  args: {
+    meetingId: v.id("meetings"),
+  },
+  handler: async (ctx, args): Promise<Doc<"meetings"> | null> => {
+    const canView = await ctx.runQuery(api.meetings.canView, {
+      meetingId: args.meetingId,
+    });
+    if (!canView) {
+      throw new Error("Not authorized to view this meeting");
+    }
+
+    return await ctx.db.get(args.meetingId);
+  },
+});
+
 export const canEdit = query({
   args: {
     meetingId: v.id("meetings"),

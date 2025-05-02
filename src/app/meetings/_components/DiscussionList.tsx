@@ -2,8 +2,8 @@
 
 import { useMutation, useQuery } from "convex/react";
 import { twMerge } from "tailwind-merge";
-import { api } from "../../convex/_generated/api";
-import { Id } from "../../convex/_generated/dataModel";
+import { api } from "../../../../convex/_generated/api";
+import { Id } from "../../../../convex/_generated/dataModel";
 import { TopicList } from "./TopicList";
 
 interface DiscussionListProps {

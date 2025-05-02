@@ -7,7 +7,7 @@ import { api } from "../../../../convex/_generated/api";
 export const MeetingList = () => {
   return (
     <div className="flex flex-col">
-      <div className="flex-1">Meetings</div>
+      <div className="text-lg font-bold">Meetings</div>
       <Authenticated>
         <MeetingListAuthenticated />
       </Authenticated>
@@ -28,6 +28,7 @@ const MeetingListAuthenticated = () => {
           {meeting.title}
         </Link>
       ))}
+      <Link href="/meetings/new">New Meeting</Link>
     </div>
   );
 };

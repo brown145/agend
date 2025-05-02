@@ -2,31 +2,17 @@
 
 import { useMutation, useQuery } from "convex/react";
 import { useState } from "react";
-import { api } from "../../convex/_generated/api";
-import { Id } from "../../convex/_generated/dataModel";
+import { api } from "../../../../convex/_generated/api";
+import { Id } from "../../../../convex/_generated/dataModel";
 import { AttendenceList } from "./AttendenceList";
-import { DiscussionList } from "./DiscussionList";
 
-export const MeetingList = () => {
-  const meetingList = useQuery(api.meetings.list);
-  return (
-    <div className="flex flex-col gap-4">
-      {meetingList?.map(({ _id, title }) => (
-        <div
-          key={_id}
-          className="border-l-4 border-solid border-emerald-800 pl-2"
-        >
-          <Meeting id={_id} title={title} />
-          <DiscussionList meetingId={_id} />
-        </div>
-      ))}
-      {meetingList?.length === 0 && <div>No meetings</div>}
-      <AddMeeting />
-    </div>
-  );
-};
-
-const Meeting = ({ id, title }: { id: Id<"meetings">; title: string }) => {
+export const MeetingDetails = ({
+  id,
+  title,
+}: {
+  id: Id<"meetings">;
+  title: string;
+}) => {
   const [isEditing, setIsEditing] = useState(false);
   const updateMeeting = useMutation(api.meetings.update);
   const canEdit = useQuery(api.meetings.canEdit, { meetingId: id });
@@ -86,34 +72,5 @@ const Meeting = ({ id, title }: { id: Id<"meetings">; title: string }) => {
       </div>
       <AttendenceList meetingId={id} />
     </div>
-  );
-};
-
-const AddMeeting = () => {
-  const [title, setTitle] = useState("");
-  const createMeeting = useMutation(api.meetings.create);
-
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    createMeeting({ title });
-    setTitle("");
-  };
-
-  return (
-    <form onSubmit={handleSubmit} className="flex gap-2">
-      <input
-        className="border-2 border-gray-300 rounded-md p-1"
-        onChange={(e) => setTitle(e.target.value)}
-        placeholder="New meeting title"
-        type="text"
-        value={title}
-      />
-      <button
-        className="bg-emerald-800 text-white rounded-md p-1"
-        type="submit"
-      >
-        New Meeting
-      </button>
-    </form>
   );
 };
