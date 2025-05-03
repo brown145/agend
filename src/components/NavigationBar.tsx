@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { SignedIn, useAuth, UserButton } from "@clerk/nextjs";
 import { useQuery } from "convex/react";
-import { ChevronsUpDown, Plus, Settings, Squirrel } from "lucide-react";
+import { ChevronsUpDown, List, Plus, Settings, Squirrel } from "lucide-react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { api } from "../../convex/_generated/api";
@@ -98,8 +98,14 @@ export const NavigationBar = () => {
                 ))}
                 <DropdownMenuSeparator />
                 <DropdownMenuItem asChild>
+                  <Link href="/meetings" className="flex items-center">
+                    <List className="h-4 w-4" />
+                    list
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
                   <Link href="/meetings/new" className="flex items-center">
-                    <Plus className="h-4 w-4 mr-2" />
+                    <Plus className="h-4 w-4" />
                     new
                   </Link>
                 </DropdownMenuItem>
