@@ -27,13 +27,13 @@ export default function RootLayout({
 }>) {
   return (
     <ClerkProvider publishableKey="pk_test_cmVsYXhpbmctYnVubnktNjQuY2xlcmsuYWNjb3VudHMuZGV2JA">
-      <html lang="en">
+      <html lang="en" className="h-full">
         <body
-          className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+          className={`${geistSans.variable} ${geistMono.variable} antialiased h-full flex flex-col`}
         >
           <ConvexClientProvider>
             <NavigationBar />
-            {children}
+            <main className="flex-1">{children}</main>
           </ConvexClientProvider>
         </body>
       </html>

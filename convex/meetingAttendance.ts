@@ -1,16 +1,50 @@
 import { v } from "convex/values";
 import { api } from "./_generated/api";
-import { Id } from "./_generated/dataModel";
-import { mutation } from "./_generated/server";
+import { mutation, query } from "./_generated/server";
 
-export const update = mutation({
+export const add = mutation({
   args: {
-    attendees: v.array(v.id("users")),
-    id: v.id("meetings"),
+    userId: v.id("users"),
+    meetingId: v.id("meetings"),
   },
   handler: async (ctx, args) => {
     const canEdit = await ctx.runQuery(api.meetings.canEdit, {
-      meetingId: args.id,
+      meetingId: args.meetingId,
+    });
+
+    if (!canEdit) {
+      throw new Error("Not authorized to update this meeting");
+    }
+
+    // Check if user is already an attendee
+    const existingAttendance = await ctx.db
+      .query("meetingAttendance")
+      .withIndex("by_meetingId", (q) => q.eq("meetingId", args.meetingId))
+      .filter((q) => q.eq(q.field("userId"), args.userId))
+      .first();
+
+    if (existingAttendance) {
+      return args.meetingId;
+    }
+
+    // Add the new attendee
+    await ctx.db.insert("meetingAttendance", {
+      meetingId: args.meetingId,
+      userId: args.userId,
+    });
+
+    return args.meetingId;
+  },
+});
+
+export const remove = mutation({
+  args: {
+    userId: v.id("users"),
+    meetingId: v.id("meetings"),
+  },
+  handler: async (ctx, args) => {
+    const canEdit = await ctx.runQuery(api.meetings.canEdit, {
+      meetingId: args.meetingId,
     });
 
     if (!canEdit) {
@@ -20,56 +54,35 @@ export const update = mutation({
     // Get all current attendance records for this meeting
     const currentAttendance = await ctx.db
       .query("meetingAttendance")
-      .withIndex("by_meetingId", (q) => q.eq("meetingId", args.id))
+      .withIndex("by_meetingId", (q) => q.eq("meetingId", args.meetingId))
       .collect();
 
-    const attendeesToAdd = new Set<Id<"users">>();
-    const attendeesToRemove = new Set<Id<"users">>();
-    const attendeesCurrent = new Set(
-      currentAttendance.map((record) => record.userId),
+    // Ensure we don't remove the last attendee
+    if (currentAttendance.length <= 1) {
+      throw new Error("Cannot remove the last attendee from a meeting");
+    }
+
+    // Find and remove the specific attendance record
+    const recordToRemove = currentAttendance.find(
+      (record) => record.userId === args.userId,
     );
-    const attendeesNew = new Set(args.attendees);
 
-    const combinedAttendeeIds = new Set([
-      ...currentAttendance.map((record) => record.userId),
-      ...args.attendees,
-    ]);
-
-    combinedAttendeeIds.forEach((id) => {
-      if (attendeesCurrent.has(id) && !attendeesNew.has(id)) {
-        attendeesToRemove.add(id);
-      } else if (!attendeesCurrent.has(id) && attendeesNew.has(id)) {
-        attendeesToAdd.add(id);
-      }
-    });
-
-    // Remove attendees that are no longer in the meeting
-    if (attendeesToRemove.size > 0) {
-      await Promise.all(
-        Array.from(attendeesToRemove)
-          .map((userId) => {
-            const record = currentAttendance.find(
-              (record) => record.userId === userId,
-            );
-            if (!record) return;
-            return ctx.db.delete(record._id);
-          })
-          .filter(Boolean),
-      );
+    if (recordToRemove) {
+      await ctx.db.delete(recordToRemove._id);
     }
 
-    // Add new attendees
-    if (attendeesToAdd.size > 0) {
-      await Promise.all(
-        Array.from(attendeesToAdd).map((userId) =>
-          ctx.db.insert("meetingAttendance", {
-            meetingId: args.id,
-            userId,
-          }),
-        ),
-      );
-    }
+    return args.meetingId;
+  },
+});
 
-    return args.id;
+export const listByMeeting = query({
+  args: {
+    meetingId: v.id("meetings"),
+  },
+  handler: async (ctx, args) => {
+    return await ctx.db
+      .query("meetingAttendance")
+      .withIndex("by_meetingId", (q) => q.eq("meetingId", args.meetingId))
+      .collect();
   },
 });

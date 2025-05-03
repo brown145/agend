@@ -1,6 +1,5 @@
 "use client";
 
-import { AttendenceList } from "@/components/AttendenceList";
 import { Button } from "@/components/ui/button";
 import { useMutation, useQuery } from "convex/react";
 import Link from "next/link";
@@ -65,9 +64,6 @@ export default function MeetingsPage() {
           </div>
         ))}
       </div>
-      <hr />
-      {/* TODO: */}
-      <AttendenceList meetingId={meetingId} />
     </div>
   );
 }

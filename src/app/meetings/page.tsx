@@ -9,7 +9,7 @@ export default function MeetingsPage() {
   const meetings = useQuery(api.meetings.list);
 
   return (
-    <div>
+    <div className="h-full">
       <div className="flex items-center gap-2">
         <h1 className="text-2xl font-bold">Meetings</h1>
         <Button

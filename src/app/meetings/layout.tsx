@@ -13,7 +13,7 @@ export default function MeetingsLayout({
     <>
       <Authenticated>
         <StoreUser />
-        <div className="px-4">{children}</div>
+        <div className="h-full px-4">{children}</div>
       </Authenticated>
       <Unauthenticated>Auth required</Unauthenticated>
     </>
