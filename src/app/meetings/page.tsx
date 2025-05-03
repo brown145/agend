@@ -7,6 +7,7 @@ import { api } from "../../../convex/_generated/api";
 
 export default function MeetingsPage() {
   const meetings = useQuery(api.meetings.list);
+
   return (
     <div>
       <div className="flex items-center gap-2">

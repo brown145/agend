@@ -1,11 +1,17 @@
 "use client";
 
-import { DiscussionList } from "@/components/DiscussionList";
-import { MeetingDetails } from "@/components/MeetingDetails";
-import { useQuery } from "convex/react";
-import { useParams } from "next/navigation";
+import { AttendenceList } from "@/components/AttendenceList";
+import { Button } from "@/components/ui/button";
+import { useMutation, useQuery } from "convex/react";
+import Link from "next/link";
+import {
+  useParams,
+  usePathname,
+  useRouter,
+  useSearchParams,
+} from "next/navigation";
 import { api } from "../../../../convex/_generated/api";
-import { Id } from "../../../../convex/_generated/dataModel";
+import { Doc, Id } from "../../../../convex/_generated/dataModel";
 
 export default function MeetingsPage() {
   const params = useParams();
@@ -19,14 +25,121 @@ export default function MeetingsPage() {
       : "skip",
   );
 
+  const discussions = useQuery(
+    api.discussions.listByMeeting,
+    meetingId
+      ? {
+          meetingId,
+        }
+      : "skip",
+  );
+
+  const createDiscussion = useMutation(api.discussions.create);
+
+  const handleNewDiscussion = () => {
+    createDiscussion({ meetingId });
+  };
+
   if (!meeting) {
     return <div>Meeting not found</div>;
   }
 
   return (
-    <div className="">
-      <MeetingDetails id={meetingId} title={meeting.title} />
-      <DiscussionList meetingId={meetingId} />
+    <div>
+      <div className="flex items-center gap-2">
+        <MeetingHeader meeting={meeting} />
+        <Button
+          variant="link"
+          size="sm"
+          className="w-fit text-muted-foreground"
+        >
+          <div onClick={handleNewDiscussion}>New discussion</div>
+        </Button>
+      </div>
+      <div className="flex flex-col">
+        {discussions?.map((discussion) => (
+          <div key={discussion._id} className="hover:underline">
+            <Link href={`/meetings/${meeting._id}/${discussion._id}`}>
+              {new Date(discussion._creationTime).toLocaleDateString()}
+            </Link>
+          </div>
+        ))}
+      </div>
+      <hr />
+      {/* TODO: */}
+      <AttendenceList meetingId={meetingId} />
     </div>
   );
 }
+
+const MeetingHeader = ({ meeting }: { meeting: Doc<"meetings"> }) => {
+  const updateMeeting = useMutation(api.meetings.update);
+  const canEdit = useQuery(api.meetings.canEdit, { meetingId: meeting._id });
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
+  const isEditing = searchParams.get("edit") === "true";
+
+  const setEditMode = (edit: boolean) => {
+    const params = new URLSearchParams(searchParams.toString());
+    if (edit) {
+      params.set("edit", "true");
+    } else {
+      params.delete("edit");
+    }
+    router.replace(`${pathname}?${params.toString()}`);
+  };
+
+  const handleSave = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    const newTitle = formData.get("title") as string;
+    await updateMeeting({ id: meeting._id, title: newTitle });
+    setEditMode(false);
+  };
+
+  if (isEditing) {
+    return (
+      <form onSubmit={handleSave} className="flex flex-col gap-4">
+        <div className="flex gap-2 items-center">
+          <input
+            type="text"
+            name="title"
+            defaultValue={meeting.title}
+            className="border-2 border-gray-300 rounded-md p-1"
+            autoFocus
+          />
+          <button
+            type="submit"
+            className="bg-emerald-800 text-white rounded-md px-2 py-1 text-sm"
+          >
+            Save
+          </button>
+          <button
+            type="button"
+            onClick={() => setEditMode(false)}
+            className="bg-gray-500 text-white rounded-md px-2 py-1 text-sm"
+          >
+            Cancel
+          </button>
+        </div>
+        <div className="flex flex-col gap-2">
+          <div className="font-semibold">Attendees</div>
+        </div>
+      </form>
+    );
+  }
+
+  return (
+    <div className="flex flex-col gap-2">
+      <div className="flex gap-2 items-center">
+        <div
+          className="text-xl font-semibold"
+          onClick={canEdit ? () => setEditMode(true) : undefined}
+        >
+          {meeting.title}
+        </div>
+      </div>
+    </div>
+  );
+};
