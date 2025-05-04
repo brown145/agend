@@ -55,6 +55,29 @@ export const listByMeeting = query({
   },
 });
 
+export const details = query({
+  args: {
+    discussionId: v.id("discussions"),
+  },
+  handler: async (ctx, args) => {
+    const discussion = await ctx.db.get(args.discussionId);
+
+    if (!discussion) {
+      throw new Error("Discussion not found");
+    }
+
+    const canView = await ctx.runQuery(api.meetings.canView, {
+      meetingId: discussion.meetingId,
+    });
+
+    if (!canView) {
+      throw new Error("Not authorized to view discussions in this meeting");
+    }
+
+    return discussion;
+  },
+});
+
 export const create = mutation({
   args: {
     meetingId: v.id("meetings"),
