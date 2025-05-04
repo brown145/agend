@@ -29,6 +29,11 @@ export default function DiscussionPage() {
       : "skip",
   );
 
+  const meetingOwner = useQuery(
+    api.users.details,
+    meeting?.owner ? { userId: meeting.owner } : "skip",
+  );
+
   const discussionDate = discussion?._creationTime
     ? new Date(discussion._creationTime)
     : null;
@@ -39,6 +44,7 @@ export default function DiscussionPage() {
         {meeting?.title ?? "Meeting"} -{" "}
         {discussionDate ? discussionDate.toLocaleDateString() : "Unknown"}
       </h1>
+      <div>{meetingOwner?.name ?? "Unknown owner"}</div>
       <h2 className="text-lg font-bold">Recap (previous discussion date)</h2>
       <div className="text-sm text-gray-500">TODO</div>
       <h2 className="text-lg font-bold">Topics</h2>

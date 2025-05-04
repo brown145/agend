@@ -120,3 +120,18 @@ export const findUser = query({
     return user;
   },
 });
+
+export const details = query({
+  args: {
+    userId: v.id("users"),
+  },
+  handler: async (ctx, args) => {
+    const currentUser = await ctx.runQuery(api.users.findUser, {});
+
+    if (!currentUser) {
+      throw new Error("Not authenticated");
+    }
+
+    return await ctx.db.get(args.userId);
+  },
+});
