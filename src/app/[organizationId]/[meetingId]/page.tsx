@@ -3,23 +3,17 @@
 import { Button } from "@/components/ui/button";
 import { useMutation, useQuery } from "convex/react";
 import Link from "next/link";
-import {
-  useParams,
-  usePathname,
-  useRouter,
-  useSearchParams,
-} from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { api } from "../../../../convex/_generated/api";
-import { Doc, Id } from "../../../../convex/_generated/dataModel";
+import { Doc } from "../../../../convex/_generated/dataModel";
+import { useParamIds } from "../_hooks/useParamIds";
 
 export default function MeetingsPage() {
-  const params = useParams();
-  const meetingId = params.meetingId as Id<"meetings">;
-  const organizationId = params.organizationId as Id<"organizations">;
+  const { meetingId, organizationId } = useParamIds();
 
   const meeting = useQuery(
     api.meetings.details,
-    meetingId
+    meetingId && organizationId
       ? {
           meetingId,
           orgId: organizationId,
@@ -29,7 +23,7 @@ export default function MeetingsPage() {
 
   const discussions = useQuery(
     api.discussions.listByMeeting,
-    meetingId
+    meetingId && organizationId
       ? {
           meetingId,
           orgId: organizationId,
@@ -40,7 +34,9 @@ export default function MeetingsPage() {
   const createDiscussion = useMutation(api.discussions.create);
 
   const handleNewDiscussion = () => {
-    createDiscussion({ meetingId, orgId: organizationId });
+    if (meetingId && organizationId) {
+      createDiscussion({ meetingId, orgId: organizationId });
+    }
   };
 
   if (!meeting) {

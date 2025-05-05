@@ -1,10 +1,11 @@
 "use client";
 
 import { AddMeeting } from "@/components/AddMeeting";
-import { redirect, useParams } from "next/navigation";
+import { redirect } from "next/navigation";
+import { useParamIds } from "../_hooks/useParamIds";
 
 export default function MeetingsNewPage() {
-  const { organizationId } = useParams();
+  const { organizationId } = useParamIds();
 
   const handleSubmit = (id: string) => {
     redirect(`/${organizationId}/${id}`);

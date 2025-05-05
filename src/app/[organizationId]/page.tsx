@@ -3,15 +3,19 @@
 import { Button } from "@/components/ui/button";
 import { useQuery } from "convex/react";
 import Link from "next/link";
-import { useParams } from "next/navigation";
 import { api } from "../../../convex/_generated/api";
-import { Id } from "../../../convex/_generated/dataModel";
+import { useParamIds } from "./_hooks/useParamIds";
 
 export default function MeetingsPage() {
-  const { organizationId } = useParams();
-  const meetings = useQuery(api.meetings.list, {
-    orgId: organizationId as Id<"organizations">,
-  });
+  const { organizationId } = useParamIds();
+  const meetings = useQuery(
+    api.meetings.list,
+    organizationId
+      ? {
+          orgId: organizationId,
+        }
+      : "skip",
+  );
 
   return (
     <div className="h-full">

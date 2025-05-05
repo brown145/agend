@@ -2,20 +2,18 @@
 
 import { TopicList } from "@/components/TopicList";
 import { useQuery } from "convex/react";
-import { useParams } from "next/navigation";
 import { api } from "../../../../../convex/_generated/api";
-import { Id } from "../../../../../convex/_generated/dataModel";
+import { useParamIds } from "../../_hooks/useParamIds";
 
 export default function DiscussionPage() {
-  const params = useParams();
-  const meetingId = params.meetingId as Id<"meetings">;
-  const discussionId = params.discussionId as Id<"discussions">;
+  const { meetingId, discussionId, organizationId } = useParamIds();
 
   const meeting = useQuery(
     api.meetings.details,
-    meetingId
+    meetingId && organizationId
       ? {
           meetingId,
+          orgId: organizationId,
         }
       : "skip",
   );
@@ -49,7 +47,9 @@ export default function DiscussionPage() {
       <div className="text-sm text-gray-500">TODO</div>
       <h2 className="text-lg font-bold">Topics</h2>
       <div className="">
-        <TopicList discussionId={discussionId} meetingId={meetingId} />
+        {discussionId && meetingId && (
+          <TopicList discussionId={discussionId} meetingId={meetingId} />
+        )}
       </div>
       <h2 className="text-lg font-bold">Summary</h2>
       <div className="text-sm text-gray-500">TODO</div>
