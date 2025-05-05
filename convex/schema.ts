@@ -31,6 +31,7 @@ export default defineSchema({
   organizations: defineTable({
     createdBy: v.id("users"),
     name: v.string(),
+    isPersonal: v.boolean(),
   }).index("by_createdBy", ["createdBy"]),
 
   tasks: defineTable({
@@ -60,10 +61,15 @@ export default defineSchema({
   users: defineTable({
     email: v.string(),
     name: v.string(),
-    organizationId: v.optional(v.id("organizations")),
     tokenIdentifier: v.string(),
   })
     .index("by_email", ["email"])
-    .index("by_organizationId", ["organizationId"])
     .index("by_token", ["tokenIdentifier"]),
+
+  userOrganizations: defineTable({
+    orgId: v.id("organizations"),
+    userId: v.id("users"),
+  })
+    .index("by_orgId_userId", ["orgId", "userId"])
+    .index("by_userId", ["userId"]),
 });

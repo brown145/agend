@@ -18,14 +18,13 @@ import { Id } from "../../convex/_generated/dataModel";
 
 export const NavigationBar = () => {
   const params = useParams();
+  const { organizationId } = params;
   const { meetingId } = params;
   const { discussionId } = params;
 
   const { isSignedIn } = useAuth();
-  const organization = useQuery(
-    api.organizations.details,
-    isSignedIn ? {} : "skip",
-  );
+  const organizations =
+    useQuery(api.organizations.list, isSignedIn ? {} : "skip") ?? [];
 
   const meetings = useQuery(api.meetings.list, isSignedIn ? {} : "skip") ?? [];
   const currentMeeting = meetings.find((mtg) => mtg._id === meetingId);
@@ -48,25 +47,24 @@ export const NavigationBar = () => {
           <Squirrel className="h-6 w-6" />
         </div>
 
-        {organization && (
+        {organizations.length > 0 && (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="h-8 px-2">
                 <div className="flex items-center gap-0.5">
-                  {organization?.name ?? "Organization"}
+                  {organizations[0]?.name ?? "Organization"}
                   <ChevronsUpDown className="h-4 w-4" />
                 </div>
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="start">
-              <DropdownMenuItem
-                key={organization?._id ?? "organization"}
-                asChild
-              >
-                <Link href="/settings" className="flex items-center">
-                  {organization?.name ?? "Organization"}
-                </Link>
-              </DropdownMenuItem>
+              {organizations.map((org) => (
+                <DropdownMenuItem key={org._id} asChild>
+                  <Link href={`/${org._id}`} className="flex items-center">
+                    {org.name}
+                  </Link>
+                </DropdownMenuItem>
+              ))}
               <DropdownMenuSeparator />
               <DropdownMenuItem asChild>
                 <Link href="/settings" className="flex items-center">
@@ -93,18 +91,26 @@ export const NavigationBar = () => {
               <DropdownMenuContent align="start">
                 {meetings.map((mtg) => (
                   <DropdownMenuItem key={mtg._id} asChild>
-                    <Link href={`/meetings/${mtg._id}`}>{mtg.title}</Link>
+                    <Link href={`/${organizationId}/${mtg._id}`}>
+                      {mtg.title}
+                    </Link>
                   </DropdownMenuItem>
                 ))}
                 <DropdownMenuSeparator />
                 <DropdownMenuItem asChild>
-                  <Link href="/meetings" className="flex items-center">
+                  <Link
+                    href={`/${organizationId}`}
+                    className="flex items-center"
+                  >
                     <List className="h-4 w-4" />
                     list
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
-                  <Link href="/meetings/new" className="flex items-center">
+                  <Link
+                    href={`/${organizationId}/new`}
+                    className="flex items-center"
+                  >
                     <Plus className="h-4 w-4" />
                     new
                   </Link>
@@ -132,7 +138,7 @@ export const NavigationBar = () => {
                     {discussions.map((disc) => (
                       <DropdownMenuItem key={disc._id} asChild>
                         <Link
-                          href={`/meetings/${currentMeeting?._id}/${disc._id}`}
+                          href={`/${organizationId}/${currentMeeting?._id}/${disc._id}`}
                         >
                           {new Date(
                             disc._creationTime ?? 0,

@@ -19,11 +19,15 @@ interface User {
 }
 
 export const AttendeesList = () => {
-  const { meetingId: _meetingId } = useParams();
+  const { meetingId: _meetingId, organizationId: _organizationId } =
+    useParams();
+  const organizationId = _organizationId as Id<"organizations">;
   const meetingId = _meetingId as Id<"meetings">;
 
   const attendees = useQuery(api.users.listByMeeting, { meetingId });
-  const allOrgUsers = useQuery(api.users.listUsersInOrganization);
+  const allOrgUsers = useQuery(api.users.listUsersInOrganization, {
+    organizationId,
+  });
   const canEdit = useQuery(api.meetings.canEdit, { meetingId });
 
   return (

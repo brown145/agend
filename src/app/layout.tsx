@@ -1,4 +1,3 @@
-import { NavigationBar } from "@/components/NavigationBar";
 import { ClerkProvider } from "@clerk/nextjs";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
@@ -32,7 +31,6 @@ export default function RootLayout({
           className={`${geistSans.variable} ${geistMono.variable} antialiased h-full flex flex-col`}
         >
           <ConvexClientProvider>
-            <NavigationBar />
             <main className="flex-1">{children}</main>
           </ConvexClientProvider>
         </body>

@@ -3,9 +3,11 @@
 import { Button } from "@/components/ui/button";
 import { useQuery } from "convex/react";
 import Link from "next/link";
+import { useParams } from "next/navigation";
 import { api } from "../../../convex/_generated/api";
 
 export default function MeetingsPage() {
+  const { organizationId } = useParams();
   const meetings = useQuery(api.meetings.list);
 
   return (
@@ -17,13 +19,15 @@ export default function MeetingsPage() {
           size="sm"
           className="w-fit text-muted-foreground"
         >
-          <Link href="/meetings/new">New meeting</Link>
+          <Link href={`/${organizationId}/new`}>New meeting</Link>
         </Button>
       </div>
       <div className="flex flex-col">
         {meetings?.map((meeting) => (
           <div key={meeting._id} className="hover:underline">
-            <Link href={`/meetings/${meeting._id}`}>{meeting.title}</Link>
+            <Link href={`/${organizationId}/${meeting._id}`}>
+              {meeting.title}
+            </Link>
           </div>
         ))}
       </div>

@@ -15,6 +15,8 @@ import { Doc, Id } from "../../../../convex/_generated/dataModel";
 export default function MeetingsPage() {
   const params = useParams();
   const meetingId = params.meetingId as Id<"meetings">;
+  const organizationId = params.organizationId as Id<"organizations">;
+
   const meeting = useQuery(
     api.meetings.details,
     meetingId
@@ -58,7 +60,7 @@ export default function MeetingsPage() {
       <div className="flex flex-col">
         {discussions?.map((discussion) => (
           <div key={discussion._id} className="hover:underline">
-            <Link href={`/meetings/${meeting._id}/${discussion._id}`}>
+            <Link href={`/${organizationId}/${meetingId}/${discussion._id}`}>
               {new Date(discussion._creationTime).toLocaleDateString()}
             </Link>
           </div>

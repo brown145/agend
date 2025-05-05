@@ -4,27 +4,28 @@ import { Doc, Id } from "./_generated/dataModel";
 import { mutation, query } from "./_generated/server";
 
 export const listUsersInOrganization = query({
-  args: {},
-  handler: async (ctx): Promise<Doc<"users">[]> => {
-    const user: Doc<"users"> | null = await ctx.runQuery(
-      api.users.findUser,
-      {},
+  args: {
+    organizationId: v.id("organizations"),
+  },
+  handler: async (ctx, args): Promise<Doc<"users">[]> => {
+    // Get all users in the specified organization
+    const orgUsers = await ctx.db
+      .query("userOrganizations")
+      .withIndex("by_orgId_userId", (q) => q.eq("orgId", args.organizationId))
+      .collect();
+
+    // Get the user documents for all users in the organization
+    const users = await Promise.all(
+      orgUsers.map(async (orgUser) => {
+        const user = await ctx.db.get(orgUser.userId);
+        return user;
+      }),
     );
 
-    if (!user) {
-      throw new Error("User not found");
-    }
-
-    if (!user.organizationId) {
-      throw new Error("User is not part of an organization");
-    }
-
-    return await ctx.db
-      .query("users")
-      .withIndex("by_organizationId", (q) =>
-        q.eq("organizationId", user.organizationId),
-      )
-      .collect();
+    // Filter out any null values in case users were deleted
+    return users.filter(
+      (user): user is NonNullable<typeof user> => user !== null,
+    );
   },
 });
 
@@ -63,7 +64,7 @@ export const listByMeeting = query({
 
 export const ensureUser = mutation({
   args: {},
-  handler: async (ctx): Promise<Id<"users">> => {
+  handler: async (ctx): Promise<Doc<"users">> => {
     const identity = await ctx.auth.getUserIdentity();
     if (!identity) {
       throw new Error("Not authenticated");
@@ -77,6 +78,7 @@ export const ensureUser = mutation({
       )
       .unique();
 
+    let userId: Id<"users">;
     if (user !== null) {
       // If we've seen this identity before but the name has changed, update it
       if (user.name !== identity.name || user.email !== identity.email) {
@@ -85,18 +87,47 @@ export const ensureUser = mutation({
           email: identity.email,
         });
       }
-      return user._id;
+      userId = user._id;
+    } else {
+      // If it's a new identity, create a new user
+      userId = await ctx.db.insert("users", {
+        name: identity.name ?? "Anonymous",
+        email: identity.email ?? "",
+        tokenIdentifier: identity.tokenIdentifier,
+      });
     }
 
-    // If it's a new identity, create a new user
-    return await ctx.db.insert("users", {
-      name: identity.name ?? "Anonymous",
-      email: identity.email ?? "",
-      tokenIdentifier: identity.tokenIdentifier,
-    });
+    // Check if user has any organizations
+    const userOrgs = await ctx.db
+      .query("userOrganizations")
+      .withIndex("by_userId", (q) => q.eq("userId", userId))
+      .collect();
+
+    if (userOrgs.length === 0) {
+      // Create a personal organization for the user
+      const orgId = await ctx.db.insert("organizations", {
+        name: `Personal organization`,
+        isPersonal: true,
+        createdBy: userId,
+      });
+
+      // Create the user-organization relationship
+      await ctx.db.insert("userOrganizations", {
+        orgId,
+        userId,
+      });
+    }
+
+    // Get the final user document to return
+    const finalUser = await ctx.db.get(userId);
+    if (!finalUser) {
+      throw new Error("Failed to retrieve user after creation/update");
+    }
+    return finalUser;
   },
 });
 
+// @deprecated -> thinking we may want to remove this
 export const findUser = query({
   args: {},
   handler: async (ctx): Promise<Doc<"users">> => {
