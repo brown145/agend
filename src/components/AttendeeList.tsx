@@ -24,11 +24,13 @@ export const AttendeesList = () => {
   const organizationId = _organizationId as Id<"organizations">;
   const meetingId = _meetingId as Id<"meetings">;
 
-  const attendees = useQuery(api.users.listByMeeting, { meetingId });
-  const allOrgUsers = useQuery(api.users.listUsersInOrganization, {
-    organizationId,
+  const attendees = useQuery(api.users.listByMeeting, {
+    meetingId,
+    orgId: organizationId,
   });
-  const canEdit = useQuery(api.meetings.canEdit, { meetingId });
+  const allOrgUsers = useQuery(api.users.listUsersInOrganization, {
+    orgId: organizationId,
+  });
 
   return (
     <main className="space-y-4">
@@ -38,20 +40,17 @@ export const AttendeesList = () => {
             key={attendee._id}
             attendee={attendee}
             meetingId={meetingId}
-            canEdit={canEdit ?? false}
             isLast={attendees.length === 1}
           />
         ))}
         {attendees?.length === 0 && <div>No attendees</div>}
       </div>
-      {canEdit && (
-        <AddAttendee
-          meetingId={meetingId}
-          users={allOrgUsers?.filter(
-            (user) => !attendees?.some((a) => a._id === user._id),
-          )}
-        />
-      )}
+      <AddAttendee
+        meetingId={meetingId}
+        users={allOrgUsers?.filter(
+          (user) => !attendees?.some((a) => a._id === user._id),
+        )}
+      />
     </main>
   );
 };
@@ -59,12 +58,10 @@ export const AttendeesList = () => {
 const Attendee = ({
   attendee,
   meetingId,
-  canEdit,
   isLast,
 }: {
   attendee: Doc<"users">;
   meetingId: Id<"meetings">;
-  canEdit: boolean;
   isLast: boolean;
 }) => {
   const removeAttendee = useMutation(api.meetingAttendance.remove);
@@ -74,7 +71,7 @@ const Attendee = ({
   return (
     <div className="flex items-center justify-between">
       <span>{attendee.name}</span>
-      {canEdit && !isLast && (
+      {!isLast && (
         <Button
           className="text-muted-foreground"
           variant="ghost"

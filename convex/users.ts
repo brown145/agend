@@ -2,17 +2,15 @@ import { v } from "convex/values";
 import { api } from "./_generated/api";
 import { Doc, Id } from "./_generated/dataModel";
 import { mutation, query } from "./_generated/server";
+import { authedOrgQuery } from "./utils";
 
-export const listUsersInOrganization = query({
-  args: {
-    organizationId: v.id("organizations"),
-  },
-  handler: async (ctx, args): Promise<Doc<"users">[]> => {
-    throw new Error("use authedOrgQuery");
+export const listUsersInOrganization = authedOrgQuery({
+  args: {},
+  handler: async (ctx): Promise<Doc<"users">[]> => {
     // Get all users in the specified organization
     const orgUsers = await ctx.db
       .query("userOrganizations")
-      .withIndex("by_orgId_userId", (q) => q.eq("orgId", args.organizationId))
+      .withIndex("by_orgId_userId", (q) => q.eq("orgId", ctx.organization._id))
       .collect();
 
     // Get the user documents for all users in the organization
@@ -30,20 +28,16 @@ export const listUsersInOrganization = query({
   },
 });
 
-export const listByMeeting = query({
+export const listByMeeting = authedOrgQuery({
   args: {
     meetingId: v.id("meetings"),
   },
   handler: async (ctx, args) => {
-    throw new Error("use authedOrgQuery");
-    const canView = await ctx.runQuery(api.meetings.canView, {
-      meetingId: args.meetingId,
-    });
-
-    if (!canView) {
-      throw new Error("Not authorized to view this meeting");
-    }
-
+    // ------------------------------------------------------------
+    // TODO: org validation
+    // not sure if this is needed on meetingAttendance...
+    // probably want it on the user fetch
+    // ------------------------------------------------------------
     const attendance = await ctx.db
       .query("meetingAttendance")
       .withIndex("by_meetingId", (q) => q.eq("meetingId", args.meetingId))

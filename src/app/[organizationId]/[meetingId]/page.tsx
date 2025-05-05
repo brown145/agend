@@ -22,6 +22,7 @@ export default function MeetingsPage() {
     meetingId
       ? {
           meetingId,
+          orgId: organizationId,
         }
       : "skip",
   );
@@ -31,6 +32,7 @@ export default function MeetingsPage() {
     meetingId
       ? {
           meetingId,
+          orgId: organizationId,
         }
       : "skip",
   );
@@ -72,7 +74,6 @@ export default function MeetingsPage() {
 
 const MeetingHeader = ({ meeting }: { meeting: Doc<"meetings"> }) => {
   const updateMeeting = useMutation(api.meetings.update);
-  const canEdit = useQuery(api.meetings.canEdit, { meetingId: meeting._id });
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
@@ -133,7 +134,7 @@ const MeetingHeader = ({ meeting }: { meeting: Doc<"meetings"> }) => {
       <div className="flex gap-2 items-center">
         <div
           className="text-xl font-semibold"
-          onClick={canEdit ? () => setEditMode(true) : undefined}
+          onClick={() => setEditMode(true)}
         >
           {meeting.title}
         </div>

@@ -16,20 +16,16 @@ export const list = authedOrgQuery({
   },
 });
 
-export const details = query({
+export const details = authedOrgQuery({
   args: {
     meetingId: v.id("meetings"),
   },
   handler: async (ctx, args): Promise<Doc<"meetings"> | null> => {
-    throw new Error("use authedOrgQuery");
-    const canView = await ctx.runQuery(api.meetings.canView, {
-      meetingId: args.meetingId,
-    });
-    if (!canView) {
-      throw new Error("Not authorized to view this meeting");
+    const meeting = await ctx.db.get(args.meetingId);
+    if (!meeting || meeting.orgId !== ctx.organization._id) {
+      return null;
     }
-
-    return await ctx.db.get(args.meetingId);
+    return meeting;
   },
 });
 
