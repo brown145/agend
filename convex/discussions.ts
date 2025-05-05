@@ -2,7 +2,7 @@ import { v } from "convex/values";
 import { api } from "./_generated/api";
 import { Doc, Id } from "./_generated/dataModel";
 import { mutation, query } from "./_generated/server";
-import { authedOrgQuery } from "./utils";
+import { authedOrgMutation, authedOrgQuery } from "./utils";
 
 type DiscussionWithMetadata = Doc<"discussions"> & {
   metadata: {
@@ -73,26 +73,22 @@ export const details = query({
   },
 });
 
-export const create = mutation({
+export const create = authedOrgMutation({
   args: {
     meetingId: v.id("meetings"),
   },
   handler: async (ctx, args): Promise<Id<"discussions">> => {
-    throw new Error("use authedOrgMutation");
-    const user = await ctx.runQuery(api.users.findUser, {});
-
-    // Verify the meeting exists and belongs to the user
     const meeting = await ctx.db.get(args.meetingId);
     if (!meeting) {
       throw new Error("Meeting not found");
     }
-    if (meeting.createdBy !== user._id) {
-      throw new Error("Not authorized to create discussion in this meeting");
+    if (meeting.orgId !== ctx.organization._id) {
+      throw new Error("Cannot create discussion in this meeting");
     }
 
     return await ctx.db.insert("discussions", {
       completed: false,
-      createdBy: user._id,
+      createdBy: ctx.user._id,
       meetingId: args.meetingId,
     });
   },

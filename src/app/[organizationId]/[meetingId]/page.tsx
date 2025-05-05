@@ -40,7 +40,7 @@ export default function MeetingsPage() {
   const createDiscussion = useMutation(api.discussions.create);
 
   const handleNewDiscussion = () => {
-    createDiscussion({ meetingId });
+    createDiscussion({ meetingId, orgId: organizationId });
   };
 
   if (!meeting) {

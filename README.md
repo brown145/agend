@@ -33,7 +33,14 @@ bunx convex dev
 # v0.6 urls
 1. slugs for url
 
+# v0.7 server function cleanup
+1. remove unused functions
+1. remove manyToMany.ts functions... move to one of the objects
+1. review for consistency in function names and arguments (get vs details) / (orgId vs organizationId)
+1. review where in schema we want orgIds (meeting? discussions? tasks?...)
+
 # v1.0 Workable product
+1. publish to github
 1. publish on Clerk / Convex / Vercel
 
 # 1.1 advanced topic / task ownership
