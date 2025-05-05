@@ -1,21 +1,16 @@
 import { v } from "convex/values";
-import { api } from "./_generated/api";
-import { mutation, query } from "./_generated/server";
+import { query } from "./_generated/server";
+import { authedOrgMutation } from "./utils";
 
-export const add = mutation({
+export const add = authedOrgMutation({
   args: {
     userId: v.id("users"),
     meetingId: v.id("meetings"),
   },
   handler: async (ctx, args) => {
-    throw new Error("use authedOrgMutation");
-    const canEdit = await ctx.runQuery(api.meetings.canEdit, {
-      meetingId: args.meetingId,
-    });
-
-    if (!canEdit) {
-      throw new Error("Not authorized to update this meeting");
-    }
+    // ------------------------------------------------------------
+    // TODO: validate that the ctx.user has edit rights to this meeting
+    // ------------------------------------------------------------
 
     // Check if user is already an attendee
     const existingAttendance = await ctx.db
@@ -38,21 +33,15 @@ export const add = mutation({
   },
 });
 
-export const remove = mutation({
+export const remove = authedOrgMutation({
   args: {
     userId: v.id("users"),
     meetingId: v.id("meetings"),
   },
   handler: async (ctx, args) => {
-    throw new Error("use authedOrgMutation");
-
-    const canEdit = await ctx.runQuery(api.meetings.canEdit, {
-      meetingId: args.meetingId,
-    });
-
-    if (!canEdit) {
-      throw new Error("Not authorized to update this meeting");
-    }
+    // ------------------------------------------------------------
+    // TODO: validate that the ctx.user has edit rights to this meeting
+    // ------------------------------------------------------------
 
     // Get all current attendance records for this meeting
     const currentAttendance = await ctx.db

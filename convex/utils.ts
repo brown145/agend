@@ -3,7 +3,6 @@ import {
   customQuery,
 } from "convex-helpers/server/customFunctions";
 import { ConvexError, v } from "convex/values";
-import { api } from "./_generated/api";
 import { Doc } from "./_generated/dataModel";
 import { mutation, query, QueryCtx } from "./_generated/server";
 
@@ -70,7 +69,13 @@ export const authedOrgMutation = customMutation(mutation, {
     }
 
     // Get the user document
-    const user = (await ctx.runQuery(api.users.findUser, {})) as Doc<"users">;
+    const user = await ctx.db
+      .query("users")
+      .withIndex("by_token", (q) =>
+        q.eq("tokenIdentifier", identity.tokenIdentifier),
+      )
+      .unique();
+
     if (!user) {
       throw new ConvexError("User not found");
     }

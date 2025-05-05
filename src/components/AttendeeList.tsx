@@ -64,6 +64,8 @@ const Attendee = ({
   meetingId: Id<"meetings">;
   isLast: boolean;
 }) => {
+  const { organizationId } = useParams();
+  const orgId = organizationId as Id<"organizations">;
   const removeAttendee = useMutation(api.meetingAttendance.remove);
 
   if (!attendee) return null;
@@ -76,7 +78,9 @@ const Attendee = ({
           className="text-muted-foreground"
           variant="ghost"
           size="sm"
-          onClick={() => removeAttendee({ meetingId, userId: attendee._id })}
+          onClick={() =>
+            removeAttendee({ meetingId, userId: attendee._id, orgId })
+          }
         >
           Remove
         </Button>
@@ -92,6 +96,8 @@ const AddAttendee = ({
   meetingId: Id<"meetings">;
   users?: User[];
 }) => {
+  const { organizationId } = useParams();
+  const orgId = organizationId as Id<"organizations">;
   const [selectedUserId, setSelectedUserId] = useState<Id<"users"> | null>(
     null,
   );
@@ -100,7 +106,7 @@ const AddAttendee = ({
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!selectedUserId) return;
-    addAttendee({ meetingId, userId: selectedUserId });
+    addAttendee({ meetingId, userId: selectedUserId, orgId });
     setSelectedUserId(null);
   };
 
