@@ -9,6 +9,8 @@ export const listByTopic = query({
     meetingId: v.id("meetings"),
   },
   handler: async (ctx, args): Promise<Doc<"tasks">[]> => {
+    throw new Error("use authedOrgQuery");
+
     const canView = await ctx.runQuery(api.meetings.canView, {
       meetingId: args.meetingId,
     });
@@ -34,6 +36,7 @@ export const create = mutation({
     text: v.string(),
   },
   handler: async (ctx, args): Promise<Id<"tasks">> => {
+    throw new Error("use authedOrgMutation");
     const user = await ctx.runQuery(api.users.findUser, {});
 
     return await ctx.db.insert("tasks", {
@@ -53,6 +56,7 @@ export const update = mutation({
     id: v.id("tasks"),
   },
   handler: async (ctx, args) => {
+    throw new Error("use authedOrgMutation");
     // Get the task to verify ownership
     const task = await ctx.db.get(args.id);
     if (!task) {

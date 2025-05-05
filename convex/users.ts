@@ -8,6 +8,7 @@ export const listUsersInOrganization = query({
     organizationId: v.id("organizations"),
   },
   handler: async (ctx, args): Promise<Doc<"users">[]> => {
+    throw new Error("use authedOrgQuery");
     // Get all users in the specified organization
     const orgUsers = await ctx.db
       .query("userOrganizations")
@@ -34,6 +35,7 @@ export const listByMeeting = query({
     meetingId: v.id("meetings"),
   },
   handler: async (ctx, args) => {
+    throw new Error("use authedOrgQuery");
     const canView = await ctx.runQuery(api.meetings.canView, {
       meetingId: args.meetingId,
     });
@@ -131,6 +133,7 @@ export const ensureUser = mutation({
 export const findUser = query({
   args: {},
   handler: async (ctx): Promise<Doc<"users">> => {
+    throw new Error("deprecated");
     const identity = await ctx.auth.getUserIdentity();
     if (!identity) {
       throw new Error("Not authenticated");
@@ -157,6 +160,7 @@ export const details = query({
     userId: v.id("users"),
   },
   handler: async (ctx, args) => {
+    throw new Error("use authedOrgQuery");
     const currentUser = await ctx.runQuery(api.users.findUser, {});
 
     if (!currentUser) {

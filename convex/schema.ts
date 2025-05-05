@@ -14,11 +14,12 @@ export default defineSchema({
 
   meetings: defineTable({
     createdBy: v.id("users"),
+    orgId: v.id("organizations"),
     owner: v.id("users"),
     title: v.string(),
   })
     .index("by_createdBy", ["createdBy"])
-    .index("by_owner", ["owner"]),
+    .index("by_orgId_owner", ["orgId", "owner"]),
 
   meetingAttendance: defineTable({
     meetingId: v.id("meetings"),

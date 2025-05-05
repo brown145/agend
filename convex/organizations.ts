@@ -1,9 +1,11 @@
 import { api } from "./_generated/api";
 import { Doc } from "./_generated/dataModel";
 import { query } from "./_generated/server";
+import { authedQuery } from "./utils";
 
 export const getUsersFirst = query({
   handler: async (ctx): Promise<Doc<"organizations"> | null> => {
+    throw new Error("use authedQuery");
     const user: Doc<"users"> | null = await ctx.runQuery(
       api.users.findUser,
       {},
@@ -25,19 +27,11 @@ export const getUsersFirst = query({
   },
 });
 
-export const list = query({
+export const list = authedQuery({
   handler: async (ctx): Promise<Doc<"organizations">[]> => {
-    const user: Doc<"users"> | null = await ctx.runQuery(
-      api.users.findUser,
-      {},
-    );
-    if (!user) {
-      return [];
-    }
-
     const userOrgs = await ctx.db
       .query("userOrganizations")
-      .withIndex("by_userId", (q) => q.eq("userId", user._id))
+      .withIndex("by_userId", (q) => q.eq("userId", ctx.user._id))
       .collect();
 
     // Fetch all organizations the user has access to
@@ -53,6 +47,7 @@ export const list = query({
 
 export const details = query({
   handler: async (ctx): Promise<Doc<"organizations"> | null> => {
+    throw new Error("use authedQuery");
     const user: Doc<"users"> | null = await ctx.runQuery(
       api.users.findUser,
       {},

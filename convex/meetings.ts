@@ -2,31 +2,17 @@ import { v } from "convex/values";
 import { api } from "./_generated/api";
 import { Doc, Id } from "./_generated/dataModel";
 import { mutation, query } from "./_generated/server";
+import { authedOrgMutation, authedOrgQuery } from "./utils";
 
-export const list = query({
-  args: {},
-  handler: async (ctx): Promise<Doc<"meetings">[]> => {
-    const user: Doc<"users"> | null = await ctx.runQuery(
-      api.users.findUser,
-      {},
-    );
-    if (!user) {
-      throw new Error("User not found");
-    }
-
-    // Get all meetings where user is an attendee using the meetingAttendance table
-    const attendanceRecords = await ctx.db
-      .query("meetingAttendance")
-      .withIndex("by_userId", (q) => q.eq("userId", user._id))
+export const list = authedOrgQuery({
+  args: { orgId: v.id("organizations") },
+  handler: async (ctx) => {
+    return ctx.db
+      .query("meetings")
+      .withIndex("by_orgId_owner", (q) =>
+        q.eq("orgId", ctx.organization._id).eq("owner", ctx.user._id),
+      )
       .collect();
-
-    // Get the meetings for these attendance records
-    const meetings = await Promise.all(
-      attendanceRecords.map((record) => ctx.db.get(record.meetingId)),
-    );
-
-    // Filter out any null meetings (shouldn't happen, but TypeScript needs it)
-    return meetings.filter((m): m is Doc<"meetings"> => m !== null);
   },
 });
 
@@ -35,6 +21,7 @@ export const details = query({
     meetingId: v.id("meetings"),
   },
   handler: async (ctx, args): Promise<Doc<"meetings"> | null> => {
+    throw new Error("use authedOrgQuery");
     const canView = await ctx.runQuery(api.meetings.canView, {
       meetingId: args.meetingId,
     });
@@ -46,11 +33,13 @@ export const details = query({
   },
 });
 
+// TODO: can this be deleted:
 export const canEdit = query({
   args: {
     meetingId: v.id("meetings"),
   },
   handler: async (ctx, args): Promise<boolean> => {
+    throw new Error("use authedOrgQuery");
     const user: Doc<"users"> | null = await ctx.runQuery(
       api.users.findUser,
       {},
@@ -70,11 +59,13 @@ export const canEdit = query({
   },
 });
 
+// TODO: can this be deleted:
 export const canView = query({
   args: {
     meetingId: v.id("meetings"),
   },
   handler: async (ctx, args): Promise<boolean> => {
+    throw new Error("use authedOrgQuery");
     const user: Doc<"users"> | null = await ctx.runQuery(
       api.users.findUser,
       {},
@@ -94,11 +85,12 @@ export const canView = query({
   },
 });
 
-export const create = mutation({
+export const create = authedOrgMutation({
   args: {
     title: v.string(),
   },
   handler: async (ctx, args): Promise<Id<"meetings">> => {
+    throw new Error("use authedOrgMutation");
     const user = await ctx.runQuery(api.users.findUser, {});
 
     // Create the meeting
@@ -106,6 +98,7 @@ export const create = mutation({
       title: args.title,
       createdBy: user._id,
       owner: user._id,
+      orgId: ctx.organization._id,
     });
 
     // Create the attendance record
@@ -124,6 +117,7 @@ export const update = mutation({
     title: v.string(),
   },
   handler: async (ctx, args) => {
+    throw new Error("use authedOrgMutation");
     const canEdit = await ctx.runQuery(api.meetings.canEdit, {
       meetingId: args.id,
     });

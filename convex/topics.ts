@@ -14,6 +14,7 @@ export const listByDiscussion = query({
     discussionId: v.id("discussions"),
   },
   handler: async (ctx, args): Promise<TopicWithMetadata[]> => {
+    throw new Error("use authedOrgQuery");
     const discussion = await ctx.db.get(args.discussionId);
     if (!discussion) {
       throw new Error("Discussion not found");
@@ -68,6 +69,7 @@ export const create = mutation({
     discussionId: v.id("discussions"),
   },
   handler: async (ctx, args): Promise<Id<"topics">> => {
+    throw new Error("use authedOrgMutation");
     const user = await ctx.runQuery(api.users.findUser, {});
 
     // Get the discussion to find the meeting
@@ -105,6 +107,7 @@ export const update = mutation({
     id: v.id("topics"),
   },
   handler: async (ctx, args) => {
+    throw new Error("use authedOrgMutation");
     const topic = await ctx.db.get(args.id);
     if (!topic) {
       throw new Error("Topic not found");

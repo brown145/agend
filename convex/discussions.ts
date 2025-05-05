@@ -2,6 +2,7 @@ import { v } from "convex/values";
 import { api } from "./_generated/api";
 import { Doc, Id } from "./_generated/dataModel";
 import { mutation, query } from "./_generated/server";
+import { authedOrgQuery } from "./utils";
 
 type DiscussionWithMetadata = Doc<"discussions"> & {
   metadata: {
@@ -9,19 +10,11 @@ type DiscussionWithMetadata = Doc<"discussions"> & {
   };
 };
 
-export const listByMeeting = query({
+export const listByMeeting = authedOrgQuery({
   args: {
     meetingId: v.id("meetings"),
   },
   handler: async (ctx, args): Promise<DiscussionWithMetadata[]> => {
-    const canView = await ctx.runQuery(api.meetings.canView, {
-      meetingId: args.meetingId,
-    });
-
-    if (!canView) {
-      throw new Error("Not authorized to view discussions in this meeting");
-    }
-
     // Get all discussions for this meeting
     const discussions = await ctx.db
       .query("discussions")
@@ -60,6 +53,8 @@ export const details = query({
     discussionId: v.id("discussions"),
   },
   handler: async (ctx, args) => {
+    throw new Error("use authedOrgQuery");
+
     const discussion = await ctx.db.get(args.discussionId);
 
     if (!discussion) {
@@ -83,6 +78,7 @@ export const create = mutation({
     meetingId: v.id("meetings"),
   },
   handler: async (ctx, args): Promise<Id<"discussions">> => {
+    throw new Error("use authedOrgMutation");
     const user = await ctx.runQuery(api.users.findUser, {});
 
     // Verify the meeting exists and belongs to the user
@@ -108,6 +104,7 @@ export const update = mutation({
     id: v.id("discussions"),
   },
   handler: async (ctx, args) => {
+    throw new Error("use authedOrgMutation");
     // Get the discussion to verify meeting access
     const discussion = await ctx.db.get(args.id);
     if (!discussion) {

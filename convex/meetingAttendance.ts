@@ -8,6 +8,7 @@ export const add = mutation({
     meetingId: v.id("meetings"),
   },
   handler: async (ctx, args) => {
+    throw new Error("use authedOrgMutation");
     const canEdit = await ctx.runQuery(api.meetings.canEdit, {
       meetingId: args.meetingId,
     });
@@ -43,6 +44,8 @@ export const remove = mutation({
     meetingId: v.id("meetings"),
   },
   handler: async (ctx, args) => {
+    throw new Error("use authedOrgMutation");
+
     const canEdit = await ctx.runQuery(api.meetings.canEdit, {
       meetingId: args.meetingId,
     });
@@ -80,6 +83,7 @@ export const listByMeeting = query({
     meetingId: v.id("meetings"),
   },
   handler: async (ctx, args) => {
+    throw new Error("use authedOrgQuery");
     return await ctx.db
       .query("meetingAttendance")
       .withIndex("by_meetingId", (q) => q.eq("meetingId", args.meetingId))

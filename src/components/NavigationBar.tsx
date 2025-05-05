@@ -25,15 +25,29 @@ export const NavigationBar = () => {
   const { isSignedIn } = useAuth();
   const organizations =
     useQuery(api.organizations.list, isSignedIn ? {} : "skip") ?? [];
+  const currentOrganization = organizations.find(
+    (org) => org._id === organizationId,
+  );
 
-  const meetings = useQuery(api.meetings.list, isSignedIn ? {} : "skip") ?? [];
+  const meetings =
+    useQuery(
+      api.meetings.list,
+      isSignedIn
+        ? {
+            orgId: organizationId as Id<"organizations">,
+          }
+        : "skip",
+    ) ?? [];
   const currentMeeting = meetings.find((mtg) => mtg._id === meetingId);
 
   const discussions =
     useQuery(
       api.discussions.listByMeeting,
       isSignedIn && meetingId
-        ? { meetingId: meetingId as Id<"meetings"> }
+        ? {
+            meetingId: meetingId as Id<"meetings">,
+            orgId: organizationId as Id<"organizations">,
+          }
         : "skip",
     ) ?? [];
   const currentDiscussion = discussions.find(
@@ -52,7 +66,7 @@ export const NavigationBar = () => {
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="h-8 px-2">
                 <div className="flex items-center gap-0.5">
-                  {organizations[0]?.name ?? "Organization"}
+                  {currentOrganization?.name ?? "Organization"}
                   <ChevronsUpDown className="h-4 w-4" />
                 </div>
               </Button>

@@ -5,10 +5,13 @@ import { useQuery } from "convex/react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { api } from "../../../convex/_generated/api";
+import { Id } from "../../../convex/_generated/dataModel";
 
 export default function MeetingsPage() {
   const { organizationId } = useParams();
-  const meetings = useQuery(api.meetings.list);
+  const meetings = useQuery(api.meetings.list, {
+    orgId: organizationId as Id<"organizations">,
+  });
 
   return (
     <div className="h-full">

@@ -1,3 +1,9 @@
+```
+asdf shell nodejs 23.1.0
+bun dev
+bunx convex dev
+```
+
 # V0.1
 
 1. Init new users in "personal" org
