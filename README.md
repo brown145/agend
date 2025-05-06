@@ -8,11 +8,11 @@ bunx convex dev
 # v0.1 Org management
 1. ✔ Init new users in "personal" org
 1. ✔ associate meetings to orgs
-1. "personal" org can have no attendence (other than self)
+1. ~~"personal" org can have no attendence (other than self)~~ we dont add right now so cannot enforce
 1. ✔ many-to-many org-to-user 
 1. ✔ build useAuthedQuery and useAuthedMutation that abstract auth and org restrictions
 1. simplify canView and canEdit logic to be just user.orgs.includes(meeting.org) -> update schema and indexes to match, orgId on all 
-1. remove findUser
+1. ✔ remove findUser
 
 # v0.2 New meeting flow
 1. get rid of meetings/new; instead create a meeting and land on /meetings/{meetingId}?edit=true
@@ -38,8 +38,15 @@ bunx convex dev
 1. remove manyToMany.ts functions... move to one of the objects
 1. review for consistency in function names and arguments (get vs details) / (orgId vs organizationId)
 1. review where in schema we want orgIds (meeting? discussions? tasks?...)
+1. cleanup argument names (id vs meetingId)
+1. cleanup throw vs null response
+
+# v0.8 cleanup components
+1. avoid useParams or useParamIds in components; pass in from parent page
+1. avoid data fetching and mutions in comopnents; pass in handlers from parent page
 
 # v1.0 Workable product
+1. write a proper readme
 1. publish to github
 1. publish on Clerk / Convex / Vercel
 

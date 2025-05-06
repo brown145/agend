@@ -1,22 +1,15 @@
-import { api } from "./_generated/api";
+import { v } from "convex/values";
 import { Doc } from "./_generated/dataModel";
-import { query } from "./_generated/server";
-import { authedQuery } from "./utils";
+import { authedOrgQuery, authedQuery } from "./utils";
 
-export const getUsersFirst = query({
+export const getUsersFirst = authedOrgQuery({
+  args: {
+    orgId: v.id("organizations"),
+  },
   handler: async (ctx): Promise<Doc<"organizations"> | null> => {
-    throw new Error("use authedQuery");
-    const user: Doc<"users"> | null = await ctx.runQuery(
-      api.users.findUser,
-      {},
-    );
-    if (!user) {
-      return null;
-    }
-
     const userFirstOrg = await ctx.db
       .query("userOrganizations")
-      .withIndex("by_userId", (q) => q.eq("userId", user._id))
+      .withIndex("by_userId", (q) => q.eq("userId", ctx.user._id))
       .first();
 
     if (!userFirstOrg) {
@@ -42,32 +35,5 @@ export const list = authedQuery({
     return organizations.filter(
       (org): org is Doc<"organizations"> => org !== null,
     );
-  },
-});
-
-export const details = query({
-  handler: async (ctx): Promise<Doc<"organizations"> | null> => {
-    throw new Error("use authedQuery");
-    const user: Doc<"users"> | null = await ctx.runQuery(
-      api.users.findUser,
-      {},
-    );
-    if (!user) {
-      return null;
-    }
-
-    // Get the user's organization through userOrganizations
-    const userOrg = await ctx.db
-      .query("userOrganizations")
-      .withIndex("by_userId", (q) => q.eq("userId", user._id))
-      .first();
-
-    if (!userOrg) {
-      return null;
-    }
-
-    // Get the organization details
-    const organization = await ctx.db.get(userOrg.orgId);
-    return organization;
   },
 });

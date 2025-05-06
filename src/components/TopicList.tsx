@@ -9,12 +9,17 @@ import { TaskList } from "./TaskList";
 
 export const TopicList = ({
   discussionId,
+  orgId,
   meetingId,
 }: {
   discussionId: Id<"discussions">;
+  orgId: Id<"organizations">;
   meetingId: Id<"meetings">;
 }) => {
-  const topicList = useQuery(api.topics.listByDiscussion, { discussionId });
+  const topicList = useQuery(api.topics.listByDiscussion, {
+    discussionId,
+    orgId,
+  });
   return (
     <div className="flex flex-col gap-2">
       {topicList?.map(({ _id, text, completed, metadata }) => (
@@ -25,14 +30,15 @@ export const TopicList = ({
           <Topic
             completed={completed ?? false}
             id={_id}
+            orgId={orgId}
             tasksCompleted={metadata?.tasksCompleted ?? false}
             text={text}
           />
-          <TaskList meetingId={meetingId} topicId={_id} />
+          <TaskList meetingId={meetingId} orgId={orgId} topicId={_id} />
         </div>
       ))}
       {topicList?.length === 0 && <div>No topics</div>}
-      <AddTopic discussionId={discussionId} />
+      <AddTopic discussionId={discussionId} orgId={orgId} />
     </div>
   );
 };
@@ -40,11 +46,13 @@ export const TopicList = ({
 const Topic = ({
   completed,
   id,
+  orgId,
   tasksCompleted,
   text,
 }: {
   completed: boolean;
   id: Id<"topics">;
+  orgId: Id<"organizations">;
   tasksCompleted: boolean;
   text: string;
 }) => {
@@ -54,7 +62,7 @@ const Topic = ({
     <div className="flex gap-2 items-center">
       <input
         checked={completed}
-        onChange={() => updateTopic({ id, completed: !completed })}
+        onChange={() => updateTopic({ id, completed: !completed, orgId })}
         type="checkbox"
       />
       <div className={cn(completed && tasksCompleted && "line-through")}>
@@ -64,13 +72,19 @@ const Topic = ({
   );
 };
 
-const AddTopic = ({ discussionId }: { discussionId: Id<"discussions"> }) => {
+const AddTopic = ({
+  discussionId,
+  orgId,
+}: {
+  discussionId: Id<"discussions">;
+  orgId: Id<"organizations">;
+}) => {
   const [text, setText] = useState("");
   const createTopic = useMutation(api.topics.create);
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    createTopic({ text, discussionId });
+    createTopic({ text, discussionId, orgId });
     setText("");
   };
 

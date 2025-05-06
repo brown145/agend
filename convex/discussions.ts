@@ -1,7 +1,5 @@
 import { v } from "convex/values";
-import { api } from "./_generated/api";
 import { Doc, Id } from "./_generated/dataModel";
-import { mutation, query } from "./_generated/server";
 import { authedOrgMutation, authedOrgQuery } from "./utils";
 
 type DiscussionWithMetadata = Doc<"discussions"> & {
@@ -48,25 +46,18 @@ export const listByMeeting = authedOrgQuery({
   },
 });
 
-export const details = query({
+export const details = authedOrgQuery({
   args: {
     discussionId: v.id("discussions"),
   },
   handler: async (ctx, args) => {
-    throw new Error("use authedOrgQuery");
-
+    // ------------------------------------------------------------
+    // TODO: Check if the user has access to this discussion
+    // ------------------------------------------------------------
     const discussion = await ctx.db.get(args.discussionId);
 
     if (!discussion) {
       throw new Error("Discussion not found");
-    }
-
-    const canView = await ctx.runQuery(api.meetings.canView, {
-      meetingId: discussion.meetingId,
-    });
-
-    if (!canView) {
-      throw new Error("Not authorized to view discussions in this meeting");
     }
 
     return discussion;
@@ -94,26 +85,21 @@ export const create = authedOrgMutation({
   },
 });
 
-export const update = mutation({
+export const update = authedOrgMutation({
   args: {
     completed: v.boolean(),
     id: v.id("discussions"),
   },
   handler: async (ctx, args) => {
-    throw new Error("use authedOrgMutation");
     // Get the discussion to verify meeting access
     const discussion = await ctx.db.get(args.id);
     if (!discussion) {
       throw new Error("Discussion not found");
     }
 
-    const canEdit = await ctx.runQuery(api.meetings.canEdit, {
-      meetingId: discussion.meetingId,
-    });
-
-    if (!canEdit) {
-      throw new Error("Not authorized to update this meeting");
-    }
+    // ------------------------------------------------------------
+    // TODO: validate access via orgid
+    // ------------------------------------------------------------
 
     return await ctx.db.patch(args.id, {
       completed: args.completed,

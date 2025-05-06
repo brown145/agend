@@ -1,8 +1,6 @@
 import { v } from "convex/values";
-import { api } from "./_generated/api";
 import { Doc, Id } from "./_generated/dataModel";
-import { mutation, query } from "./_generated/server";
-import { authedOrgQuery } from "./utils";
+import { authedMutation, authedOrgQuery } from "./utils";
 
 export const listUsersInOrganization = authedOrgQuery({
   args: {},
@@ -58,38 +56,36 @@ export const listByMeeting = authedOrgQuery({
   },
 });
 
-export const ensureUser = mutation({
+export const ensureUser = authedMutation({
   args: {},
   handler: async (ctx): Promise<Doc<"users">> => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) {
-      throw new Error("Not authenticated");
-    }
-
     // Check if we've already stored this identity before
     const user = await ctx.db
       .query("users")
       .withIndex("by_token", (q) =>
-        q.eq("tokenIdentifier", identity.tokenIdentifier),
+        q.eq("tokenIdentifier", ctx.identity.tokenIdentifier),
       )
       .unique();
 
     let userId: Id<"users">;
     if (user !== null) {
       // If we've seen this identity before but the name has changed, update it
-      if (user.name !== identity.name || user.email !== identity.email) {
+      if (
+        user.name !== ctx.identity.name ||
+        user.email !== ctx.identity.email
+      ) {
         await ctx.db.patch(user._id, {
-          name: identity.name,
-          email: identity.email,
+          name: ctx.identity.name,
+          email: ctx.identity.email,
         });
       }
       userId = user._id;
     } else {
       // If it's a new identity, create a new user
       userId = await ctx.db.insert("users", {
-        name: identity.name ?? "Anonymous",
-        email: identity.email ?? "",
-        tokenIdentifier: identity.tokenIdentifier,
+        name: ctx.identity.name ?? "Anonymous",
+        email: ctx.identity.email ?? "",
+        tokenIdentifier: ctx.identity.tokenIdentifier,
       });
     }
 
@@ -123,43 +119,14 @@ export const ensureUser = mutation({
   },
 });
 
-// @deprecated -> thinking we may want to remove this
-export const findUser = query({
-  args: {},
-  handler: async (ctx): Promise<Doc<"users">> => {
-    throw new Error("deprecated");
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) {
-      throw new Error("Not authenticated");
-    }
-
-    // Only look up existing users
-    const user = await ctx.db
-      .query("users")
-      .withIndex("by_token", (q) =>
-        q.eq("tokenIdentifier", identity.tokenIdentifier),
-      )
-      .unique();
-
-    if (!user) {
-      throw new Error("User not found");
-    }
-
-    return user;
-  },
-});
-
-export const details = query({
+export const details = authedOrgQuery({
   args: {
     userId: v.id("users"),
   },
   handler: async (ctx, args) => {
-    throw new Error("use authedOrgQuery");
-    const currentUser = await ctx.runQuery(api.users.findUser, {});
-
-    if (!currentUser) {
-      throw new Error("Not authenticated");
-    }
+    // ------------------------------------------------------------
+    // TODO: validate access via orgid
+    // ------------------------------------------------------------
 
     return await ctx.db.get(args.userId);
   },

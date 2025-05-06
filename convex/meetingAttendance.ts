@@ -1,5 +1,4 @@
 import { v } from "convex/values";
-import { query } from "./_generated/server";
 import { authedOrgMutation } from "./utils";
 
 export const add = authedOrgMutation({
@@ -64,18 +63,5 @@ export const remove = authedOrgMutation({
     }
 
     return args.meetingId;
-  },
-});
-
-export const listByMeeting = query({
-  args: {
-    meetingId: v.id("meetings"),
-  },
-  handler: async (ctx, args) => {
-    throw new Error("use authedOrgQuery");
-    return await ctx.db
-      .query("meetingAttendance")
-      .withIndex("by_meetingId", (q) => q.eq("meetingId", args.meetingId))
-      .collect();
   },
 });

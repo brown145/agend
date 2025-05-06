@@ -7,12 +7,18 @@ import { Id } from "../../convex/_generated/dataModel";
 
 export const TaskList = ({
   meetingId,
+  orgId,
   topicId,
 }: {
   meetingId: Id<"meetings">;
+  orgId: Id<"organizations">;
   topicId: Id<"topics">;
 }) => {
-  const taskList = useQuery(api.tasks.listByTopic, { topicId, meetingId });
+  const taskList = useQuery(api.tasks.listByTopic, {
+    topicId,
+    meetingId,
+    orgId,
+  });
   return (
     <main>
       {taskList?.map(({ _id, text, completed }) => (
@@ -20,23 +26,30 @@ export const TaskList = ({
           key={_id}
           className="border-l-2 border-solid border-emerald-300 pl-2"
         >
-          <Task id={_id} text={text} completed={completed ?? false} />
+          <Task
+            completed={completed ?? false}
+            id={_id}
+            orgId={orgId}
+            text={text}
+          />
         </div>
       ))}
       {taskList?.length === 0 && <div>No tasks</div>}
-      <AddTask meetingId={meetingId} topicId={topicId} />
+      <AddTask meetingId={meetingId} orgId={orgId} topicId={topicId} />
     </main>
   );
 };
 
 const Task = ({
-  id,
-  text,
   completed,
+  id,
+  orgId,
+  text,
 }: {
-  id: Id<"tasks">;
-  text: string;
   completed: boolean;
+  id: Id<"tasks">;
+  orgId: Id<"organizations">;
+  text: string;
 }) => {
   const updateTask = useMutation(api.tasks.update);
 
@@ -44,7 +57,7 @@ const Task = ({
     <div className="flex gap-2 items-center text-sm">
       <input
         checked={completed}
-        onChange={() => updateTask({ id, completed: !completed })}
+        onChange={() => updateTask({ id, completed: !completed, orgId })}
         type="checkbox"
       />
       {text}
@@ -54,9 +67,11 @@ const Task = ({
 
 const AddTask = ({
   meetingId,
+  orgId,
   topicId,
 }: {
   meetingId: Id<"meetings">;
+  orgId: Id<"organizations">;
   topicId: Id<"topics">;
 }) => {
   const [text, setText] = useState("");
@@ -64,7 +79,7 @@ const AddTask = ({
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    createTask({ meetingId, topicId, text });
+    createTask({ meetingId, topicId, text, orgId });
     setText("");
   };
 

@@ -20,16 +20,19 @@ export default function DiscussionPage() {
 
   const discussion = useQuery(
     api.discussions.details,
-    discussionId
+    discussionId && organizationId
       ? {
           discussionId,
+          orgId: organizationId,
         }
       : "skip",
   );
 
   const meetingOwner = useQuery(
     api.users.details,
-    meeting?.owner ? { userId: meeting.owner } : "skip",
+    meeting?.owner && organizationId
+      ? { userId: meeting.owner, orgId: organizationId }
+      : "skip",
   );
 
   const discussionDate = discussion?._creationTime
@@ -47,8 +50,12 @@ export default function DiscussionPage() {
       <div className="text-sm text-gray-500">TODO</div>
       <h2 className="text-lg font-bold">Topics</h2>
       <div className="">
-        {discussionId && meetingId && (
-          <TopicList discussionId={discussionId} meetingId={meetingId} />
+        {discussionId && meetingId && organizationId && (
+          <TopicList
+            discussionId={discussionId}
+            orgId={organizationId}
+            meetingId={meetingId}
+          />
         )}
       </div>
       <h2 className="text-lg font-bold">Summary</h2>

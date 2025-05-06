@@ -2,9 +2,10 @@ import {
   customMutation,
   customQuery,
 } from "convex-helpers/server/customFunctions";
+import { UserIdentity } from "convex/server";
 import { ConvexError, v } from "convex/values";
 import { Doc } from "./_generated/dataModel";
-import { mutation, query, QueryCtx } from "./_generated/server";
+import { mutation, MutationCtx, query, QueryCtx } from "./_generated/server";
 
 type AuthedCtx = QueryCtx & { user: Doc<"users"> };
 
@@ -60,9 +61,14 @@ export const authedOrgQuery = customQuery(authedQuery, {
   },
 });
 
-export const authedOrgMutation = customMutation(mutation, {
-  args: { orgId: v.id("organizations") },
-  input: async (ctx, args) => {
+type AuthedMutationCtx = MutationCtx & {
+  user: Doc<"users">;
+  identity: UserIdentity;
+};
+
+export const authedMutation = customMutation(mutation, {
+  args: {},
+  input: async (ctx) => {
     const identity = await ctx.auth.getUserIdentity();
     if (identity === null) {
       throw new ConvexError("Not authenticated!");
@@ -80,12 +86,20 @@ export const authedOrgMutation = customMutation(mutation, {
       throw new ConvexError("User not found");
     }
 
+    return { ctx: { ...ctx, user, identity }, args: {} };
+  },
+});
+
+export const authedOrgMutation = customMutation(authedMutation, {
+  args: { orgId: v.id("organizations") },
+  input: async (ctx, args) => {
+    const authedCtx = ctx as AuthedMutationCtx;
     const { orgId } = args;
 
-    const userOrg = await ctx.db
+    const userOrg = await authedCtx.db
       .query("userOrganizations")
       .withIndex("by_orgId_userId", (q) =>
-        q.eq("orgId", orgId).eq("userId", user._id),
+        q.eq("orgId", orgId).eq("userId", authedCtx.user._id),
       )
       .first();
 
@@ -93,11 +107,13 @@ export const authedOrgMutation = customMutation(mutation, {
       throw new ConvexError("Not authorized to access this organization");
     }
 
-    const organization = (await ctx.db.get(orgId)) as Doc<"organizations">;
+    const organization = (await authedCtx.db.get(
+      orgId,
+    )) as Doc<"organizations">;
     if (!organization) {
       throw new ConvexError("Organization not found");
     }
 
-    return { ctx: { ...ctx, user, organization }, args: {} };
+    return { ctx: { ...authedCtx, organization }, args: {} };
   },
 });

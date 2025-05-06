@@ -1,7 +1,6 @@
 import { v } from "convex/values";
-import { api } from "./_generated/api";
 import { Doc, Id } from "./_generated/dataModel";
-import { mutation, query } from "./_generated/server";
+import { authedOrgMutation, authedOrgQuery } from "./utils";
 
 type TopicWithMetadata = Doc<"topics"> & {
   metadata: {
@@ -9,24 +8,19 @@ type TopicWithMetadata = Doc<"topics"> & {
   };
 };
 
-export const listByDiscussion = query({
+export const listByDiscussion = authedOrgQuery({
   args: {
     discussionId: v.id("discussions"),
   },
   handler: async (ctx, args): Promise<TopicWithMetadata[]> => {
-    throw new Error("use authedOrgQuery");
     const discussion = await ctx.db.get(args.discussionId);
     if (!discussion) {
       throw new Error("Discussion not found");
     }
 
-    const canView = await ctx.runQuery(api.meetings.canView, {
-      meetingId: discussion.meetingId,
-    });
-
-    if (!canView) {
-      throw new Error("Not authorized to view topics in this meeting");
-    }
+    // ------------------------------------------------------------
+    // TODO: validate access via orgid
+    // ------------------------------------------------------------
 
     // Get all topics for this discussion
     const topics = await ctx.db
@@ -63,15 +57,12 @@ export const listByDiscussion = query({
   },
 });
 
-export const create = mutation({
+export const create = authedOrgMutation({
   args: {
     text: v.string(),
     discussionId: v.id("discussions"),
   },
   handler: async (ctx, args): Promise<Id<"topics">> => {
-    throw new Error("use authedOrgMutation");
-    const user = await ctx.runQuery(api.users.findUser, {});
-
     // Get the discussion to find the meeting
     const discussion = await ctx.db.get(args.discussionId);
     if (!discussion) {
@@ -82,7 +73,7 @@ export const create = mutation({
     const attendance = await ctx.db
       .query("meetingAttendance")
       .withIndex("by_meetingId_userId", (q) =>
-        q.eq("meetingId", discussion.meetingId).eq("userId", user._id),
+        q.eq("meetingId", discussion.meetingId).eq("userId", ctx.user._id),
       )
       .first();
 
@@ -92,34 +83,29 @@ export const create = mutation({
 
     return await ctx.db.insert("topics", {
       completed: false,
-      createdBy: user._id,
+      createdBy: ctx.user._id,
       meetingId: discussion.meetingId,
-      owner: user._id,
+      owner: ctx.user._id,
       text: args.text,
       discussionId: args.discussionId,
     });
   },
 });
 
-export const update = mutation({
+export const update = authedOrgMutation({
   args: {
     completed: v.boolean(),
     id: v.id("topics"),
   },
   handler: async (ctx, args) => {
-    throw new Error("use authedOrgMutation");
     const topic = await ctx.db.get(args.id);
     if (!topic) {
       throw new Error("Topic not found");
     }
 
-    const canEdit = await ctx.runQuery(api.meetings.canEdit, {
-      meetingId: topic.meetingId,
-    });
-
-    if (!canEdit) {
-      throw new Error("Not authorized to update this meeting");
-    }
+    // ------------------------------------------------------------
+    // TODO: validate access via orgid
+    // ------------------------------------------------------------
 
     return await ctx.db.patch(args.id, {
       completed: args.completed,
