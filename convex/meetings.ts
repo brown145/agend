@@ -32,7 +32,7 @@ export const create = authedOrgMutation({
     title: v.string(),
   },
   handler: async (ctx, args): Promise<Id<"meetings">> => {
-    // Create the meeting
+    // Create the meeting first without nextDiscussionId
     const meetingId = await ctx.db.insert("meetings", {
       title: args.title,
       createdBy: ctx.user._id,
@@ -44,6 +44,20 @@ export const create = authedOrgMutation({
     await ctx.db.insert("meetingAttendance", {
       meetingId,
       userId: ctx.user._id,
+    });
+
+    // Create the next discussion
+    const nextDiscussionId = await ctx.db.insert("discussions", {
+      completed: false,
+      createdBy: ctx.user._id,
+      date: "next",
+      meetingId,
+      orgId: ctx.organization._id,
+    });
+
+    // Update the meeting with the nextDiscussionId
+    await ctx.db.patch(meetingId, {
+      nextDiscussionId,
     });
 
     return meetingId;

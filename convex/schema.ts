@@ -7,7 +7,7 @@ export default defineSchema({
   discussions: defineTable({
     completed: v.boolean(),
     createdBy: v.id("users"),
-    date: v.string(), // Format: YYYY-MM-DD / Expected to be unique
+    date: v.optional(v.string() || "next"), // Format: YYYY-MM-DD
     meetingId: v.id("meetings"),
     orgId: v.id("organizations"),
   })
@@ -18,6 +18,7 @@ export default defineSchema({
 
   meetings: defineTable({
     createdBy: v.id("users"),
+    nextDiscussionId: v.optional(v.id("discussions")),
     orgId: v.id("organizations"),
     owner: v.id("users"),
     title: v.string(),

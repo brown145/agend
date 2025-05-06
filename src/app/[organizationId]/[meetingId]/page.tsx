@@ -1,8 +1,8 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { formatDiscussionDate } from "@/lib/utils/date";
 import { useMutation, useQuery } from "convex/react";
-import { DateTime } from "luxon";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { api } from "../../../../convex/_generated/api";
@@ -65,9 +65,7 @@ export default function MeetingsPage() {
         {discussions?.map((discussion) => (
           <div key={discussion._id} className="hover:underline">
             <Link href={`/${organizationId}/${meetingId}/${discussion._id}`}>
-              {DateTime.fromISO(discussion.date).toLocaleString(
-                DateTime.DATE_SHORT,
-              )}
+              {formatDiscussionDate(discussion.date)}
             </Link>
           </div>
         ))}
