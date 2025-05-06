@@ -6,17 +6,14 @@ import { api } from "../../convex/_generated/api";
 import { Id } from "../../convex/_generated/dataModel";
 
 export const TaskList = ({
-  meetingId,
   orgId,
   topicId,
 }: {
-  meetingId: Id<"meetings">;
   orgId: Id<"organizations">;
   topicId: Id<"topics">;
 }) => {
   const taskList = useQuery(api.tasks.listByTopic, {
     topicId,
-    meetingId,
     orgId,
   });
   return (
@@ -35,7 +32,7 @@ export const TaskList = ({
         </div>
       ))}
       {taskList?.length === 0 && <div>No tasks</div>}
-      <AddTask meetingId={meetingId} orgId={orgId} topicId={topicId} />
+      <AddTask orgId={orgId} topicId={topicId} />
     </main>
   );
 };
@@ -66,11 +63,9 @@ const Task = ({
 };
 
 const AddTask = ({
-  meetingId,
   orgId,
   topicId,
 }: {
-  meetingId: Id<"meetings">;
   orgId: Id<"organizations">;
   topicId: Id<"topics">;
 }) => {
@@ -79,7 +74,7 @@ const AddTask = ({
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    createTask({ meetingId, topicId, text, orgId });
+    createTask({ topicId, text, orgId });
     setText("");
   };
 

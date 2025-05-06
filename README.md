@@ -11,7 +11,7 @@ bunx convex dev
 1. ~~"personal" org can have no attendence (other than self)~~ we dont add right now so cannot enforce
 1. ✔ many-to-many org-to-user 
 1. ✔ build useAuthedQuery and useAuthedMutation that abstract auth and org restrictions
-1. simplify canView and canEdit logic to be just user.orgs.includes(meeting.org) -> update schema and indexes to match, orgId on all 
+1. ✔ simplify canView and canEdit logic to be just user.orgs.includes(meeting.org) -> update schema and indexes to match, orgId on all 
 1. ✔ remove findUser
 
 # v0.2 New meeting flow

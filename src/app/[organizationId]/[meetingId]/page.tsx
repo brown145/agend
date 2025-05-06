@@ -89,7 +89,11 @@ const MeetingHeader = ({ meeting }: { meeting: Doc<"meetings"> }) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
     const newTitle = formData.get("title") as string;
-    await updateMeeting({ id: meeting._id, title: newTitle });
+    await updateMeeting({
+      id: meeting._id,
+      orgId: meeting.orgId,
+      title: newTitle,
+    });
     setEditMode(false);
   };
 

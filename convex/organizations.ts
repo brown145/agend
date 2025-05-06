@@ -1,11 +1,8 @@
-import { v } from "convex/values";
 import { Doc } from "./_generated/dataModel";
-import { authedOrgQuery, authedQuery } from "./utils";
+import { authedQuery } from "./utils";
 
-export const getUsersFirst = authedOrgQuery({
-  args: {
-    orgId: v.id("organizations"),
-  },
+export const getUsersFirst = authedQuery({
+  args: {},
   handler: async (ctx): Promise<Doc<"organizations"> | null> => {
     const userFirstOrg = await ctx.db
       .query("userOrganizations")

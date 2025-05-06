@@ -24,9 +24,9 @@ export const listByMeeting = authedOrgQuery({
       discussions.map(async (discussion) => {
         const topics = await ctx.db
           .query("topics")
-          .withIndex("by_meetingId_discussionId", (q) =>
+          .withIndex("by_orgId_discussionId", (q) =>
             q
-              .eq("meetingId", args.meetingId)
+              .eq("orgId", ctx.organization._id)
               .eq("discussionId", discussion._id),
           )
           .collect();
@@ -51,13 +51,14 @@ export const details = authedOrgQuery({
     discussionId: v.id("discussions"),
   },
   handler: async (ctx, args) => {
-    // ------------------------------------------------------------
-    // TODO: Check if the user has access to this discussion
-    // ------------------------------------------------------------
     const discussion = await ctx.db.get(args.discussionId);
 
     if (!discussion) {
       throw new Error("Discussion not found");
+    }
+
+    if (discussion.orgId !== ctx.organization._id) {
+      throw new Error("Cannot access this discussion");
     }
 
     return discussion;
@@ -81,6 +82,7 @@ export const create = authedOrgMutation({
       completed: false,
       createdBy: ctx.user._id,
       meetingId: args.meetingId,
+      orgId: ctx.organization._id,
     });
   },
 });
@@ -97,9 +99,9 @@ export const update = authedOrgMutation({
       throw new Error("Discussion not found");
     }
 
-    // ------------------------------------------------------------
-    // TODO: validate access via orgid
-    // ------------------------------------------------------------
+    if (discussion.orgId !== ctx.organization._id) {
+      throw new Error("Cannot update this discussion");
+    }
 
     return await ctx.db.patch(args.id, {
       completed: args.completed,

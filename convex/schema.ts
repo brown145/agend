@@ -8,9 +8,11 @@ export default defineSchema({
     completed: v.boolean(),
     createdBy: v.id("users"),
     meetingId: v.id("meetings"),
+    orgId: v.id("organizations"),
   })
     .index("by_createdBy", ["createdBy"])
-    .index("by_meetingId", ["meetingId"]),
+    .index("by_meetingId", ["meetingId"])
+    .index("by_orgId", ["orgId"]),
 
   meetings: defineTable({
     createdBy: v.id("users"),
@@ -38,25 +40,26 @@ export default defineSchema({
   tasks: defineTable({
     completed: v.boolean(),
     createdBy: v.id("users"),
-    meetingId: v.id("meetings"),
+    orgId: v.id("organizations"),
     owner: v.id("users"),
     text: v.string(),
     topicId: v.id("topics"),
   })
     .index("by_createdBy", ["createdBy"])
-    .index("by_meetingId_topicId", ["meetingId", "topicId"])
+    .index("by_orgId_topicId", ["orgId", "topicId"])
     .index("by_owner", ["owner"]),
 
   topics: defineTable({
     completed: v.boolean(),
     createdBy: v.id("users"),
     discussionId: v.id("discussions"),
-    meetingId: v.id("meetings"),
+    orgId: v.id("organizations"),
     owner: v.id("users"),
     text: v.string(),
   })
     .index("by_createdBy", ["createdBy"])
-    .index("by_meetingId_discussionId", ["meetingId", "discussionId"])
+    .index("by_orgId_discussionId", ["orgId", "discussionId"])
+    .index("by_orgId", ["orgId"])
     .index("by_owner", ["owner"]),
 
   users: defineTable({

@@ -10,11 +10,9 @@ import { TaskList } from "./TaskList";
 export const TopicList = ({
   discussionId,
   orgId,
-  meetingId,
 }: {
   discussionId: Id<"discussions">;
   orgId: Id<"organizations">;
-  meetingId: Id<"meetings">;
 }) => {
   const topicList = useQuery(api.topics.listByDiscussion, {
     discussionId,
@@ -34,7 +32,7 @@ export const TopicList = ({
             tasksCompleted={metadata?.tasksCompleted ?? false}
             text={text}
           />
-          <TaskList meetingId={meetingId} orgId={orgId} topicId={_id} />
+          <TaskList orgId={orgId} topicId={_id} />
         </div>
       ))}
       {topicList?.length === 0 && <div>No topics</div>}

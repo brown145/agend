@@ -50,12 +50,8 @@ export default function DiscussionPage() {
       <div className="text-sm text-gray-500">TODO</div>
       <h2 className="text-lg font-bold">Topics</h2>
       <div className="">
-        {discussionId && meetingId && organizationId && (
-          <TopicList
-            discussionId={discussionId}
-            orgId={organizationId}
-            meetingId={meetingId}
-          />
+        {discussionId && organizationId && (
+          <TopicList discussionId={discussionId} orgId={organizationId} />
         )}
       </div>
       <h2 className="text-lg font-bold">Summary</h2>
