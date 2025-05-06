@@ -7,10 +7,12 @@ export default defineSchema({
   discussions: defineTable({
     completed: v.boolean(),
     createdBy: v.id("users"),
+    date: v.string(), // Format: YYYY-MM-DD / Expected to be unique
     meetingId: v.id("meetings"),
     orgId: v.id("organizations"),
   })
     .index("by_createdBy", ["createdBy"])
+    .index("by_meetingId_date", ["meetingId", "date"])
     .index("by_meetingId", ["meetingId"])
     .index("by_orgId", ["orgId"]),
 

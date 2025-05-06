@@ -78,9 +78,25 @@ export const create = authedOrgMutation({
       throw new Error("Cannot create discussion in this meeting");
     }
 
+    // Format current date as YYYY-MM-DD
+    const today = new Date().toISOString().split("T")[0];
+
+    // Check if a discussion already exists for this meeting and date
+    const existingDiscussion = await ctx.db
+      .query("discussions")
+      .withIndex("by_meetingId_date", (q) =>
+        q.eq("meetingId", args.meetingId).eq("date", today),
+      )
+      .first();
+
+    if (existingDiscussion) {
+      return existingDiscussion._id;
+    }
+
     return await ctx.db.insert("discussions", {
       completed: false,
       createdBy: ctx.user._id,
+      date: today,
       meetingId: args.meetingId,
       orgId: ctx.organization._id,
     });

@@ -2,6 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { useMutation, useQuery } from "convex/react";
+import { DateTime } from "luxon";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { api } from "../../../../convex/_generated/api";
@@ -10,6 +11,7 @@ import { useParamIds } from "../_hooks/useParamIds";
 
 export default function MeetingsPage() {
   const { meetingId, organizationId } = useParamIds();
+  const router = useRouter();
 
   const meeting = useQuery(
     api.meetings.details,
@@ -33,9 +35,13 @@ export default function MeetingsPage() {
 
   const createDiscussion = useMutation(api.discussions.create);
 
-  const handleNewDiscussion = () => {
+  const handleNewDiscussion = async () => {
     if (meetingId && organizationId) {
-      createDiscussion({ meetingId, orgId: organizationId });
+      const newDiscussionId = await createDiscussion({
+        meetingId,
+        orgId: organizationId,
+      });
+      router.push(`/${organizationId}/${meetingId}/${newDiscussionId}`);
     }
   };
 
@@ -59,7 +65,9 @@ export default function MeetingsPage() {
         {discussions?.map((discussion) => (
           <div key={discussion._id} className="hover:underline">
             <Link href={`/${organizationId}/${meetingId}/${discussion._id}`}>
-              {new Date(discussion._creationTime).toLocaleDateString()}
+              {DateTime.fromISO(discussion.date).toLocaleString(
+                DateTime.DATE_SHORT,
+              )}
             </Link>
           </div>
         ))}

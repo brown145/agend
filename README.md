@@ -15,7 +15,7 @@ bunx convex dev
 1. ✔ remove findUser
 
 # v0.2 New meeting flow
-1. get rid of meetings/new; instead create a meeting and land on /meetings/{meetingId}?edit=true
+1. ~~get rid of meetings/new; instead create a meeting and land on /meetings/{meetingId}?edit=true~~ no this seems like a bad flow, cannot be canceled and cannot be linked to
 
 # v0.3 discussion management
 1. build "next" discussion concept
@@ -50,17 +50,20 @@ bunx convex dev
 1. publish to github
 1. publish on Clerk / Convex / Vercel
 
-# 1.1 advanced topic / task ownership
+# v1.1 Toasts
+1. use toasts to confirm user actions
+
+# 1.2 advanced topic / task ownership
 1. postpone topic
 1. topic ordering / reordering
 1. focused topic (add tasks for focused topic only)
 
-# 1.2 advanced org management
+# 1.3 advanced org management
 1. create org
 1. invite to org
 1. request to join org
 
-# 1.3 perf / useability 
+# 1.4 perf / useability 
 1. loading.tsx
 1. error.tsx
 1. react transitions

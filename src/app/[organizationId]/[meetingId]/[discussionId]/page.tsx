@@ -2,6 +2,7 @@
 
 import { TopicList } from "@/components/TopicList";
 import { useQuery } from "convex/react";
+import { DateTime } from "luxon";
 import { api } from "../../../../../convex/_generated/api";
 import { useParamIds } from "../../_hooks/useParamIds";
 
@@ -35,15 +36,14 @@ export default function DiscussionPage() {
       : "skip",
   );
 
-  const discussionDate = discussion?._creationTime
-    ? new Date(discussion._creationTime)
+  const discussionDate = discussion?.date
+    ? DateTime.fromISO(discussion.date).toLocaleString(DateTime.DATE_SHORT)
     : null;
 
   return (
     <div className="">
       <h1 className="text-2xl font-bold">
-        {meeting?.title ?? "Meeting"} -{" "}
-        {discussionDate ? discussionDate.toLocaleDateString() : "Unknown"}
+        {meeting?.title ?? "Meeting"} - {discussionDate ?? "Unknown"}
       </h1>
       <div>{meetingOwner?.name ?? "Unknown owner"}</div>
       <h2 className="text-lg font-bold">Recap (previous discussion date)</h2>

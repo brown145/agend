@@ -11,6 +11,7 @@ import {
 import { SignedIn, useAuth, UserButton } from "@clerk/nextjs";
 import { useQuery } from "convex/react";
 import { ChevronsUpDown, List, Plus, Settings, Squirrel } from "lucide-react";
+import { DateTime } from "luxon";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { api } from "../../convex/_generated/api";
@@ -140,9 +141,9 @@ export const NavigationBar = () => {
                     <Button variant="ghost" className="h-8 px-2">
                       <div className="flex items-center gap-0.5">
                         {currentDiscussion
-                          ? new Date(
-                              currentDiscussion._creationTime,
-                            ).toLocaleDateString()
+                          ? DateTime.fromISO(
+                              currentDiscussion.date,
+                            ).toLocaleString(DateTime.DATE_SHORT)
                           : "Discussions"}
                         <ChevronsUpDown className="h-4 w-4" />
                       </div>
@@ -154,9 +155,9 @@ export const NavigationBar = () => {
                         <Link
                           href={`/${organizationId}/${currentMeeting?._id}/${disc._id}`}
                         >
-                          {new Date(
-                            disc._creationTime ?? 0,
-                          ).toLocaleDateString() ?? "Discussions"}
+                          {DateTime.fromISO(disc.date).toLocaleString(
+                            DateTime.DATE_SHORT,
+                          )}
                         </Link>
                       </DropdownMenuItem>
                     ))}
