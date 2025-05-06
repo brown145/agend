@@ -34,8 +34,21 @@ bunx convex dev
 1. slugs for url
 
 # v0.7 server function cleanup
+1. use folder structure conventsions:
+  ```
+  convex/
+    users/
+        queries.ts
+        mutations.ts
+        schema.ts (maybe)
+    posts/
+        queries.ts
+        mutations.ts
+        schema.ts (maybe)
+    schema.ts
+  ```
 1. remove unused functions
-1. remove manyToMany.ts functions... move to one of the objects
+1. remove manyToMany.ts functions... move to one of the objects or helper functions helper.object.ts
 1. review for consistency in function names and arguments (get vs details) / (orgId vs organizationId)
 1. review where in schema we want orgIds (meeting? discussions? tasks?...)
 1. cleanup argument names (id vs meetingId)
