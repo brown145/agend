@@ -2,6 +2,13 @@ import { v } from "convex/values";
 import { Doc, Id } from "./_generated/dataModel";
 import { authedMutation, authedOrgQuery } from "./utils";
 
+export const currentUser = authedOrgQuery({
+  args: {},
+  handler: async (ctx): Promise<Doc<"users">> => {
+    return ctx.user;
+  },
+});
+
 export const listUsersInOrganization = authedOrgQuery({
   args: {},
   handler: async (ctx): Promise<Doc<"users">[]> => {

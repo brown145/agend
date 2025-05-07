@@ -27,6 +27,7 @@ bunx convex dev
 1. ✔ build summary of current
 
 # v0.5 basic topic / task ownership
+1. display meeting owner
 1. add/edit task owner
 1. add/edit topic owner
 
