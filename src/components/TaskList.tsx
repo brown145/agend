@@ -7,9 +7,11 @@ import { Id } from "../../convex/_generated/dataModel";
 
 export const TaskList = ({
   orgId,
+  editable,
   topicId,
 }: {
   orgId: Id<"organizations">;
+  editable?: boolean;
   topicId: Id<"topics">;
 }) => {
   const taskList = useQuery(api.tasks.listByTopic, {
@@ -31,8 +33,8 @@ export const TaskList = ({
           />
         </div>
       ))}
-      {taskList?.length === 0 && <div>No tasks</div>}
-      <AddTask orgId={orgId} topicId={topicId} />
+      {editable && taskList?.length === 0 && <div>No tasks</div>}
+      {editable && <AddTask orgId={orgId} topicId={topicId} />}
     </main>
   );
 };

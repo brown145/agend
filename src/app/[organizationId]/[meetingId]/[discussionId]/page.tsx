@@ -78,10 +78,14 @@ export default function DiscussionPage() {
           <TopicList discussionId={discussionId} orgId={organizationId} />
         )}
       </div>
-      {!isNextDiscussion && (
+      {!isNextDiscussion && discussionId && organizationId && (
         <>
           <h2 className="text-lg font-bold">Summary</h2>
-          <div className="text-sm text-gray-500">TODO</div>
+          <TopicList
+            discussionId={discussionId}
+            editable={false}
+            orgId={organizationId}
+          />
         </>
       )}
     </div>
@@ -106,9 +110,16 @@ const DiscussionRecap = ({
 
   return (
     <div>
-      <h2 className="text-lg font-bold">Summary</h2>
+      <h2 className="text-lg font-bold">Review</h2>
       <div className="text-sm text-gray-500">
         From: {formatDiscussionDate(discussion?.date)}
+        {organizationId && (
+          <TopicList
+            discussionId={discussionId}
+            editable={false}
+            orgId={organizationId}
+          />
+        )}
       </div>
     </div>
   );

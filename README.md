@@ -22,9 +22,9 @@ bunx convex dev
 1. ✔ build "start" functionality
 1. ✔ build "previous" discussion concept
 
-# v0.4 summary / recap
-1. build recap from previous
-1. build summary of current
+# v0.4 summary / recap (core functionality)
+1. ✔ build recap from previous
+1. ✔ build summary of current
 
 # v0.5 basic topic / task ownership
 1. add/edit task owner
@@ -66,17 +66,28 @@ bunx convex dev
 # v1.1 Toasts
 1. use toasts to confirm user actions
 
-# 1.2 advanced topic / task ownership
+# v1.2 properly designed TaskList TopicList
+  _this is a key part of the UI and the primary user interaction; spend some time here_
+1. summary
+1. recap
+1. active / next discussion
+1. "active" meeting concpet
+1. progress through meeting Recap > Topcis > Summary
+
+# 1.3 advanced topic / task management
 1. postpone topic
 1. topic ordering / reordering
 1. focused topic (add tasks for focused topic only)
 
-# 1.3 advanced org management
+# 1.4 Make in Juicy
+1. https://roughnotation.com/
+1. react transitions
+
+# 1.5 perf / useability 
+1. loading.tsx
+1. error.tsx
+
+# 1.6 advanced org management
 1. create org
 1. invite to org
 1. request to join org
-
-# 1.4 perf / useability 
-1. loading.tsx
-1. error.tsx
-1. react transitions

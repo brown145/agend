@@ -9,9 +9,11 @@ import { TaskList } from "./TaskList";
 
 export const TopicList = ({
   discussionId,
+  editable = true,
   orgId,
 }: {
   discussionId: Id<"discussions">;
+  editable?: boolean;
   orgId: Id<"organizations">;
 }) => {
   const topicList = useQuery(api.topics.listByDiscussion, {
@@ -32,11 +34,11 @@ export const TopicList = ({
             tasksCompleted={metadata?.tasksCompleted ?? false}
             text={text}
           />
-          <TaskList orgId={orgId} topicId={_id} />
+          <TaskList orgId={orgId} topicId={_id} editable={editable} />
         </div>
       ))}
-      {topicList?.length === 0 && <div>No topics</div>}
-      <AddTopic discussionId={discussionId} orgId={orgId} />
+      {editable && topicList?.length === 0 && <div>No topics</div>}
+      {editable && <AddTopic discussionId={discussionId} orgId={orgId} />}
     </div>
   );
 };
