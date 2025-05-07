@@ -27,14 +27,27 @@ bunx convex dev
 1. ✔ build summary of current
 
 # v0.5 basic topic / task ownership
-1. display meeting owner
-1. add/edit task owner
-1. add/edit topic owner
+1. ✔ display meeting owner
+1. ✔ add/display task owner
+1. ✔ add/display topic owner
 
 # v0.6 urls
 1. slugs for url
 
 # v0.7 server function cleanup
+1. read: https://stack.convex.dev/relationship-structures-let-s-talk-about-schemas
+1. read: https://stack.convex.dev/functional-relationships-helpers
+1. rewrite with above helpers
+1. ??? move convext types out of FE code ???
+1. probabbly want to replace common cases with multiple queries with single query
+   ```
+     const meeting = useQuery(api.users.meeting, {...})
+     const meetingOwner = useQuery(api.users.details, {id: meeting.ownerId})
+
+     // vs
+
+     const [meeting, meetingOwner] = useQuery(api.users.meetingWithOwner, {...})
+   ```
 1. use folder structure conventsions:
   ```
   convex/
@@ -59,13 +72,18 @@ bunx convex dev
 1. avoid useParams or useParamIds in components; pass in from parent page
 1. avoid data fetching and mutions in comopnents; pass in handlers from parent page
 
+# v0.9 UI Pass Basic
+1. fix the worst UI stuff
+1. consistenly use shadcn/ui
+
 # v1.0 Workable product
 1. write a proper readme
 1. publish to github
 1. publish on Clerk / Convex / Vercel
 
-# v1.1 Toasts
+# v1.1 Minor polish
 1. use toasts to confirm user actions
+1. Favicon
 
 # v1.2 properly designed TaskList TopicList
   _this is a key part of the UI and the primary user interaction; spend some time here_
@@ -76,6 +94,7 @@ bunx convex dev
 1. progress through meeting Recap > Topcis > Summary
 
 # 1.3 advanced topic / task management
+1. edit task/topic/meeting ownership
 1. postpone topic
 1. topic ordering / reordering
 1. focused topic (add tasks for focused topic only)
@@ -83,10 +102,15 @@ bunx convex dev
 # 1.4 Make in Juicy
 1. https://roughnotation.com/
 1. react transitions
+1. handwriting font???
+1. rough js???
+1. drag and drop re-ordering
 
 # 1.5 perf / useability 
 1. loading.tsx
 1. error.tsx
+1. metadata?
+1. trunkation for titles and stuff
 
 # 1.6 advanced org management
 1. create org

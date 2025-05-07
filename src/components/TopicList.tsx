@@ -5,6 +5,7 @@ import { useMutation, useQuery } from "convex/react";
 import { useState } from "react";
 import { api } from "../../convex/_generated/api";
 import { Id } from "../../convex/_generated/dataModel";
+import { TopicWithMetadata } from "../../convex/topics";
 import { TaskList } from "./TaskList";
 
 export const TopicList = ({
@@ -22,19 +23,13 @@ export const TopicList = ({
   });
   return (
     <div className="flex flex-col gap-2">
-      {topicList?.map(({ _id, text, completed, metadata }) => (
+      {topicList?.map((topic) => (
         <div
-          key={_id}
+          key={topic._id}
           className="border-l-2 border-solid border-emerald-500 pl-2"
         >
-          <Topic
-            completed={completed ?? false}
-            id={_id}
-            orgId={orgId}
-            tasksCompleted={metadata?.tasksCompleted ?? false}
-            text={text}
-          />
-          <TaskList orgId={orgId} topicId={_id} editable={editable} />
+          <Topic topic={topic} orgId={orgId} />
+          <TaskList orgId={orgId} topicId={topic._id} editable={editable} />
         </div>
       ))}
       {editable && topicList?.length === 0 && <div>No topics</div>}
@@ -44,30 +39,37 @@ export const TopicList = ({
 };
 
 const Topic = ({
-  completed,
-  id,
+  topic,
   orgId,
-  tasksCompleted,
-  text,
 }: {
-  completed: boolean;
-  id: Id<"topics">;
+  topic: TopicWithMetadata;
   orgId: Id<"organizations">;
-  tasksCompleted: boolean;
-  text: string;
 }) => {
   const updateTopic = useMutation(api.topics.update);
+  const owner = useQuery(api.users.details, {
+    userId: topic.owner,
+    orgId,
+  });
 
   return (
     <div className="flex gap-2 items-center">
       <input
-        checked={completed}
-        onChange={() => updateTopic({ id, completed: !completed, orgId })}
+        checked={topic.completed}
+        onChange={() =>
+          updateTopic({ id: topic._id, completed: !topic.completed, orgId })
+        }
         type="checkbox"
       />
-      <div className={cn(completed && tasksCompleted && "line-through")}>
-        {text}
+      <div
+        className={cn(
+          topic.completed &&
+            (topic.metadata?.tasksCompleted ?? false) &&
+            "line-through",
+        )}
+      >
+        {topic.text}
       </div>
+      <div className="text-muted-foreground">{owner?.name}</div>
     </div>
   );
 };
@@ -82,9 +84,16 @@ const AddTopic = ({
   const [text, setText] = useState("");
   const createTopic = useMutation(api.topics.create);
 
+  const orgUsers = useQuery(api.users.listUsersInOrganization, {
+    orgId,
+  });
+
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    createTopic({ text, discussionId, orgId });
+    const form = e.currentTarget;
+    const select = form.querySelector("select") as HTMLSelectElement;
+    const owner = select.value as Id<"users">;
+    createTopic({ text, discussionId, orgId, owner });
     setText("");
   };
 
@@ -96,6 +105,13 @@ const AddTopic = ({
         type="text"
         value={text}
       />
+      <select className="border-2 border-gray-300 rounded-md p-1">
+        {orgUsers?.map((user) => (
+          <option key={user._id} value={user._id}>
+            {user.name}
+          </option>
+        ))}
+      </select>
       <button
         className="bg-emerald-500 text-white rounded-md p-1"
         type="submit"

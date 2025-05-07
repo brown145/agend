@@ -1,6 +1,6 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
+import { formatDiscussionDate } from "@/lib/utils/date";
 import { useQuery } from "convex/react";
 import { PlusCircle } from "lucide-react";
 import Link from "next/link";
@@ -21,22 +21,16 @@ export default function MeetingsPage() {
     ) ?? [];
 
   return (
-    <div className="h-full">
-      <div className="flex items-center gap-2">
-        <h1 className="text-2xl font-bold">Meetings</h1>
-        <Button
-          variant="link"
-          size="sm"
-          className="w-fit text-muted-foreground"
+    <div className="h-full flex flex-col gap-2">
+      <div className="flex items-start gap-2">
+        <h1 className="text-6xl font-medium">Meetings</h1>
+        <Link
+          href={`/${organizationId}/new`}
+          title="New meeting"
+          className="pt-1 text-muted-foreground"
         >
-          <Link
-            className="p-0"
-            href={`/${organizationId}/new`}
-            title="New meeting"
-          >
-            <PlusCircle className="h-4 w-4" />
-          </Link>
-        </Button>
+          <PlusCircle className="h-4 w-4" />
+        </Link>
       </div>
       <div className="flex flex-col">
         <MeetingList meetings={meetings} />
@@ -65,13 +59,29 @@ const MeetingListItem = ({ meeting }: { meeting: Doc<"meetings"> }) => {
     orgId: meeting.orgId,
   });
 
+  const discussions =
+    useQuery(api.discussions.listByMeeting, {
+      meetingId: meeting._id,
+      orgId: meeting.orgId,
+    }) ?? [];
+
+  const mostRecentDiscussion = discussions
+    .filter(
+      (d): d is typeof d & { date: string } =>
+        d.date !== "next" && d.date !== null,
+    )
+    .sort((a, b) => {
+      return b.date.localeCompare(a.date);
+    })[0];
+
   const isOwnMeeting = currentUser?._id === meeting.owner;
 
   return (
-    <div key={meeting._id} className="flex items-center gap-2">
+    <div key={meeting._id} className="flex items-start gap-2">
       <Link className="font-bold" href={`/${meeting.orgId}/${meeting._id}`}>
         {meeting.title}
       </Link>
+      <div>({isOwnMeeting ? "Yours" : owner?.name})</div>
       {meeting.nextDiscussionId && (
         <Link
           className="text-muted-foreground italic"
@@ -80,9 +90,16 @@ const MeetingListItem = ({ meeting }: { meeting: Doc<"meetings"> }) => {
           Next
         </Link>
       )}
-      <div className="text-muted-foreground italic">
-        {isOwnMeeting ? "Yours" : owner?.name}
-      </div>
+      {mostRecentDiscussion ? (
+        <Link
+          className="text-muted-foreground italic"
+          href={`/${meeting.orgId}/${meeting._id}/${mostRecentDiscussion._id}`}
+        >
+          {formatDiscussionDate(mostRecentDiscussion.date)}
+        </Link>
+      ) : (
+        <div className="text-muted-foreground italic"></div>
+      )}
     </div>
   );
 };

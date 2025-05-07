@@ -56,8 +56,8 @@ export default function DiscussionPage() {
   const discussionDate = formatDiscussionDate(discussion?.date);
 
   return (
-    <div className="">
-      <h1 className="text-2xl font-bold">
+    <div className="flex flex-col gap-2">
+      <h1 className="text-6xl font-medium">
         {meeting?.title ?? "Meeting"} - {discussionDate}
       </h1>
       <div>{meetingOwner?.name ?? "Unknown owner"}</div>

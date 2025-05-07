@@ -2,7 +2,7 @@ import { v } from "convex/values";
 import { Doc, Id } from "./_generated/dataModel";
 import { authedOrgMutation, authedOrgQuery } from "./utils";
 
-type TopicWithMetadata = Doc<"topics"> & {
+export type TopicWithMetadata = Doc<"topics"> & {
   metadata: {
     tasksCompleted: boolean;
   };
@@ -57,6 +57,7 @@ export const create = authedOrgMutation({
   args: {
     text: v.string(),
     discussionId: v.id("discussions"),
+    owner: v.id("users"),
   },
   handler: async (ctx, args): Promise<Id<"topics">> => {
     // Get the discussion to find the meeting
@@ -81,7 +82,7 @@ export const create = authedOrgMutation({
       completed: false,
       createdBy: ctx.user._id,
       orgId: ctx.organization._id,
-      owner: ctx.user._id,
+      owner: args.owner,
       text: args.text,
       discussionId: args.discussionId,
     });

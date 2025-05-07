@@ -36,10 +36,8 @@ export default function MeetingsPage() {
   }
 
   return (
-    <div>
-      <div className="flex items-center gap-2">
-        <MeetingHeader meeting={meeting} />
-      </div>
+    <div className="flex flex-col gap-2">
+      <MeetingHeader meeting={meeting} />
       <div className="flex flex-col">
         {discussions?.map((discussion) => (
           <div key={discussion._id} className="hover:underline">
@@ -59,6 +57,17 @@ const MeetingHeader = ({ meeting }: { meeting: Doc<"meetings"> }) => {
   const router = useRouter();
   const pathname = usePathname();
   const isEditing = searchParams.get("edit") === "true";
+
+  const currentUser = useQuery(api.users.currentUser, {
+    orgId: meeting.orgId,
+  });
+
+  const owner = useQuery(api.users.details, {
+    userId: meeting.owner,
+    orgId: meeting.orgId,
+  });
+
+  const isOwnMeeting = currentUser?._id === meeting.owner;
 
   const setEditMode = (edit: boolean) => {
     const params = new URLSearchParams(searchParams.toString());
@@ -115,14 +124,12 @@ const MeetingHeader = ({ meeting }: { meeting: Doc<"meetings"> }) => {
   }
 
   return (
-    <div className="flex flex-col gap-2">
-      <div className="flex gap-2 items-center">
-        <div
-          className="text-xl font-semibold"
-          onClick={() => setEditMode(true)}
-        >
-          {meeting.title}
-        </div>
+    <div className="flex flex-col">
+      <h1 className="text-6xl font-medium" onClick={() => setEditMode(true)}>
+        {meeting.title}
+      </h1>
+      <div className="text-muted-foreground">
+        {isOwnMeeting ? "Yours" : owner?.name}
       </div>
     </div>
   );

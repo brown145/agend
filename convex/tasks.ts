@@ -21,13 +21,14 @@ export const create = authedOrgMutation({
   args: {
     topicId: v.id("topics"),
     text: v.string(),
+    owner: v.id("users"),
   },
   handler: async (ctx, args): Promise<Id<"tasks">> => {
     return await ctx.db.insert("tasks", {
       completed: false,
       createdBy: ctx.user._id,
       orgId: ctx.organization._id,
-      owner: ctx.user._id,
+      owner: args.owner,
       text: args.text,
       topicId: args.topicId,
     });
