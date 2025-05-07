@@ -2,12 +2,15 @@
 
 import { TopicList } from "@/components/TopicList";
 import { formatDiscussionDate } from "@/lib/utils/date";
-import { useQuery } from "convex/react";
+import { useMutation, useQuery } from "convex/react";
+import { useRouter } from "next/navigation";
 import { api } from "../../../../../convex/_generated/api";
 import { useParamIds } from "../../_hooks/useParamIds";
 
 export default function DiscussionPage() {
+  const router = useRouter();
   const { meetingId, discussionId, organizationId } = useParamIds();
+  const startMeeting = useMutation(api.meetings.start);
 
   const meeting = useQuery(
     api.meetings.details,
@@ -36,6 +39,19 @@ export default function DiscussionPage() {
       : "skip",
   );
 
+  const isNextDiscussion =
+    meeting?.nextDiscussionId && discussion?._id === meeting.nextDiscussionId;
+
+  const handleStart = async () => {
+    if (!meetingId || !organizationId) return;
+    const newDiscussionId = await startMeeting({
+      meetingId,
+      orgId: organizationId,
+    });
+    // Redirect to the new discussion page
+    router.push(`/${organizationId}/${meetingId}/${newDiscussionId}`);
+  };
+
   const discussionDate = formatDiscussionDate(discussion?.date);
 
   return (
@@ -44,16 +60,34 @@ export default function DiscussionPage() {
         {meeting?.title ?? "Meeting"} - {discussionDate}
       </h1>
       <div>{meetingOwner?.name ?? "Unknown owner"}</div>
-      <h2 className="text-lg font-bold">Recap (previous discussion date)</h2>
-      <div className="text-sm text-gray-500">TODO</div>
+      {isNextDiscussion && (
+        <button
+          className="mt-4 px-4 py-2 bg-blue-600 text-white rounded"
+          onClick={handleStart}
+        >
+          Start
+        </button>
+      )}
+      {!isNextDiscussion && (
+        <>
+          <h2 className="text-lg font-bold">
+            Recap (previous discussion date)
+          </h2>
+          <div className="text-sm text-gray-500">TODO</div>
+        </>
+      )}
       <h2 className="text-lg font-bold">Topics</h2>
       <div className="">
         {discussionId && organizationId && (
           <TopicList discussionId={discussionId} orgId={organizationId} />
         )}
       </div>
-      <h2 className="text-lg font-bold">Summary</h2>
-      <div className="text-sm text-gray-500">TODO</div>
+      {!isNextDiscussion && (
+        <>
+          <h2 className="text-lg font-bold">Summary</h2>
+          <div className="text-sm text-gray-500">TODO</div>
+        </>
+      )}
     </div>
   );
 }

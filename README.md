@@ -18,8 +18,8 @@ bunx convex dev
 1. ~~get rid of meetings/new; instead create a meeting and land on /meetings/{meetingId}?edit=true~~ no this seems like a bad flow, cannot be canceled and cannot be linked to
 
 # v0.3 discussion management
-1. build "next" discussion concept
-1. build "start" functionality
+1. ✔ build "next" discussion concept
+1. ✔ build "start" functionality
 1. build "previous" discussion concept
 
 # v0.4 summary / recap

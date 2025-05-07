@@ -80,3 +80,51 @@ export const update = authedOrgMutation({
     });
   },
 });
+
+export const start = authedOrgMutation({
+  args: {
+    meetingId: v.id("meetings"),
+    orgId: v.id("organizations"),
+  },
+  handler: async (ctx, args): Promise<Id<"discussions">> => {
+    const meeting = await ctx.db.get(args.meetingId);
+    if (!meeting || meeting.orgId !== ctx.organization._id) {
+      throw new Error("Meeting not found");
+    }
+
+    // Format current date as YYYY-MM-DD
+    const today = new Date().toISOString().split("T")[0];
+
+    // Create the new discussion
+    const newDiscussionId = await ctx.db.insert("discussions", {
+      completed: false,
+      createdBy: ctx.user._id,
+      date: today,
+      meetingId: args.meetingId,
+      orgId: ctx.organization._id,
+    });
+
+    // If there's a nextDiscussionId, move its topics to the new discussion
+    if (meeting.nextDiscussionId) {
+      const topics = await ctx.db
+        .query("topics")
+        .withIndex("by_orgId_discussionId", (q) =>
+          q
+            .eq("orgId", ctx.organization._id)
+            .eq("discussionId", meeting.nextDiscussionId!),
+        )
+        .collect();
+
+      // Move each topic to the new discussion
+      await Promise.all(
+        topics.map((topic) =>
+          ctx.db.patch(topic._id, {
+            discussionId: newDiscussionId,
+          }),
+        ),
+      );
+    }
+
+    return newDiscussionId;
+  },
+});

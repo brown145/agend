@@ -1,6 +1,5 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
 import { formatDiscussionDate } from "@/lib/utils/date";
 import { useMutation, useQuery } from "convex/react";
 import Link from "next/link";
@@ -11,7 +10,6 @@ import { useParamIds } from "../_hooks/useParamIds";
 
 export default function MeetingsPage() {
   const { meetingId, organizationId } = useParamIds();
-  const router = useRouter();
 
   const meeting = useQuery(
     api.meetings.details,
@@ -33,18 +31,6 @@ export default function MeetingsPage() {
       : "skip",
   );
 
-  const createDiscussion = useMutation(api.discussions.create);
-
-  const handleNewDiscussion = async () => {
-    if (meetingId && organizationId) {
-      const newDiscussionId = await createDiscussion({
-        meetingId,
-        orgId: organizationId,
-      });
-      router.push(`/${organizationId}/${meetingId}/${newDiscussionId}`);
-    }
-  };
-
   if (!meeting) {
     return <div>Meeting not found</div>;
   }
@@ -53,13 +39,6 @@ export default function MeetingsPage() {
     <div>
       <div className="flex items-center gap-2">
         <MeetingHeader meeting={meeting} />
-        <Button
-          variant="link"
-          size="sm"
-          className="w-fit text-muted-foreground"
-        >
-          <div onClick={handleNewDiscussion}>New discussion</div>
-        </Button>
       </div>
       <div className="flex flex-col">
         {discussions?.map((discussion) => (
