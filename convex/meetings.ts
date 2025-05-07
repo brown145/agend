@@ -95,6 +95,22 @@ export const start = authedOrgMutation({
     // Format current date as YYYY-MM-DD
     const today = new Date().toISOString().split("T")[0];
 
+    const meetingDiscussions = await ctx.db
+      .query("discussions")
+      .withIndex("by_orgId_meetingId", (q) =>
+        q.eq("orgId", ctx.organization._id).eq("meetingId", args.meetingId),
+      )
+      .collect();
+
+    const mostRecentDiscussion = meetingDiscussions
+      .filter(
+        (d): d is typeof d & { date: string } =>
+          d.date !== "next" && d.date !== null,
+      )
+      .sort((a, b) => {
+        return b.date.localeCompare(a.date);
+      })[0];
+
     // Create the new discussion
     const newDiscussionId = await ctx.db.insert("discussions", {
       completed: false,
@@ -102,6 +118,9 @@ export const start = authedOrgMutation({
       date: today,
       meetingId: args.meetingId,
       orgId: ctx.organization._id,
+      previousDiscussionId: mostRecentDiscussion
+        ? mostRecentDiscussion._id
+        : undefined,
     });
 
     // If there's a nextDiscussionId, move its topics to the new discussion

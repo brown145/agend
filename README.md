@@ -20,7 +20,7 @@ bunx convex dev
 # v0.3 discussion management
 1. ✔ build "next" discussion concept
 1. ✔ build "start" functionality
-1. build "previous" discussion concept
+1. ✔ build "previous" discussion concept
 
 # v0.4 summary / recap
 1. build recap from previous

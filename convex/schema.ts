@@ -2,7 +2,9 @@ import { defineSchema, defineTable } from "convex/server";
 import { v } from "convex/values";
 
 export default defineSchema({
-  authVerifiers: defineTable({ signature: v.string() }),
+  authVerifiers: defineTable({
+    signature: v.string(),
+  }),
 
   discussions: defineTable({
     completed: v.boolean(),
@@ -10,11 +12,14 @@ export default defineSchema({
     date: v.optional(v.string() || "next"), // Format: YYYY-MM-DD
     meetingId: v.id("meetings"),
     orgId: v.id("organizations"),
+    previousDiscussionId: v.optional(v.id("discussions")),
   })
     .index("by_createdBy", ["createdBy"])
     .index("by_meetingId_date", ["meetingId", "date"])
     .index("by_meetingId", ["meetingId"])
-    .index("by_orgId", ["orgId"]),
+    .index("by_orgId", ["orgId"])
+    .index("by_orgId_meetingId", ["orgId", "meetingId"])
+    .index("by_previousDiscussionId", ["previousDiscussionId"]),
 
   meetings: defineTable({
     createdBy: v.id("users"),

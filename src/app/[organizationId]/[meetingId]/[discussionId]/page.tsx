@@ -5,6 +5,7 @@ import { formatDiscussionDate } from "@/lib/utils/date";
 import { useMutation, useQuery } from "convex/react";
 import { useRouter } from "next/navigation";
 import { api } from "../../../../../convex/_generated/api";
+import { Id } from "../../../../../convex/_generated/dataModel";
 import { useParamIds } from "../../_hooks/useParamIds";
 
 export default function DiscussionPage() {
@@ -68,13 +69,8 @@ export default function DiscussionPage() {
           Start
         </button>
       )}
-      {!isNextDiscussion && (
-        <>
-          <h2 className="text-lg font-bold">
-            Recap (previous discussion date)
-          </h2>
-          <div className="text-sm text-gray-500">TODO</div>
-        </>
+      {discussion?.previousDiscussionId && (
+        <DiscussionRecap discussionId={discussion?.previousDiscussionId} />
       )}
       <h2 className="text-lg font-bold">Topics</h2>
       <div className="">
@@ -91,3 +87,29 @@ export default function DiscussionPage() {
     </div>
   );
 }
+
+const DiscussionRecap = ({
+  discussionId,
+}: {
+  discussionId: Id<"discussions">;
+}) => {
+  const { organizationId } = useParamIds();
+  const discussion = useQuery(
+    api.discussions.details,
+    discussionId && organizationId
+      ? {
+          discussionId,
+          orgId: organizationId,
+        }
+      : "skip",
+  );
+
+  return (
+    <div>
+      <h2 className="text-lg font-bold">Summary</h2>
+      <div className="text-sm text-gray-500">
+        From: {formatDiscussionDate(discussion?.date)}
+      </div>
+    </div>
+  );
+};
