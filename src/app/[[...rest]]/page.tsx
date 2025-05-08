@@ -26,8 +26,6 @@ function RedirectToOrganization() {
   const router = useRouter();
   const firstOrganization = useQuery(api.organizations.getUsersFirst);
 
-  console.log(firstOrganization);
-
   useEffect(() => {
     router.push(`/${firstOrganization?._id}`);
   }, [router, firstOrganization]);

@@ -86,7 +86,7 @@ export const authedMutation = customMutation(mutation, {
       throw new ConvexError("User not found");
     }
 
-    return { ctx: { ...ctx, user, identity }, args: {} };
+    return { ctx: { ...ctx, user }, args: {} };
   },
 });
 

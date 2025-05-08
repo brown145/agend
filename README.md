@@ -93,26 +93,29 @@ bunx convex dev
 1. "active" meeting concpet
 1. progress through meeting Recap > Topcis > Summary
 
-# 1.3 advanced topic / task management
+# v1.3 advanced topic / task management
 1. edit task/topic/meeting ownership
 1. postpone topic
 1. topic ordering / reordering
 1. focused topic (add tasks for focused topic only)
 
-# 1.4 Make in Juicy
+# v1.4 Make in Juicy
 1. https://roughnotation.com/
 1. react transitions
 1. handwriting font???
 1. rough js???
 1. drag and drop re-ordering
 
-# 1.5 perf / useability 
+# v1.5 perf / useability 
 1. loading.tsx
 1. error.tsx
 1. metadata?
 1. trunkation for titles and stuff
 
-# 1.6 advanced org management
+# v1.6 advanced org management
 1. create org
 1. invite to org
 1. request to join org
+
+# v1.7
+1. clerk webhooks to sync users

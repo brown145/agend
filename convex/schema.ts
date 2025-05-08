@@ -2,10 +2,6 @@ import { defineSchema, defineTable } from "convex/server";
 import { v } from "convex/values";
 
 export default defineSchema({
-  authVerifiers: defineTable({
-    signature: v.string(),
-  }),
-
   discussions: defineTable({
     completed: v.boolean(),
     createdBy: v.id("users"),
