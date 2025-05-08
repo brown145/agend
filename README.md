@@ -31,10 +31,7 @@ bunx convex dev
 1. ✔ add/display task owner
 1. ✔ add/display topic owner
 
-# v0.6 urls
-1. slugs for url
-
-# v0.7 server function cleanup
+# v0.6 server function cleanup
 1. read: https://stack.convex.dev/relationship-structures-let-s-talk-about-schemas
 1. read: https://stack.convex.dev/functional-relationships-helpers
 1. rewrite with above helpers
@@ -68,11 +65,11 @@ bunx convex dev
 1. cleanup argument names (id vs meetingId)
 1. cleanup throw vs null response
 
-# v0.8 cleanup components
+# v0.7 cleanup components
 1. avoid useParams or useParamIds in components; pass in from parent page
 1. avoid data fetching and mutions in comopnents; pass in handlers from parent page
 
-# v0.9 UI Pass Basic
+# v0.8 UI Pass Basic
 1. fix the worst UI stuff
 1. consistenly use shadcn/ui
 
@@ -112,10 +109,13 @@ bunx convex dev
 1. metadata?
 1. trunkation for titles and stuff
 
-# v1.6 advanced org management
+# v1.6 urls
+1. slugs for url
+
+# v1.7 advanced org management
 1. create org
 1. invite to org
 1. request to join org
 
-# v1.7
+# v1.8
 1. clerk webhooks to sync users

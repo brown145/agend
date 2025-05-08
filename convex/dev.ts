@@ -41,3 +41,33 @@ export const resetMeetings = mutation({
     return { success: true };
   },
 });
+
+export const resetUsesAndOrganizations = mutation({
+  args: {},
+  handler: async (ctx) => {
+    // use process.env.NODE_ENV to check if we are in development mode
+    if (process.env.NODE_ENV !== "development") {
+      throw new Error("This mutation is only available in development mode");
+    }
+
+    // Delete all organizations
+    const organizations = await ctx.db.query("organizations").collect();
+    for (const organization of organizations) {
+      await ctx.db.delete(organization._id);
+    }
+
+    // Delete all user organizations
+    const userOrganizations = await ctx.db.query("userOrganizations").collect();
+    for (const userOrganization of userOrganizations) {
+      await ctx.db.delete(userOrganization._id);
+    }
+
+    // Delete all users
+    const users = await ctx.db.query("users").collect();
+    for (const user of users) {
+      await ctx.db.delete(user._id);
+    }
+
+    return { success: true };
+  },
+});

@@ -1,8 +1,9 @@
 import { ConvexError, v } from "convex/values";
 import { Doc, Id } from "./_generated/dataModel";
 import { mutation } from "./_generated/server";
+import { authedOrgQuery, authedQuery } from "./utils";
 
-export const currentUser = authedOrgQuery({
+export const currentUser = authedQuery({
   args: {},
   handler: async (ctx): Promise<Doc<"users">> => {
     return ctx.user;
