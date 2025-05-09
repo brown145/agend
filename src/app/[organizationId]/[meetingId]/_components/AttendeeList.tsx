@@ -1,17 +1,18 @@
 "use client";
 
-import { useMutation, useQuery } from "convex/react";
-import { useParams } from "next/navigation";
-import { useState } from "react";
-import { api } from "../../convex/_generated/api";
-import { Doc, Id } from "../../convex/_generated/dataModel";
-import { Button } from "./ui/button";
+import { useParamIds } from "@/app/[organizationId]/_hooks/useParamIds";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "./ui/dropdown-menu";
+} from "@/components/ui/dropdown-menu";
+import { isNonNull } from "@/lib/isNotNull";
+import { api } from "@convex/_generated/api";
+import { Doc, Id } from "@convex/_generated/dataModel";
+import { useMutation, useQuery } from "convex/react";
+import { useState } from "react";
 
 interface User {
   _id: Id<"users">;
@@ -19,18 +20,29 @@ interface User {
 }
 
 export const AttendeesList = () => {
-  const { meetingId: _meetingId, organizationId: _organizationId } =
-    useParams();
-  const organizationId = _organizationId as Id<"organizations">;
-  const meetingId = _meetingId as Id<"meetings">;
+  const { meetingId, organizationId } = useParamIds();
 
-  const attendees = useQuery(api.users.listByMeeting, {
-    meetingId,
-    orgId: organizationId,
-  });
-  const allOrgUsers = useQuery(api.users.listUsersInOrganization, {
-    orgId: organizationId,
-  });
+  const attendees = useQuery(
+    api.users.queries.byMeetingId,
+    meetingId && organizationId
+      ? {
+          meetingId,
+          orgId: organizationId,
+        }
+      : "skip",
+  )?.filter(isNonNull);
+
+  const allOrgUsers = useQuery(
+    api.users.queries.byOrgId,
+    organizationId
+      ? {
+          orgId: organizationId,
+        }
+      : "skip",
+  )?.filter(isNonNull);
+
+  // TODO: handle loading state
+  if (!meetingId || !organizationId) return null;
 
   return (
     <main className="space-y-4">
@@ -64,9 +76,8 @@ const Attendee = ({
   meetingId: Id<"meetings">;
   isLast: boolean;
 }) => {
-  const { organizationId } = useParams();
-  const orgId = organizationId as Id<"organizations">;
-  const removeAttendee = useMutation(api.meetingAttendance.remove);
+  const { organizationId } = useParamIds();
+  const removeAttendee = useMutation(api.meetings.mutations.removeAttendee);
 
   if (!attendee) return null;
 
@@ -78,9 +89,15 @@ const Attendee = ({
           className="text-muted-foreground"
           variant="ghost"
           size="sm"
-          onClick={() =>
-            removeAttendee({ meetingId, userId: attendee._id, orgId })
-          }
+          onClick={() => {
+            if (organizationId) {
+              removeAttendee({
+                meetingId,
+                userId: attendee._id,
+                orgId: organizationId,
+              });
+            }
+          }}
         >
           Remove
         </Button>
@@ -96,17 +113,16 @@ const AddAttendee = ({
   meetingId: Id<"meetings">;
   users?: User[];
 }) => {
-  const { organizationId } = useParams();
-  const orgId = organizationId as Id<"organizations">;
+  const { organizationId } = useParamIds();
   const [selectedUserId, setSelectedUserId] = useState<Id<"users"> | null>(
     null,
   );
-  const addAttendee = useMutation(api.meetingAttendance.add);
+  const addAttendee = useMutation(api.meetings.mutations.addAttendee);
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!selectedUserId) return;
-    addAttendee({ meetingId, userId: selectedUserId, orgId });
+    if (!selectedUserId || !organizationId) return;
+    addAttendee({ meetingId, userId: selectedUserId, orgId: organizationId });
     setSelectedUserId(null);
   };
 

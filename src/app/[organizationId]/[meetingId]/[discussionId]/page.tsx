@@ -1,20 +1,20 @@
 "use client";
 
-import { TopicList } from "@/components/TopicList";
 import { formatDiscussionDate } from "@/lib/utils/date";
+import { api } from "@convex/_generated/api";
 import { useMutation, useQuery } from "convex/react";
 import { useRouter } from "next/navigation";
-import { api } from "../../../../../convex/_generated/api";
-import { Id } from "../../../../../convex/_generated/dataModel";
 import { useParamIds } from "../../_hooks/useParamIds";
+import DiscussionRecap from "./_components/DiscussionRecap";
+import { TopicList } from "./_components/TopicList";
 
 export default function DiscussionPage() {
   const router = useRouter();
   const { meetingId, discussionId, organizationId } = useParamIds();
-  const startMeeting = useMutation(api.meetings.start);
+  const startMeeting = useMutation(api.meetings.mutations.start);
 
-  const meeting = useQuery(
-    api.meetings.details,
+  const meetingDetails = useQuery(
+    api.meetings.queries.byMeetingId,
     meetingId && organizationId
       ? {
           meetingId,
@@ -24,7 +24,7 @@ export default function DiscussionPage() {
   );
 
   const discussion = useQuery(
-    api.discussions.details,
+    api.discussions.queries.byDiscussionId,
     discussionId && organizationId
       ? {
           discussionId,
@@ -33,15 +33,9 @@ export default function DiscussionPage() {
       : "skip",
   );
 
-  const meetingOwner = useQuery(
-    api.users.details,
-    meeting?.owner && organizationId
-      ? { userId: meeting.owner, orgId: organizationId }
-      : "skip",
-  );
-
   const isNextDiscussion =
-    meeting?.nextDiscussionId && discussion?._id === meeting.nextDiscussionId;
+    meetingDetails?.nextDiscussionId &&
+    discussion?._id === meetingDetails.nextDiscussionId;
 
   const handleStart = async () => {
     if (!meetingId || !organizationId) return;
@@ -58,9 +52,9 @@ export default function DiscussionPage() {
   return (
     <div className="flex flex-col gap-2">
       <h1 className="text-6xl font-medium">
-        {meeting?.title ?? "Meeting"} - {discussionDate}
+        {meetingDetails?.title ?? "Meeting"} - {discussionDate}
       </h1>
-      <div>{meetingOwner?.name ?? "Unknown owner"}</div>
+      <div>{meetingDetails?.owner?.name ?? "Unknown owner"}</div>
       {isNextDiscussion && (
         <button
           className="mt-4 px-4 py-2 bg-blue-600 text-white rounded"
@@ -69,8 +63,11 @@ export default function DiscussionPage() {
           Start
         </button>
       )}
-      {discussion?.previousDiscussionId && (
-        <DiscussionRecap discussionId={discussion?.previousDiscussionId} />
+      {discussion?.previousDiscussionId && organizationId && (
+        <DiscussionRecap
+          discussionId={discussion?.previousDiscussionId}
+          organizationId={organizationId}
+        />
       )}
       <h2 className="text-lg font-bold">Topics</h2>
       <div className="">
@@ -91,36 +88,3 @@ export default function DiscussionPage() {
     </div>
   );
 }
-
-const DiscussionRecap = ({
-  discussionId,
-}: {
-  discussionId: Id<"discussions">;
-}) => {
-  const { organizationId } = useParamIds();
-  const discussion = useQuery(
-    api.discussions.details,
-    discussionId && organizationId
-      ? {
-          discussionId,
-          orgId: organizationId,
-        }
-      : "skip",
-  );
-
-  return (
-    <div>
-      <h2 className="text-lg font-bold">Review</h2>
-      <div className="text-sm text-gray-500">
-        From: {formatDiscussionDate(discussion?.date)}
-        {organizationId && (
-          <TopicList
-            discussionId={discussionId}
-            editable={false}
-            orgId={organizationId}
-          />
-        )}
-      </div>
-    </div>
-  );
-};

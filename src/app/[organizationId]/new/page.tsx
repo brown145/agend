@@ -1,19 +1,23 @@
 "use client";
 
-import { AddMeeting } from "@/components/AddMeeting";
-import { redirect } from "next/navigation";
-import { useParamIds } from "../_hooks/useParamIds";
+import { redirect, useParams } from "next/navigation";
+import { AddMeeting } from "./_components/AddMeeting";
 
 export default function MeetingsNewPage() {
-  const { organizationId } = useParamIds();
+  const { organizationId } = useParams();
+  const currentOrgId = organizationId ? organizationId.toString() : null;
 
   const handleSubmit = (id: string) => {
     redirect(`/${organizationId}/${id}`);
   };
 
+  if (!currentOrgId) {
+    return null;
+  }
+
   return (
-    <div>
-      <AddMeeting onSubmit={handleSubmit} />
+    <div className="py-2">
+      <AddMeeting onSubmit={handleSubmit} orgId={currentOrgId} />
     </div>
   );
 }

@@ -9,51 +9,47 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { formatDiscussionDate } from "@/lib/utils/date";
-import { SignedIn, useAuth, UserButton } from "@clerk/nextjs";
+import { SignedIn, UserButton } from "@clerk/nextjs";
+import { api } from "@convex/_generated/api";
+import { Id } from "@convex/_generated/dataModel";
 import { useQuery } from "convex/react";
 import { ChevronsUpDown, List, Plus, Settings, Squirrel } from "lucide-react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { api } from "../../convex/_generated/api";
-import { Id } from "../../convex/_generated/dataModel";
 
-export const NavigationBar = () => {
-  const params = useParams();
-  const { organizationId } = params;
-  const { meetingId } = params;
-  const { discussionId } = params;
+export default function NavigationBar() {
+  const { organizationId, meetingId, discussionId } = useParams();
 
-  const { isSignedIn } = useAuth();
-  const organizations =
-    useQuery(api.organizations.list, isSignedIn ? {} : "skip") ?? [];
-  const currentOrganization = organizations.find(
-    (org) => org._id === organizationId,
+  const orgs = useQuery(api.organizations.queries.list);
+  const currentOrgId = organizationId ? organizationId.toString() : null;
+  const currentOrganization = orgs
+    ? orgs.find((org) => org._id.toString() === currentOrgId)
+    : null;
+
+  const meetings = useQuery(
+    api.meetings.queries.list,
+    currentOrgId
+      ? {
+          orgId: currentOrgId as Id<"organizations">,
+        }
+      : "skip",
   );
+  const currentMeetingId = meetingId ? meetingId.toString() : null;
+  const currentMeeting = meetings?.find((mtg) => mtg._id === currentMeetingId);
 
-  const meetings =
-    useQuery(
-      api.meetings.list,
-      isSignedIn
-        ? {
-            orgId: organizationId as Id<"organizations">,
-          }
-        : "skip",
-    ) ?? [];
-  const currentMeeting = meetings.find((mtg) => mtg._id === meetingId);
-
-  const discussions =
-    useQuery(
-      api.discussions.listByMeeting,
-      isSignedIn && meetingId
-        ? {
-            meetingId: meetingId as Id<"meetings">,
-            orgId: organizationId as Id<"organizations">,
-          }
-        : "skip",
-    ) ?? [];
-  const currentDiscussion = discussions.find(
-    (disc) => disc._id === discussionId,
+  const discussions = useQuery(
+    api.discussions.queries.byMeetingId,
+    currentMeetingId && currentOrgId
+      ? {
+          meetingId: currentMeetingId as Id<"meetings">,
+          orgId: currentOrgId as Id<"organizations">,
+        }
+      : "skip",
   );
+  const currentDiscussionId = discussionId ? discussionId.toString() : null;
+  const currentDiscussion = discussions
+    ? discussions.find((disc) => disc._id === currentDiscussionId)
+    : null;
 
   return (
     <div className="flex items-center justify-between h-14 px-4 border-b">
@@ -62,7 +58,7 @@ export const NavigationBar = () => {
           <Squirrel className="h-6 w-6" />
         </div>
 
-        {organizations.length > 0 && (
+        {orgs && orgs.length > 0 && (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="h-8 px-2">
@@ -73,7 +69,7 @@ export const NavigationBar = () => {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="start">
-              {organizations.map((org) => (
+              {orgs.map((org) => (
                 <DropdownMenuItem key={org._id} asChild>
                   <Link href={`/${org._id}`} className="flex items-center">
                     {org.name}
@@ -91,7 +87,7 @@ export const NavigationBar = () => {
           </DropdownMenu>
         )}
 
-        {meetings.length > 0 && (
+        {meetings && meetings.length > 0 && (
           <>
             <span className="text-muted-foreground">/</span>
             <DropdownMenu>
@@ -106,24 +102,21 @@ export const NavigationBar = () => {
               <DropdownMenuContent align="start">
                 {meetings.map((mtg) => (
                   <DropdownMenuItem key={mtg._id} asChild>
-                    <Link href={`/${organizationId}/${mtg._id}`}>
+                    <Link href={`/${currentOrgId}/${mtg._id}`}>
                       {mtg.title}
                     </Link>
                   </DropdownMenuItem>
                 ))}
                 <DropdownMenuSeparator />
                 <DropdownMenuItem asChild>
-                  <Link
-                    href={`/${organizationId}`}
-                    className="flex items-center"
-                  >
+                  <Link href={`/${currentOrgId}`} className="flex items-center">
                     <List className="h-4 w-4" />
                     list
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
                   <Link
-                    href={`/${organizationId}/new`}
+                    href={`/${currentOrgId}/new`}
                     className="flex items-center"
                   >
                     <Plus className="h-4 w-4" />
@@ -133,7 +126,7 @@ export const NavigationBar = () => {
               </DropdownMenuContent>
             </DropdownMenu>
 
-            {discussions.length > 0 && (
+            {discussions && discussions.length > 0 && (
               <>
                 <span className="text-muted-foreground">/</span>
                 <DropdownMenu>
@@ -151,7 +144,7 @@ export const NavigationBar = () => {
                     {discussions.map((disc) => (
                       <DropdownMenuItem key={disc._id} asChild>
                         <Link
-                          href={`/${organizationId}/${currentMeeting?._id}/${disc._id}`}
+                          href={`/${currentOrgId}/${currentMeeting?._id}/${disc._id}`}
                         >
                           {formatDiscussionDate(disc.date)}
                         </Link>
@@ -170,4 +163,4 @@ export const NavigationBar = () => {
       </SignedIn>
     </div>
   );
-};
+}

@@ -1,9 +1,10 @@
 "use client";
 
+import { isNonNull } from "@/lib/isNotNull";
+import { api } from "@convex/_generated/api";
+import { Doc, Id } from "@convex/_generated/dataModel";
 import { useMutation, useQuery } from "convex/react";
 import { useState } from "react";
-import { api } from "../../convex/_generated/api";
-import { Doc, Id } from "../../convex/_generated/dataModel";
 
 export const TaskList = ({
   orgId,
@@ -14,7 +15,7 @@ export const TaskList = ({
   editable?: boolean;
   topicId: Id<"topics">;
 }) => {
-  const taskList = useQuery(api.tasks.listByTopic, {
+  const taskList = useQuery(api.tasks.queries.byTopicId, {
     topicId,
     orgId,
   });
@@ -41,8 +42,8 @@ const Task = ({
   task: Doc<"tasks">;
   orgId: Id<"organizations">;
 }) => {
-  const updateTask = useMutation(api.tasks.update);
-  const owner = useQuery(api.users.details, {
+  const updateTask = useMutation(api.tasks.mutations.complete);
+  const owner = useQuery(api.users.queries.byUserId, {
     userId: task.owner,
     orgId,
   });
@@ -52,7 +53,11 @@ const Task = ({
       <input
         checked={task.completed}
         onChange={() =>
-          updateTask({ id: task._id, completed: !task.completed, orgId })
+          updateTask({
+            taskId: task._id,
+            isCompleted: !task.completed,
+            orgId,
+          })
         }
         type="checkbox"
       />
@@ -70,11 +75,13 @@ const AddTask = ({
   topicId: Id<"topics">;
 }) => {
   const [text, setText] = useState("");
-  const createTask = useMutation(api.tasks.create);
+  const createTask = useMutation(api.tasks.mutations.create);
 
-  const orgUsers = useQuery(api.users.listUsersInOrganization, {
+  const orgUsers = useQuery(api.users.queries.byOrgId, {
     orgId,
   });
+  // TODO: why do I get nulls back?
+  const users = orgUsers?.filter(isNonNull);
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -94,7 +101,7 @@ const AddTask = ({
         value={text}
       />
       <select className="border-2 border-gray-300 rounded-md p-1 text-sm">
-        {orgUsers?.map((user) => (
+        {users?.map((user) => (
           <option key={user._id} value={user._id}>
             {user.name}
           </option>

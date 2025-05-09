@@ -49,6 +49,7 @@ export const byOrgId = authedOrgQuery({
   },
   handler: async (ctx, args) => {
     const org = await validateOrg(ctx.db, args.orgId);
+
     const orgUsers = await ctx.db
       .query("userOrganizations")
       .withIndex("by_orgId_userId", (q) =>

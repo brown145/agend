@@ -1,25 +1,25 @@
 "use client";
 
 import { useMutation } from "convex/react";
-import { useParams } from "next/navigation";
 import { useState } from "react";
-import { api } from "../../convex/_generated/api";
-import { Id } from "../../convex/_generated/dataModel";
+import { api } from "../../../../../convex/_generated/api";
+import { Id } from "../../../../../convex/_generated/dataModel";
 
 export const AddMeeting = ({
   onSubmit,
+  orgId,
 }: {
   onSubmit: (id: string) => void;
+  orgId: string;
 }) => {
-  const { organizationId } = useParams();
   const [title, setTitle] = useState("");
-  const createMeeting = useMutation(api.meetings.create);
+  const createMeeting = useMutation(api.meetings.mutations.create);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const id = await createMeeting({
       title,
-      orgId: organizationId as Id<"organizations">,
+      orgId: orgId as Id<"organizations">,
     });
     onSubmit(id);
     setTitle("");

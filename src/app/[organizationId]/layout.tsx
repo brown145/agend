@@ -1,14 +1,14 @@
 "use client";
 
-import { NavigationBar } from "@/components/NavigationBar";
 import UserInitalizationProvider, {
   UserInitalized,
   UserNotInitalized,
-} from "@/convex/UserInitalization";
+} from "@/app/_components/UserInitalization";
 import { Authenticated, Unauthenticated } from "convex/react";
 import React from "react";
+import NavigationBar from "./_components/NavigationBar";
 
-export default function MeetingsLayout({
+export default function OrganizationLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;

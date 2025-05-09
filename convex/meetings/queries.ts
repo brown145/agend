@@ -1,9 +1,10 @@
 import { isNonNull } from "@/lib/isNotNull";
 import { getManyFrom } from "convex-helpers/server/relationships";
 import { v } from "convex/values";
-import { Id } from "../_generated/dataModel";
+import { api } from "../_generated/api";
+import { Doc, Id } from "../_generated/dataModel";
 import { DatabaseReader } from "../_generated/server";
-import { authedOrgQuery } from "../lib/authedOrgQuery";
+import { authedOrgQuery, AuthedOrgQueryCtx } from "../lib/authedOrgQuery";
 import { convexInvariant } from "../lib/convexInvariant";
 
 // ------------------------------------------------------------
@@ -34,6 +35,17 @@ export async function getUserMeetingAttendance(
 }
 // ------------------------------------------------------------
 
+export const list = authedOrgQuery({
+  args: {},
+  handler: async (ctx): Promise<Doc<"meetings">[]> => {
+    const authedCtx = ctx as AuthedOrgQueryCtx;
+    return ctx.runQuery(api.meetings.queries.byUserId, {
+      userId: authedCtx.user._id,
+      orgId: authedCtx.organization._id,
+    });
+  },
+});
+
 export const byUserId = authedOrgQuery({
   args: {
     userId: v.id("users"),
@@ -61,6 +73,36 @@ export const byMeetingId = authedOrgQuery({
     meetingId: v.id("meetings"),
   },
   handler: async (ctx, args) => {
-    return await validateMeeting(ctx.db, args.meetingId, ctx.organization._id);
+    const meeting = await validateMeeting(
+      ctx.db,
+      args.meetingId,
+      ctx.organization._id,
+    );
+
+    const owner = await ctx.db.get(meeting.owner);
+
+    const discussions = await getManyFrom(
+      ctx.db,
+      "discussions",
+      "by_meetingId",
+      args.meetingId,
+    );
+
+    // TODO: refactor this ???
+    const previousDiscussion = discussions
+      .filter(
+        (d): d is typeof d & { date: string } =>
+          d.date !== "next" && d.date !== null,
+      )
+      .sort((a, b) => {
+        return b.date.localeCompare(a.date);
+      })[0];
+
+    return {
+      ...meeting,
+      isYours: meeting.owner === ctx.user._id,
+      owner: owner,
+      previousDiscussion: previousDiscussion,
+    };
   },
 });

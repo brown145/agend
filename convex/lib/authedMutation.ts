@@ -11,7 +11,7 @@ export type AuthedMutationCtx = MutationCtx & {
 
 export const authedMutation = customMutation(mutation, {
   args: {},
-  input: async (ctx) => {
+  input: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity();
     convexInvariant(identity !== null, "Not authenticated!");
 
@@ -25,6 +25,6 @@ export const authedMutation = customMutation(mutation, {
 
     convexInvariant(user, "User not found");
 
-    return { ctx: { ...ctx, user }, args: {} };
+    return { ctx: { ...ctx, user }, args };
   },
 });

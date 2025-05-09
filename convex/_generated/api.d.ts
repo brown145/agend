@@ -14,8 +14,8 @@ import type {
   FunctionReference,
 } from "convex/server";
 import type * as devOnly_mutations from "../devOnly/mutations.js";
-import type * as discusssions_mutations from "../discusssions/mutations.js";
-import type * as discusssions_queries from "../discusssions/queries.js";
+import type * as discussions_mutations from "../discussions/mutations.js";
+import type * as discussions_queries from "../discussions/queries.js";
 import type * as lib_authedMutation from "../lib/authedMutation.js";
 import type * as lib_authedOrgMutation from "../lib/authedOrgMutation.js";
 import type * as lib_authedOrgQuery from "../lib/authedOrgQuery.js";
@@ -41,8 +41,8 @@ import type * as users_queries from "../users/queries.js";
  */
 declare const fullApi: ApiFromModules<{
   "devOnly/mutations": typeof devOnly_mutations;
-  "discusssions/mutations": typeof discusssions_mutations;
-  "discusssions/queries": typeof discusssions_queries;
+  "discussions/mutations": typeof discussions_mutations;
+  "discussions/queries": typeof discussions_queries;
   "lib/authedMutation": typeof lib_authedMutation;
   "lib/authedOrgMutation": typeof lib_authedOrgMutation;
   "lib/authedOrgQuery": typeof lib_authedOrgQuery;

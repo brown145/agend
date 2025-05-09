@@ -1,44 +1,45 @@
 "use client";
 
-import { formatDiscussionDate } from "@/lib/utils/date";
-import { useMutation, useQuery } from "convex/react";
-import Link from "next/link";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { api } from "../../../../convex/_generated/api";
-import { Doc } from "../../../../convex/_generated/dataModel";
 import { useParamIds } from "../_hooks/useParamIds";
+import { MeetingHeader } from "./_components/MeetingHeader";
 
 export default function MeetingsPage() {
   const { meetingId, organizationId } = useParamIds();
 
-  const meeting = useQuery(
-    api.meetings.details,
-    meetingId && organizationId
-      ? {
-          meetingId,
-          orgId: organizationId,
-        }
-      : "skip",
-  );
+  // const meeting = useQuery(
+  //   api.meetings.queries.byMeetingId,
+  //   meetingId && organizationId
+  //     ? {
+  //         meetingId,
+  //         orgId: organizationId,
+  //       }
+  //     : "skip",
+  // );
 
-  const discussions = useQuery(
-    api.discussions.listByMeeting,
-    meetingId && organizationId
-      ? {
-          meetingId,
-          orgId: organizationId,
-        }
-      : "skip",
-  );
+  // const discussions = useQuery(
+  //   api.discussions.listByMeeting,
+  //   meetingId && organizationId
+  //     ? {
+  //         meetingId,
+  //         orgId: organizationId,
+  //       }
+  //     : "skip",
+  // );
 
-  if (!meeting) {
-    return <div>Meeting not found</div>;
+  // if (!meeting) {
+  //   return <div>Meeting not found</div>;
+  // }
+
+  // TODO: handle loading state
+  if (!meetingId || !organizationId) {
+    return null;
   }
 
   return (
     <div className="flex flex-col gap-2">
-      <MeetingHeader meeting={meeting} />
-      <div className="flex flex-col">
+      <MeetingHeader meetingId={meetingId} organizationId={organizationId} />
+      {/* TODO: add back in */}
+      {/* <div className="flex flex-col">
         {discussions?.map((discussion) => (
           <div key={discussion._id} className="hover:underline">
             <Link href={`/${organizationId}/${meetingId}/${discussion._id}`}>
@@ -46,89 +47,7 @@ export default function MeetingsPage() {
             </Link>
           </div>
         ))}
-      </div>
+      </div> */}
     </div>
   );
 }
-
-const MeetingHeader = ({ meeting }: { meeting: Doc<"meetings"> }) => {
-  const updateMeeting = useMutation(api.meetings.update);
-  const searchParams = useSearchParams();
-  const router = useRouter();
-  const pathname = usePathname();
-  const isEditing = searchParams.get("edit") === "true";
-
-  const currentUser = useQuery(api.users.currentUser);
-
-  const owner = useQuery(api.users.details, {
-    userId: meeting.owner,
-    orgId: meeting.orgId,
-  });
-
-  const isOwnMeeting = currentUser?._id === meeting.owner;
-
-  const setEditMode = (edit: boolean) => {
-    const params = new URLSearchParams(searchParams.toString());
-    if (edit) {
-      params.set("edit", "true");
-    } else {
-      params.delete("edit");
-    }
-    router.replace(`${pathname}?${params.toString()}`);
-  };
-
-  const handleSave = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const formData = new FormData(e.currentTarget);
-    const newTitle = formData.get("title") as string;
-    await updateMeeting({
-      id: meeting._id,
-      orgId: meeting.orgId,
-      title: newTitle,
-    });
-    setEditMode(false);
-  };
-
-  if (isEditing) {
-    return (
-      <form onSubmit={handleSave} className="flex flex-col gap-4">
-        <div className="flex gap-2 items-center">
-          <input
-            type="text"
-            name="title"
-            defaultValue={meeting.title}
-            className="border-2 border-gray-300 rounded-md p-1"
-            autoFocus
-          />
-          <button
-            type="submit"
-            className="bg-emerald-800 text-white rounded-md px-2 py-1 text-sm"
-          >
-            Save
-          </button>
-          <button
-            type="button"
-            onClick={() => setEditMode(false)}
-            className="bg-gray-500 text-white rounded-md px-2 py-1 text-sm"
-          >
-            Cancel
-          </button>
-        </div>
-        <div className="flex flex-col gap-2">
-          <div className="font-semibold">Attendees</div>
-        </div>
-      </form>
-    );
-  }
-
-  return (
-    <div className="flex flex-col">
-      <h1 className="text-6xl font-medium" onClick={() => setEditMode(true)}>
-        {meeting.title}
-      </h1>
-      <div className="text-muted-foreground">
-        {isOwnMeeting ? "Yours" : owner?.name}
-      </div>
-    </div>
-  );
-};

@@ -2,7 +2,7 @@ import { getManyFrom } from "convex-helpers/server/relationships";
 import { v } from "convex/values";
 import { Id } from "../_generated/dataModel";
 import { DatabaseReader } from "../_generated/server";
-import { validateDiscussion } from "../discusssions/queries";
+import { validateDiscussion } from "../discussions/queries";
 import { authedOrgQuery } from "../lib/authedOrgQuery";
 import { convexInvariant } from "../lib/convexInvariant";
 

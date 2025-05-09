@@ -1,5 +1,5 @@
+import { Id } from "@convex/_generated/dataModel";
 import { useParams } from "next/navigation";
-import { Id } from "../../../../convex/_generated/dataModel";
 
 /**
  * Returns the meetingId, organizationId, and discussionId from the URL params.

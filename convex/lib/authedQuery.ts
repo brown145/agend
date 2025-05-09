@@ -7,9 +7,9 @@ export type AuthedCtx = QueryCtx & { user: Doc<"users"> };
 
 export const authedQuery = customQuery(query, {
   args: {},
-  input: async (ctx) => {
+  input: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity();
-    convexInvariant(identity !== null, "Not authenticated!");
+    convexInvariant(identity !== null, "Not authenticated");
 
     // Get the user document
     const user = await ctx.db
@@ -21,6 +21,6 @@ export const authedQuery = customQuery(query, {
 
     convexInvariant(user, "User not found");
 
-    return { ctx: { ...ctx, user }, args: {} };
+    return { ctx: { ...ctx, user }, args };
   },
 });

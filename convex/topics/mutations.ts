@@ -1,7 +1,7 @@
 import { v } from "convex/values";
 import { Id } from "../_generated/dataModel";
 import { DatabaseWriter } from "../_generated/server";
-import { validateDiscussion } from "../discusssions/queries";
+import { validateDiscussion } from "../discussions/queries";
 import { authedOrgMutation } from "../lib/authedOrgMutation";
 import { validateTopic } from "./queries";
 

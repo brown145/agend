@@ -1,3 +1,4 @@
+import { api } from "@convex/_generated/api";
 import { useMutation } from "convex/react";
 import {
   createContext,
@@ -6,7 +7,6 @@ import {
   useEffect,
   useState,
 } from "react";
-import { api } from "../../convex/_generated/api";
 
 type UserInitalizationType = {
   isInitialized: boolean;

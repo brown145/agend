@@ -1,4 +1,4 @@
-import { AttendeesList } from "@/components/AttendeeList";
+import { AttendeesList } from "@/app/[organizationId]/[meetingId]/_components/AttendeeList";
 import React from "react";
 
 export default function MeetingsLayout({

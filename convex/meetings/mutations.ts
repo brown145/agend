@@ -2,7 +2,7 @@ import { getManyFrom } from "convex-helpers/server/relationships";
 import { v } from "convex/values";
 import { Id } from "../_generated/dataModel";
 import { DatabaseWriter } from "../_generated/server";
-import { createDiscussion } from "../discusssions/mutations";
+import { createDiscussion } from "../discussions/mutations";
 import { authedOrgMutation } from "../lib/authedOrgMutation";
 import { getUserMeetingAttendance, validateMeeting } from "./queries";
 
@@ -122,6 +122,7 @@ export const start = authedOrgMutation({
       meeting._id,
     );
 
+    // TODO: refactor this ???
     const previousDiscussion = discussions
       .filter(
         (d): d is typeof d & { date: string } =>

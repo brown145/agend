@@ -24,6 +24,6 @@ export const authedOrgMutation = customMutation(authedMutation, {
     )) as Doc<"organizations">;
     convexInvariant(organization, "Organization not found");
 
-    return { ctx: { ...authedCtx, organization }, args: {} };
+    return { ctx: { ...authedCtx, organization }, args };
   },
 });

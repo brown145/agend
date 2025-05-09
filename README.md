@@ -32,10 +32,10 @@ bunx convex dev
 1. ✔ add/display topic owner
 
 # v0.6 server function cleanup
-1. read: https://stack.convex.dev/relationship-structures-let-s-talk-about-schemas
-1. read: https://stack.convex.dev/functional-relationships-helpers
-1. rewrite with above helpers
-1. ??? move convext types out of FE code ???
+1. ✔ read: https://stack.convex.dev/relationship-structures-let-s-talk-about-schemas
+1. ✔ read: https://stack.convex.dev/functional-relationships-helpers
+1. ✔ rewrite with above helpers
+1. move convext types out of FE code
 1. probabbly want to replace common cases with multiple queries with single query 
    -> exception would be for frequently updated tables so combine meeting.owner with user; but not meeting with topics
    ```
@@ -46,7 +46,7 @@ bunx convex dev
 
      const [meeting, meetingOwner] = useQuery(api.users.meetingWithOwner, {...})
    ```
-1. use folder structure conventsions:
+1. ✔ use folder structure conventsions:
   ```
   convex/
     users/
@@ -59,12 +59,12 @@ bunx convex dev
         schema.ts (maybe)
     schema.ts
   ```
-1. remove unused functions
-1. remove manyToMany.ts functions... move to one of the objects or helper functions helper.object.ts
-1. review for consistency in function names and arguments (get vs details) / (orgId vs organizationId)
+1. ✔ remove unused functions
+1. ✔ remove manyToMany.ts functions... move to one of the objects or helper functions helper.object.ts
+1. ✔ review for consistency in function names and arguments (get vs details) / (orgId vs organizationId)
 1. review where in schema we want orgIds (meeting? discussions? tasks?...)
-1. cleanup argument names (id vs meetingId)
-1. do -> throw errors; FE will need to handle these 
+1. ✔ cleanup argument names (id vs meetingId)
+1. ✔ do -> throw errors; FE will need to handle these 
 
 # v0.7 cleanup components
 1. avoid useParams or useParamIds in components; pass in from parent page

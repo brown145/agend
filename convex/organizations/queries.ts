@@ -1,7 +1,7 @@
 import { isNonNull } from "@/lib/isNotNull";
 import { Id } from "../_generated/dataModel";
 import { DatabaseReader } from "../_generated/server";
-import { authedOrgQuery } from "../lib/authedOrgQuery";
+import { authedQuery } from "../lib/authedQuery";
 import { convexInvariant } from "../lib/convexInvariant";
 
 // ------------------------------------------------------------
@@ -17,7 +17,7 @@ export async function validateOrg(
 }
 // ------------------------------------------------------------
 
-export const list = authedOrgQuery({
+export const list = authedQuery({
   args: {},
   handler: async (ctx) => {
     const userOrgs = await ctx.db

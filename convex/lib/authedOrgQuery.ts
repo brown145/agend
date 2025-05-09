@@ -4,6 +4,10 @@ import { Doc } from "../_generated/dataModel";
 import { AuthedCtx, authedQuery } from "./authedQuery";
 import { convexInvariant } from "./convexInvariant";
 
+export type AuthedOrgQueryCtx = AuthedCtx & {
+  organization: Doc<"organizations">;
+};
+
 export const authedOrgQuery = customQuery(authedQuery, {
   args: { orgId: v.id("organizations") },
   input: async (ctx, args) => {
@@ -24,6 +28,6 @@ export const authedOrgQuery = customQuery(authedQuery, {
     )) as Doc<"organizations">;
     convexInvariant(organization, "Organization not found");
 
-    return { ctx: { ...authedCtx, organization }, args: {} };
+    return { ctx: { ...authedCtx, organization }, args };
   },
 });

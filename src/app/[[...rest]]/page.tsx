@@ -4,7 +4,7 @@ import UserInitalizationProvider, {
   UserInitalized,
   UserNotInitalized,
   useUserInitalization,
-} from "@/convex/UserInitalization";
+} from "@/app/_components/UserInitalization";
 import { SignIn } from "@clerk/nextjs";
 import { Authenticated, Unauthenticated } from "convex/react";
 import { useRouter } from "next/navigation";

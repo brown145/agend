@@ -1,11 +1,10 @@
 "use client";
 
-import { cn } from "@/lib/utils";
+import { isNonNull } from "@/lib/isNotNull";
+import { api } from "@convex/_generated/api";
+import { Doc, Id } from "@convex/_generated/dataModel";
 import { useMutation, useQuery } from "convex/react";
 import { useState } from "react";
-import { api } from "../../convex/_generated/api";
-import { Id } from "../../convex/_generated/dataModel";
-import { TopicWithMetadata } from "../../convex/topics";
 import { TaskList } from "./TaskList";
 
 export const TopicList = ({
@@ -17,10 +16,11 @@ export const TopicList = ({
   editable?: boolean;
   orgId: Id<"organizations">;
 }) => {
-  const topicList = useQuery(api.topics.listByDiscussion, {
+  const topicList = useQuery(api.topics.queries.byDiscussionId, {
     discussionId,
     orgId,
   });
+
   return (
     <div className="flex flex-col gap-2">
       {topicList?.map((topic) => (
@@ -38,15 +38,16 @@ export const TopicList = ({
   );
 };
 
+// TODO: use topicID to query for topic details
 const Topic = ({
   topic,
   orgId,
 }: {
-  topic: TopicWithMetadata;
+  topic: Doc<"topics">;
   orgId: Id<"organizations">;
 }) => {
-  const updateTopic = useMutation(api.topics.update);
-  const owner = useQuery(api.users.details, {
+  const updateTopic = useMutation(api.topics.mutations.complete);
+  const owner = useQuery(api.users.queries.byUserId, {
     userId: topic.owner,
     orgId,
   });
@@ -56,16 +57,21 @@ const Topic = ({
       <input
         checked={topic.completed}
         onChange={() =>
-          updateTopic({ id: topic._id, completed: !topic.completed, orgId })
+          updateTopic({
+            topicId: topic._id,
+            isCompleted: !topic.completed,
+            orgId,
+          })
         }
         type="checkbox"
       />
       <div
-        className={cn(
-          topic.completed &&
-            (topic.metadata?.tasksCompleted ?? false) &&
-            "line-through",
-        )}
+      // TODO:
+      // className={cn(
+      //   topic.completed &&
+      //     (topic.metadata?.tasksCompleted ?? false) &&
+      //     "line-through",
+      // )}
       >
         {topic.text}
       </div>
@@ -82,11 +88,13 @@ const AddTopic = ({
   orgId: Id<"organizations">;
 }) => {
   const [text, setText] = useState("");
-  const createTopic = useMutation(api.topics.create);
+  const createTopic = useMutation(api.topics.mutations.create);
 
-  const orgUsers = useQuery(api.users.listUsersInOrganization, {
+  const orgUsers = useQuery(api.users.queries.byOrgId, {
     orgId,
   });
+  // TODO: why do I get nulls back?
+  const users = orgUsers?.filter(isNonNull);
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -106,7 +114,7 @@ const AddTopic = ({
         value={text}
       />
       <select className="border-2 border-gray-300 rounded-md p-1">
-        {orgUsers?.map((user) => (
+        {users?.map((user) => (
           <option key={user._id} value={user._id}>
             {user.name}
           </option>
