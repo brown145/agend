@@ -1,11 +1,14 @@
 "use client";
 
+import UserInitalizationProvider, {
+  UserInitalized,
+  UserNotInitalized,
+  useUserInitalization,
+} from "@/convex/UserInitalization";
 import { SignIn } from "@clerk/nextjs";
-import { Authenticated, Unauthenticated, useQuery } from "convex/react";
+import { Authenticated, Unauthenticated } from "convex/react";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
-import { api } from "../../../convex/_generated/api";
-import { UserProvider } from "../UserProvider";
 
 export default function Home() {
   return (
@@ -14,9 +17,14 @@ export default function Home() {
         <SignIn />
       </Unauthenticated>
       <Authenticated>
-        <UserProvider>
-          <RedirectToOrganization />
-        </UserProvider>
+        <UserInitalizationProvider>
+          <UserInitalized>
+            <RedirectToOrganization />
+          </UserInitalized>
+          <UserNotInitalized>
+            <div>Loading...</div>
+          </UserNotInitalized>
+        </UserInitalizationProvider>
       </Authenticated>
     </div>
   );
@@ -24,11 +32,13 @@ export default function Home() {
 
 function RedirectToOrganization() {
   const router = useRouter();
-  const firstOrganization = useQuery(api.organizations.getUsersFirst);
+  const { personalOrgId } = useUserInitalization();
 
   useEffect(() => {
-    router.push(`/${firstOrganization?._id}`);
-  }, [router, firstOrganization]);
+    if (personalOrgId) {
+      router.push(`/${personalOrgId}`);
+    }
+  }, [router, personalOrgId]);
 
   return <div>redirecting...</div>;
 }

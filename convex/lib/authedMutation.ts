@@ -1,0 +1,30 @@
+import { customMutation } from "convex-helpers/server/customFunctions";
+import { UserIdentity } from "convex/server";
+import { Doc } from "../_generated/dataModel";
+import { mutation, MutationCtx } from "../_generated/server";
+import { convexInvariant } from "./convexInvariant";
+
+export type AuthedMutationCtx = MutationCtx & {
+  user: Doc<"users">;
+  identity: UserIdentity;
+};
+
+export const authedMutation = customMutation(mutation, {
+  args: {},
+  input: async (ctx) => {
+    const identity = await ctx.auth.getUserIdentity();
+    convexInvariant(identity !== null, "Not authenticated!");
+
+    // Get the user document
+    const user = await ctx.db
+      .query("users")
+      .withIndex("by_token", (q) =>
+        q.eq("tokenIdentifier", identity.tokenIdentifier),
+      )
+      .unique();
+
+    convexInvariant(user, "User not found");
+
+    return { ctx: { ...ctx, user }, args: {} };
+  },
+});

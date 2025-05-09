@@ -58,9 +58,7 @@ const MeetingHeader = ({ meeting }: { meeting: Doc<"meetings"> }) => {
   const pathname = usePathname();
   const isEditing = searchParams.get("edit") === "true";
 
-  const currentUser = useQuery(api.users.currentUser, {
-    orgId: meeting.orgId,
-  });
+  const currentUser = useQuery(api.users.currentUser);
 
   const owner = useQuery(api.users.details, {
     userId: meeting.owner,

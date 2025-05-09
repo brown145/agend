@@ -36,7 +36,8 @@ bunx convex dev
 1. read: https://stack.convex.dev/functional-relationships-helpers
 1. rewrite with above helpers
 1. ??? move convext types out of FE code ???
-1. probabbly want to replace common cases with multiple queries with single query
+1. probabbly want to replace common cases with multiple queries with single query 
+   -> exception would be for frequently updated tables so combine meeting.owner with user; but not meeting with topics
    ```
      const meeting = useQuery(api.users.meeting, {...})
      const meetingOwner = useQuery(api.users.details, {id: meeting.ownerId})
@@ -63,7 +64,7 @@ bunx convex dev
 1. review for consistency in function names and arguments (get vs details) / (orgId vs organizationId)
 1. review where in schema we want orgIds (meeting? discussions? tasks?...)
 1. cleanup argument names (id vs meetingId)
-1. cleanup throw vs null response
+1. do -> throw errors; FE will need to handle these 
 
 # v0.7 cleanup components
 1. avoid useParams or useParamIds in components; pass in from parent page

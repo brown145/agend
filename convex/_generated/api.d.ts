@@ -13,15 +13,23 @@ import type {
   FilterApi,
   FunctionReference,
 } from "convex/server";
-import type * as dev from "../dev.js";
-import type * as discussions from "../discussions.js";
-import type * as meetingAttendance from "../meetingAttendance.js";
-import type * as meetings from "../meetings.js";
-import type * as organizations from "../organizations.js";
-import type * as tasks from "../tasks.js";
-import type * as topics from "../topics.js";
-import type * as users from "../users.js";
-import type * as utils from "../utils.js";
+import type * as devOnly_mutations from "../devOnly/mutations.js";
+import type * as discusssions_mutations from "../discusssions/mutations.js";
+import type * as discusssions_queries from "../discusssions/queries.js";
+import type * as lib_authedMutation from "../lib/authedMutation.js";
+import type * as lib_authedOrgMutation from "../lib/authedOrgMutation.js";
+import type * as lib_authedOrgQuery from "../lib/authedOrgQuery.js";
+import type * as lib_authedQuery from "../lib/authedQuery.js";
+import type * as lib_convexInvariant from "../lib/convexInvariant.js";
+import type * as meetings_mutations from "../meetings/mutations.js";
+import type * as meetings_queries from "../meetings/queries.js";
+import type * as organizations_queries from "../organizations/queries.js";
+import type * as tasks_mutations from "../tasks/mutations.js";
+import type * as tasks_queries from "../tasks/queries.js";
+import type * as topics_mutations from "../topics/mutations.js";
+import type * as topics_queries from "../topics/queries.js";
+import type * as users_mutations from "../users/mutations.js";
+import type * as users_queries from "../users/queries.js";
 
 /**
  * A utility for referencing Convex functions in your app's API.
@@ -32,15 +40,23 @@ import type * as utils from "../utils.js";
  * ```
  */
 declare const fullApi: ApiFromModules<{
-  dev: typeof dev;
-  discussions: typeof discussions;
-  meetingAttendance: typeof meetingAttendance;
-  meetings: typeof meetings;
-  organizations: typeof organizations;
-  tasks: typeof tasks;
-  topics: typeof topics;
-  users: typeof users;
-  utils: typeof utils;
+  "devOnly/mutations": typeof devOnly_mutations;
+  "discusssions/mutations": typeof discusssions_mutations;
+  "discusssions/queries": typeof discusssions_queries;
+  "lib/authedMutation": typeof lib_authedMutation;
+  "lib/authedOrgMutation": typeof lib_authedOrgMutation;
+  "lib/authedOrgQuery": typeof lib_authedOrgQuery;
+  "lib/authedQuery": typeof lib_authedQuery;
+  "lib/convexInvariant": typeof lib_convexInvariant;
+  "meetings/mutations": typeof meetings_mutations;
+  "meetings/queries": typeof meetings_queries;
+  "organizations/queries": typeof organizations_queries;
+  "tasks/mutations": typeof tasks_mutations;
+  "tasks/queries": typeof tasks_queries;
+  "topics/mutations": typeof topics_mutations;
+  "topics/queries": typeof topics_queries;
+  "users/mutations": typeof users_mutations;
+  "users/queries": typeof users_queries;
 }>;
 export declare const api: FilterApi<
   typeof fullApi,

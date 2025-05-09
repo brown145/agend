@@ -1,9 +1,12 @@
 "use client";
 
 import { NavigationBar } from "@/components/NavigationBar";
+import UserInitalizationProvider, {
+  UserInitalized,
+  UserNotInitalized,
+} from "@/convex/UserInitalization";
 import { Authenticated, Unauthenticated } from "convex/react";
 import React from "react";
-import { UserProvider } from "../UserProvider";
 
 export default function MeetingsLayout({
   children,
@@ -13,10 +16,15 @@ export default function MeetingsLayout({
   return (
     <>
       <Authenticated>
-        <UserProvider>
-          <NavigationBar />
-          <div className="h-full px-4">{children}</div>
-        </UserProvider>
+        <UserInitalizationProvider>
+          <UserInitalized>
+            <NavigationBar />
+            <div className="h-full px-4">{children}</div>
+          </UserInitalized>
+          <UserNotInitalized>
+            <div>Loading...</div>
+          </UserNotInitalized>
+        </UserInitalizationProvider>
       </Authenticated>
       <Unauthenticated>Auth required</Unauthenticated>
     </>
