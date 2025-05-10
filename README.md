@@ -35,8 +35,8 @@ bunx convex dev
 1. ✔ read: https://stack.convex.dev/relationship-structures-let-s-talk-about-schemas
 1. ✔ read: https://stack.convex.dev/functional-relationships-helpers
 1. ✔ rewrite with above helpers
-1. move convext types out of FE code
-1. probabbly want to replace common cases with multiple queries with single query 
+1. ~~move convext types out of FE code~~ too much overhead to define another type system; will use for now
+1. ✔ probabbly want to replace common cases with multiple queries with single query 
    -> exception would be for frequently updated tables so combine meeting.owner with user; but not meeting with topics
    ```
      const meeting = useQuery(api.users.meeting, {...})
@@ -62,13 +62,13 @@ bunx convex dev
 1. ✔ remove unused functions
 1. ✔ remove manyToMany.ts functions... move to one of the objects or helper functions helper.object.ts
 1. ✔ review for consistency in function names and arguments (get vs details) / (orgId vs organizationId)
-1. review where in schema we want orgIds (meeting? discussions? tasks?...)
+1. ✔ review where in schema we want orgIds (meeting? discussions? tasks?...)
 1. ✔ cleanup argument names (id vs meetingId)
 1. ✔ do -> throw errors; FE will need to handle these 
 
 # v0.7 cleanup components
-1. avoid useParams or useParamIds in components; pass in from parent page
-1. avoid data fetching and mutions in comopnents; pass in handlers from parent page
+1. ~~avoid useParams or useParamIds in components; pass in from parent page~~ no, unless everything is client
+1. ~~avoid data fetching and mutions in comopnents; pass in handlers from parent page~~ no, maybe in future. nothing in /ui should do this
 
 # v0.8 UI Pass Basic
 1. fix the worst UI stuff

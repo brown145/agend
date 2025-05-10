@@ -1,3 +1,4 @@
+import { convexInvariant } from "@convex/lib/convexInvariant";
 import { getManyFrom } from "convex-helpers/server/relationships";
 import { v } from "convex/values";
 import { Id } from "../_generated/dataModel";
@@ -159,5 +160,35 @@ export const start = authedOrgMutation({
     }
 
     return newDiscussionId;
+  },
+});
+
+export const update = authedOrgMutation({
+  args: {
+    meetingId: v.id("meetings"),
+    title: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const meeting = await validateMeeting(
+      ctx.db,
+      args.meetingId,
+      ctx.organization._id,
+    );
+
+    const userMeeingOrg = await ctx.db
+      .query("userOrganizations")
+      .withIndex("by_orgId_userId", (q) =>
+        q.eq("orgId", meeting.orgId).eq("userId", ctx.user._id),
+      )
+      .first();
+
+    convexInvariant(
+      userMeeingOrg,
+      "User is not a member of the meeting's organization",
+    );
+
+    await ctx.db.patch(meeting._id, {
+      title: args.title,
+    });
   },
 });

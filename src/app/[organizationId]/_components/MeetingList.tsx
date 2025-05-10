@@ -1,3 +1,5 @@
+"use client";
+
 import { formatDiscussionDate } from "@/lib/utils/date";
 import { api } from "@convex/_generated/api";
 import { Id } from "@convex/_generated/dataModel";

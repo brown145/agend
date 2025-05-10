@@ -2,21 +2,21 @@
 
 import { api } from "@convex/_generated/api";
 import { Id } from "@convex/_generated/dataModel";
-import { useQuery } from "convex/react";
+import { useMutation, useQuery } from "convex/react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 export function MeetingHeader({
+  orgId,
   meetingId,
-  organizationId,
 }: {
-  meetingId: Id<"meetings">;
-  organizationId: Id<"organizations">;
+  orgId: string;
+  meetingId: string;
 }) {
   const meetingDetails = useQuery(api.meetings.queries.byMeetingId, {
-    meetingId,
-    orgId: organizationId,
+    meetingId: meetingId as Id<"meetings">,
+    orgId: orgId as Id<"organizations">,
   });
-  //   const updateMeeting = useMutation(api.meetings.mutations.);
+  const updateMeeting = useMutation(api.meetings.mutations.update);
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
@@ -36,13 +36,11 @@ export function MeetingHeader({
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
     const newTitle = formData.get("title") as string;
-    // TODO: update meeting
-    alert(`TODO ${newTitle}`);
-    // await updateMeeting({
-    //   id: meeting._id,
-    //   orgId: meeting.orgId,
-    //   title: newTitle,
-    // });
+    await updateMeeting({
+      meetingId: meetingId as Id<"meetings">,
+      orgId: orgId as Id<"organizations">,
+      title: newTitle,
+    });
     setEditMode(false);
   };
 

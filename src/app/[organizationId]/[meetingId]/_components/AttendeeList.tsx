@@ -1,6 +1,5 @@
 "use client";
 
-import { useParamIds } from "@/app/[organizationId]/_hooks/useParamIds";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -12,22 +11,18 @@ import { isNonNull } from "@/lib/isNotNull";
 import { api } from "@convex/_generated/api";
 import { Doc, Id } from "@convex/_generated/dataModel";
 import { useMutation, useQuery } from "convex/react";
+import { useParams } from "next/navigation";
 import { useState } from "react";
 
-interface User {
-  _id: Id<"users">;
-  name: string;
-}
-
 export const AttendeesList = () => {
-  const { meetingId, organizationId } = useParamIds();
+  const { meetingId, organizationId } = useParams();
 
   const attendees = useQuery(
     api.users.queries.byMeetingId,
     meetingId && organizationId
       ? {
-          meetingId,
-          orgId: organizationId,
+          meetingId: meetingId as Id<"meetings">,
+          orgId: organizationId as Id<"organizations">,
         }
       : "skip",
   )?.filter(isNonNull);
@@ -36,29 +31,28 @@ export const AttendeesList = () => {
     api.users.queries.byOrgId,
     organizationId
       ? {
-          orgId: organizationId,
+          orgId: organizationId as Id<"organizations">,
         }
       : "skip",
   )?.filter(isNonNull);
-
-  // TODO: handle loading state
-  if (!meetingId || !organizationId) return null;
 
   return (
     <main className="space-y-4">
       <div className="space-y-2">
         {attendees?.map((attendee) => (
           <Attendee
-            key={attendee._id}
             attendee={attendee}
-            meetingId={meetingId}
             isLast={attendees.length === 1}
+            key={attendee._id}
+            meetingId={meetingId as string}
+            orgId={organizationId as string}
           />
         ))}
         {attendees?.length === 0 && <div>No attendees</div>}
       </div>
       <AddAttendee
-        meetingId={meetingId}
+        meetingId={meetingId as string}
+        orgId={organizationId as string}
         users={allOrgUsers?.filter(
           (user) => !attendees?.some((a) => a._id === user._id),
         )}
@@ -69,14 +63,15 @@ export const AttendeesList = () => {
 
 const Attendee = ({
   attendee,
-  meetingId,
   isLast,
+  meetingId,
+  orgId,
 }: {
   attendee: Doc<"users">;
-  meetingId: Id<"meetings">;
   isLast: boolean;
+  meetingId: string;
+  orgId: string;
 }) => {
-  const { organizationId } = useParamIds();
   const removeAttendee = useMutation(api.meetings.mutations.removeAttendee);
 
   if (!attendee) return null;
@@ -90,11 +85,11 @@ const Attendee = ({
           variant="ghost"
           size="sm"
           onClick={() => {
-            if (organizationId) {
+            if (orgId) {
               removeAttendee({
-                meetingId,
+                meetingId: meetingId as Id<"meetings">,
                 userId: attendee._id,
-                orgId: organizationId,
+                orgId: orgId as Id<"organizations">,
               });
             }
           }}
@@ -108,12 +103,13 @@ const Attendee = ({
 
 const AddAttendee = ({
   meetingId,
+  orgId,
   users,
 }: {
-  meetingId: Id<"meetings">;
-  users?: User[];
+  meetingId: string;
+  orgId: string;
+  users?: Doc<"users">[];
 }) => {
-  const { organizationId } = useParamIds();
   const [selectedUserId, setSelectedUserId] = useState<Id<"users"> | null>(
     null,
   );
@@ -121,8 +117,12 @@ const AddAttendee = ({
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!selectedUserId || !organizationId) return;
-    addAttendee({ meetingId, userId: selectedUserId, orgId: organizationId });
+    if (!selectedUserId || !orgId) return;
+    addAttendee({
+      meetingId: meetingId as Id<"meetings">,
+      userId: selectedUserId,
+      orgId: orgId as Id<"organizations">,
+    });
     setSelectedUserId(null);
   };
 

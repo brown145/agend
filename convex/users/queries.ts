@@ -1,3 +1,4 @@
+import { isNonNull } from "@/lib/isNotNull";
 import { getManyFrom } from "convex-helpers/server/relationships";
 import { v } from "convex/values";
 import { Id } from "../_generated/dataModel";
@@ -52,14 +53,14 @@ export const byOrgId = authedOrgQuery({
 
     const orgUsers = await ctx.db
       .query("userOrganizations")
-      .withIndex("by_orgId_userId", (q) =>
-        q.eq("orgId", org._id).eq("userId", ctx.user._id),
-      )
+      .withIndex("by_orgId", (q) => q.eq("orgId", org._id))
       .collect();
 
-    return Promise.all(
+    const users = await Promise.all(
       orgUsers.map(async (orgUser) => ctx.db.get(orgUser.userId)),
     );
+
+    return users.filter(isNonNull);
   },
 });
 

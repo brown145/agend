@@ -1,6 +1,5 @@
 "use client";
 
-import { isNonNull } from "@/lib/isNotNull";
 import { api } from "@convex/_generated/api";
 import { Doc, Id } from "@convex/_generated/dataModel";
 import { useMutation, useQuery } from "convex/react";
@@ -11,13 +10,13 @@ export const TaskList = ({
   editable,
   topicId,
 }: {
-  orgId: Id<"organizations">;
+  orgId: string;
   editable?: boolean;
-  topicId: Id<"topics">;
+  topicId: string;
 }) => {
   const taskList = useQuery(api.tasks.queries.byTopicId, {
-    topicId,
-    orgId,
+    topicId: topicId as Id<"topics">,
+    orgId: orgId as Id<"organizations">,
   });
   return (
     <main>
@@ -35,17 +34,11 @@ export const TaskList = ({
   );
 };
 
-const Task = ({
-  task,
-  orgId,
-}: {
-  task: Doc<"tasks">;
-  orgId: Id<"organizations">;
-}) => {
+const Task = ({ task, orgId }: { task: Doc<"tasks">; orgId: string }) => {
   const updateTask = useMutation(api.tasks.mutations.complete);
   const owner = useQuery(api.users.queries.byUserId, {
     userId: task.owner,
-    orgId,
+    orgId: orgId as Id<"organizations">,
   });
 
   return (
@@ -56,7 +49,7 @@ const Task = ({
           updateTask({
             taskId: task._id,
             isCompleted: !task.completed,
-            orgId,
+            orgId: orgId as Id<"organizations">,
           })
         }
         type="checkbox"
@@ -67,28 +60,25 @@ const Task = ({
   );
 };
 
-const AddTask = ({
-  orgId,
-  topicId,
-}: {
-  orgId: Id<"organizations">;
-  topicId: Id<"topics">;
-}) => {
+const AddTask = ({ orgId, topicId }: { orgId: string; topicId: string }) => {
   const [text, setText] = useState("");
   const createTask = useMutation(api.tasks.mutations.create);
 
   const orgUsers = useQuery(api.users.queries.byOrgId, {
-    orgId,
+    orgId: orgId as Id<"organizations">,
   });
-  // TODO: why do I get nulls back?
-  const users = orgUsers?.filter(isNonNull);
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const form = e.currentTarget;
     const select = form.querySelector("select") as HTMLSelectElement;
     const owner = select.value as Id<"users">;
-    createTask({ topicId, text, orgId, owner });
+    createTask({
+      topicId: topicId as Id<"topics">,
+      text,
+      orgId: orgId as Id<"organizations">,
+      owner,
+    });
     setText("");
   };
 
@@ -101,7 +91,7 @@ const AddTask = ({
         value={text}
       />
       <select className="border-2 border-gray-300 rounded-md p-1 text-sm">
-        {users?.map((user) => (
+        {orgUsers?.map((user) => (
           <option key={user._id} value={user._id}>
             {user.name}
           </option>

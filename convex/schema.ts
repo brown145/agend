@@ -79,6 +79,7 @@ export default defineSchema({
     userId: v.id("users"),
     isPersonal: v.boolean(),
   })
+    .index("by_orgId", ["orgId"])
     .index("by_orgId_userId", ["orgId", "userId"])
     .index("by_userId", ["userId"]),
 });

@@ -1,6 +1,5 @@
 "use client";
 
-import { isNonNull } from "@/lib/isNotNull";
 import { api } from "@convex/_generated/api";
 import { Doc, Id } from "@convex/_generated/dataModel";
 import { useMutation, useQuery } from "convex/react";
@@ -12,13 +11,13 @@ export const TopicList = ({
   editable = true,
   orgId,
 }: {
-  discussionId: Id<"discussions">;
+  discussionId: string;
   editable?: boolean;
-  orgId: Id<"organizations">;
+  orgId: string;
 }) => {
   const topicList = useQuery(api.topics.queries.byDiscussionId, {
-    discussionId,
-    orgId,
+    discussionId: discussionId as Id<"discussions">,
+    orgId: orgId as Id<"organizations">,
   });
 
   return (
@@ -39,17 +38,11 @@ export const TopicList = ({
 };
 
 // TODO: use topicID to query for topic details
-const Topic = ({
-  topic,
-  orgId,
-}: {
-  topic: Doc<"topics">;
-  orgId: Id<"organizations">;
-}) => {
+const Topic = ({ topic, orgId }: { topic: Doc<"topics">; orgId: string }) => {
   const updateTopic = useMutation(api.topics.mutations.complete);
   const owner = useQuery(api.users.queries.byUserId, {
     userId: topic.owner,
-    orgId,
+    orgId: orgId as Id<"organizations">,
   });
 
   return (
@@ -60,7 +53,7 @@ const Topic = ({
           updateTopic({
             topicId: topic._id,
             isCompleted: !topic.completed,
-            orgId,
+            orgId: orgId as Id<"organizations">,
           })
         }
         type="checkbox"
@@ -84,24 +77,27 @@ const AddTopic = ({
   discussionId,
   orgId,
 }: {
-  discussionId: Id<"discussions">;
-  orgId: Id<"organizations">;
+  discussionId: string;
+  orgId: string;
 }) => {
   const [text, setText] = useState("");
   const createTopic = useMutation(api.topics.mutations.create);
 
   const orgUsers = useQuery(api.users.queries.byOrgId, {
-    orgId,
+    orgId: orgId as Id<"organizations">,
   });
-  // TODO: why do I get nulls back?
-  const users = orgUsers?.filter(isNonNull);
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const form = e.currentTarget;
     const select = form.querySelector("select") as HTMLSelectElement;
     const owner = select.value as Id<"users">;
-    createTopic({ text, discussionId, orgId, owner });
+    createTopic({
+      text,
+      discussionId: discussionId as Id<"discussions">,
+      orgId: orgId as Id<"organizations">,
+      owner,
+    });
     setText("");
   };
 
@@ -114,7 +110,7 @@ const AddTopic = ({
         value={text}
       />
       <select className="border-2 border-gray-300 rounded-md p-1">
-        {users?.map((user) => (
+        {orgUsers?.map((user) => (
           <option key={user._id} value={user._id}>
             {user.name}
           </option>
