@@ -5,6 +5,17 @@ bun dev
 bunx convex dev
 ```
 
+data setup commands
+```
+bunx convex import --table users src/mocks/users.jsonl --replace
+bunx convex import --table organizations src/mocks/organizations.jsonl --replace
+bunx convex import --table userOrganizations src/mocks/userOrganizations.jsonl --replace
+bunx convex import --table meetings src/mocks/meetings.mdr.jsonl --replace
+bunx convex import --table meetingsAttendance src/mocks/meetingAttendance.mdr.jsonl --replace
+```
+
+
+
 # v0.1 Org management
 1. ✔ Init new users in "personal" org
 1. ✔ associate meetings to orgs
