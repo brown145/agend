@@ -22,7 +22,8 @@ export default function Home() {
             <RedirectToOrganization />
           </UserInitalized>
           <UserNotInitalized>
-            <div>Loading...</div>
+            {/* TODO: fix loading screen */}
+            <div className="w-full h-full bg-lime-600">Loading...</div>
           </UserNotInitalized>
         </UserInitalizationProvider>
       </Authenticated>

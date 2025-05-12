@@ -22,7 +22,8 @@ export default function OrganizationLayout({
             <div className="h-full px-4">{children}</div>
           </UserInitalized>
           <UserNotInitalized>
-            <div>Loading...</div>
+            {/* TODO: fix loading screen */}
+            <div className="w-full h-full bg-sky-600">Loading...</div>
           </UserNotInitalized>
         </UserInitalizationProvider>
       </Authenticated>
