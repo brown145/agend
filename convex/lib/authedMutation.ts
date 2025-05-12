@@ -3,6 +3,7 @@ import { UserIdentity } from "convex/server";
 import { Doc } from "../_generated/dataModel";
 import { mutation, MutationCtx } from "../_generated/server";
 import { convexInvariant } from "./convexInvariant";
+import { validateIdentity } from "./validateIdentity";
 
 export type AuthedMutationCtx = MutationCtx & {
   user: Doc<"users">;
@@ -12,8 +13,7 @@ export type AuthedMutationCtx = MutationCtx & {
 export const authedMutation = customMutation(mutation, {
   args: {},
   input: async (ctx, args) => {
-    const identity = await ctx.auth.getUserIdentity();
-    convexInvariant(identity !== null, "Not authenticated!");
+    const identity = await validateIdentity(ctx);
 
     // Get the user document
     const user = await ctx.db

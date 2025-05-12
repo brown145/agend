@@ -49,6 +49,7 @@ export const list = authedOrgQuery({
 export const byUserId = authedOrgQuery({
   args: {
     userId: v.id("users"),
+    orgId: v.id("organizations"),
   },
   handler: async (ctx, args) => {
     const meetingAttendances = await getManyFrom(
@@ -62,7 +63,9 @@ export const byUserId = authedOrgQuery({
       await Promise.all(
         meetingAttendances.map(async (ma) => await ctx.db.get(ma.meetingId)),
       )
-    ).filter(isNonNull);
+    )
+      .filter(isNonNull)
+      .filter((m) => m.orgId === args.orgId);
 
     return meetings;
   },

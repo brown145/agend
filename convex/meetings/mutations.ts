@@ -123,6 +123,9 @@ export const start = authedOrgMutation({
       meeting._id,
     );
 
+    // TODO: could the "next" discussion track the previous discussion
+    //       and simplify this code so we dont need to find it every time?
+
     // TODO: refactor this ???
     const previousDiscussion = discussions
       .filter(

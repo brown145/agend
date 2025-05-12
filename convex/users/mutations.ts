@@ -1,13 +1,12 @@
+import { validateIdentity } from "@convex/lib/validateIdentity";
 import { getOneFrom } from "convex-helpers/server/relationships";
 import { Id } from "../_generated/dataModel";
 import { mutation } from "../_generated/server";
-import { convexInvariant } from "../lib/convexInvariant";
 
 export const ensureUser = mutation({
   args: {},
   handler: async (ctx) => {
-    const identity = await ctx.auth.getUserIdentity();
-    convexInvariant(identity, "Not authenticated");
+    const identity = await validateIdentity(ctx);
 
     const user = await getOneFrom(
       ctx.db,
