@@ -2,6 +2,7 @@ import { defineSchema, defineTable } from "convex/server";
 import { v } from "convex/values";
 
 export default defineSchema({
+  // TODO: v.union for previous vs next vs actual discussions?
   discussions: defineTable({
     completed: v.boolean(),
     createdBy: v.id("users"),
@@ -17,6 +18,7 @@ export default defineSchema({
     .index("by_orgId_meetingId", ["orgId", "meetingId"])
     .index("by_previousDiscussionId", ["previousDiscussionId"]),
 
+  // TODO: v.union for oneTime vs Recurring meetings?
   meetings: defineTable({
     createdBy: v.id("users"),
     nextDiscussionId: v.optional(v.id("discussions")),
