@@ -5,6 +5,7 @@ import UserInitalizationProvider, {
   UserNotInitalized,
   useUserInitalization,
 } from "@/app/_components/UserInitalization";
+import Loader from "@/components/Loader";
 import { SignIn } from "@clerk/nextjs";
 import { Authenticated, Unauthenticated } from "convex/react";
 import { useRouter } from "next/navigation";
@@ -23,7 +24,9 @@ export default function Home() {
           </UserInitalized>
           <UserNotInitalized>
             {/* TODO: fix loading screen */}
-            <div className="w-full h-full bg-lime-600">Loading...</div>
+            <div className="w-full h-full bg-lime-600">
+              <Loader />
+            </div>
           </UserNotInitalized>
         </UserInitalizationProvider>
       </Authenticated>
@@ -41,5 +44,5 @@ function RedirectToOrganization() {
     }
   }, [router, personalOrgId]);
 
-  return <div>redirecting...</div>;
+  return <Loader text="redirecting..." />;
 }
