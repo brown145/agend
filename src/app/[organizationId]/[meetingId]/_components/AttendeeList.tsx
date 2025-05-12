@@ -1,18 +1,12 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import { Combobox } from "@/components/ui/combobox";
 import { isNonNull } from "@/lib/isNotNull";
 import { api } from "@convex/_generated/api";
 import { Doc, Id } from "@convex/_generated/dataModel";
 import { useMutation, useQuery } from "convex/react";
 import { useParams } from "next/navigation";
-import { useState } from "react";
 
 export const AttendeesList = () => {
   const { meetingId, organizationId } = useParams();
@@ -110,48 +104,32 @@ const AddAttendee = ({
   orgId: string;
   users?: Doc<"users">[];
 }) => {
-  const [selectedUserId, setSelectedUserId] = useState<Id<"users"> | null>(
-    null,
-  );
   const addAttendee = useMutation(api.meetings.mutations.addAttendee);
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    if (!selectedUserId || !orgId) return;
+  const handleUserSelect = (userId: string) => {
+    if (!orgId) return;
     addAttendee({
       meetingId: meetingId as Id<"meetings">,
-      userId: selectedUserId,
+      userId: userId as Id<"users">,
       orgId: orgId as Id<"organizations">,
     });
-    setSelectedUserId(null);
   };
 
   if (!users?.length) return null;
 
+  const items = users.map((user) => ({
+    value: user._id,
+    label: user.name,
+  }));
+
   return (
-    <form onSubmit={handleSubmit} className="flex gap-2">
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button variant="outline">
-            {selectedUserId
-              ? users.find((u) => u._id === selectedUserId)?.name
-              : "Select user"}
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent>
-          {users.map((user) => (
-            <DropdownMenuItem
-              key={user._id}
-              onClick={() => setSelectedUserId(user._id)}
-            >
-              {user.name}
-            </DropdownMenuItem>
-          ))}
-        </DropdownMenuContent>
-      </DropdownMenu>
-      <Button type="submit" disabled={!selectedUserId}>
-        Add attendee
-      </Button>
-    </form>
+    <div className="flex gap-2 w-full">
+      <Combobox
+        items={items}
+        onSelect={handleUserSelect}
+        placeholder="Add attendee"
+        emptyText="No users found"
+      />
+    </div>
   );
 };

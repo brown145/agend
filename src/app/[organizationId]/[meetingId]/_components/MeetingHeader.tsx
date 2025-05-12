@@ -2,8 +2,9 @@
 
 import { api } from "@convex/_generated/api";
 import { Id } from "@convex/_generated/dataModel";
-import { useMutation, useQuery } from "convex/react";
+import { useQuery } from "convex/react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { EditMeeting } from "./EditMeeting";
 
 export function MeetingHeader({
   orgId,
@@ -16,7 +17,6 @@ export function MeetingHeader({
     meetingId: meetingId as Id<"meetings">,
     orgId: orgId as Id<"organizations">,
   });
-  const updateMeeting = useMutation(api.meetings.mutations.update);
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
@@ -32,47 +32,18 @@ export function MeetingHeader({
     router.replace(`${pathname}?${params.toString()}`);
   };
 
-  const handleSave = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const formData = new FormData(e.currentTarget);
-    const newTitle = formData.get("title") as string;
-    await updateMeeting({
-      meetingId: meetingId as Id<"meetings">,
-      orgId: orgId as Id<"organizations">,
-      title: newTitle,
-    });
-    setEditMode(false);
-  };
-
   if (isEditing) {
     return (
-      <form onSubmit={handleSave} className="flex flex-col gap-4">
-        <div className="flex gap-2 items-center">
-          <input
-            type="text"
-            name="title"
-            defaultValue={meetingDetails?.title}
-            className="border-2 border-gray-300 rounded-md p-1"
-            autoFocus
-          />
-          <button
-            type="submit"
-            className="bg-emerald-800 text-white rounded-md px-2 py-1 text-sm"
-          >
-            Save
-          </button>
-          <button
-            type="button"
-            onClick={() => setEditMode(false)}
-            className="bg-gray-500 text-white rounded-md px-2 py-1 text-sm"
-          >
-            Cancel
-          </button>
-        </div>
+      <div className="flex flex-col gap-4">
+        <EditMeeting
+          orgId={orgId}
+          meetingId={meetingId}
+          onCancel={() => setEditMode(false)}
+        />
         <div className="flex flex-col gap-2">
           <div className="font-semibold">Attendees</div>
         </div>
-      </form>
+      </div>
     );
   }
 

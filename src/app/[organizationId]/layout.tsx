@@ -19,7 +19,7 @@ export default function OrganizationLayout({
         <UserInitalizationProvider>
           <UserInitalized>
             <NavigationBar />
-            <div className="h-full px-4">{children}</div>
+            <div className="h-full">{children}</div>
           </UserInitalized>
           <UserNotInitalized>
             {/* TODO: fix loading screen */}

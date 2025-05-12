@@ -1,5 +1,6 @@
 "use client";
 
+import { Button } from "@/components/ui/button";
 import { formatDiscussionDate } from "@/lib/utils/date";
 import { api } from "@convex/_generated/api";
 import { Id } from "@convex/_generated/dataModel";
@@ -52,12 +53,9 @@ export default function DiscussionHeader({
       </h1>
       <div>{meetingDetails?.owner?.name ?? "Unknown owner"}</div>
       {isNextDiscussion && (
-        <button
-          className="mt-4 px-4 py-2 bg-blue-600 text-white rounded"
-          onClick={handleStart}
-        >
+        <Button className="mt-4" onClick={handleStart}>
           Start
-        </button>
+        </Button>
       )}
     </>
   );

@@ -1,9 +1,34 @@
 "use client";
 
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Combobox } from "@/components/ui/combobox";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
 import { api } from "@convex/_generated/api";
 import { Doc, Id } from "@convex/_generated/dataModel";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery } from "convex/react";
-import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+
+const formSchema = z.object({
+  text: z.string().min(1, "Task description is required"),
+  assignee: z.string().min(1, "Assignee is required"),
+});
+
+const taskFormSchema = z.object({
+  completed: z.boolean(),
+});
+
+type FormValues = z.infer<typeof formSchema>;
+type TaskFormValues = z.infer<typeof taskFormSchema>;
 
 export const TaskList = ({
   orgId,
@@ -19,18 +44,20 @@ export const TaskList = ({
     orgId: orgId as Id<"organizations">,
   });
   return (
-    <main>
+    <div className="flex flex-col gap-1">
       {taskList?.map((task) => (
         <div
           key={task._id}
-          className="border-l-2 border-solid border-emerald-300 pl-2"
+          className="border-l-2 border-solid border-gray-300 pl-4"
         >
           <Task task={task} orgId={orgId} />
         </div>
       ))}
-      {editable && taskList?.length === 0 && <div>No tasks</div>}
+      {editable && taskList?.length === 0 && (
+        <div className="text-muted-foreground text-sm">No tasks</div>
+      )}
       {editable && <AddTask orgId={orgId} topicId={topicId} />}
-    </main>
+    </div>
   );
 };
 
@@ -41,68 +68,124 @@ const Task = ({ task, orgId }: { task: Doc<"tasks">; orgId: string }) => {
     orgId: orgId as Id<"organizations">,
   });
 
+  const form = useForm<TaskFormValues>({
+    resolver: zodResolver(taskFormSchema),
+    defaultValues: {
+      completed: task.completed,
+    },
+  });
+
+  const onSubmit = (values: TaskFormValues) => {
+    updateTask({
+      taskId: task._id,
+      isCompleted: values.completed,
+      orgId: orgId as Id<"organizations">,
+    });
+  };
+
   return (
-    <div className="flex gap-2 items-center text-sm">
-      <input
-        checked={task.completed}
-        onChange={() =>
-          updateTask({
-            taskId: task._id,
-            isCompleted: !task.completed,
-            orgId: orgId as Id<"organizations">,
-          })
-        }
-        type="checkbox"
-      />
-      {task.text}
-      <div className="text-muted-foreground">{owner?.name}</div>
-    </div>
+    <Form {...form}>
+      <form
+        onChange={form.handleSubmit(onSubmit)}
+        className="flex gap-1 items-center"
+      >
+        <FormField
+          control={form.control}
+          name="completed"
+          render={({ field }) => (
+            <FormItem className="flex items-center space-x-2">
+              <FormControl>
+                <Checkbox
+                  checked={field.value}
+                  onCheckedChange={field.onChange}
+                />
+              </FormControl>
+            </FormItem>
+          )}
+        />
+        <div className="flex-1 flex flex-row gap-2 items-center">
+          <span
+            className={
+              task.completed ? "line-through text-muted-foreground" : ""
+            }
+          >
+            {task.text}
+          </span>
+          <div className="text-muted-foreground text-sm">{owner?.name}</div>
+        </div>
+      </form>
+    </Form>
   );
 };
 
 const AddTask = ({ orgId, topicId }: { orgId: string; topicId: string }) => {
-  const [text, setText] = useState("");
   const createTask = useMutation(api.tasks.mutations.create);
-
   const orgUsers = useQuery(api.users.queries.byOrgId, {
     orgId: orgId as Id<"organizations">,
   });
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const form = e.currentTarget;
-    const select = form.querySelector("select") as HTMLSelectElement;
-    const owner = select.value as Id<"users">;
+  const form = useForm<FormValues>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      text: "",
+      assignee: "",
+    },
+  });
+
+  const onSubmit = (values: FormValues) => {
     createTask({
       topicId: topicId as Id<"topics">,
-      text,
+      text: values.text,
       orgId: orgId as Id<"organizations">,
-      owner,
+      owner: values.assignee as Id<"users">,
     });
-    setText("");
+    form.reset();
   };
 
+  const userItems =
+    orgUsers?.map((user) => ({
+      value: user._id,
+      label: user.name,
+    })) ?? [];
+
   return (
-    <form onSubmit={handleSubmit} className="flex gap-2">
-      <input
-        className="border-2 border-gray-300 rounded-md p-1 text-sm"
-        onChange={(e) => setText(e.target.value)}
-        type="text"
-        value={text}
-      />
-      <select className="border-2 border-gray-300 rounded-md p-1 text-sm">
-        {orgUsers?.map((user) => (
-          <option key={user._id} value={user._id}>
-            {user.name}
-          </option>
-        ))}
-      </select>
-      <button
-        className="bg-emerald-300 text-white rounded-md p-1 text-sm"
-        type="submit"
-      >
-        Add task
-      </button>
-    </form>
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="flex gap-2">
+        <FormField
+          control={form.control}
+          name="text"
+          render={({ field }) => (
+            <FormItem className="flex-1">
+              <FormControl>
+                <Input placeholder="Enter task description" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="assignee"
+          render={({ field }) => (
+            <FormItem>
+              <FormControl>
+                <Combobox
+                  items={userItems}
+                  value={field.value}
+                  onSelect={field.onChange}
+                  placeholder="Select assignee"
+                  emptyText="No users found"
+                  className="w-[200px]"
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <Button type="submit" variant="default">
+          Add task
+        </Button>
+      </form>
+    </Form>
   );
 };

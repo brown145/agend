@@ -82,8 +82,8 @@ bunx convex import --table meetingsAttendance src/mocks/meetingAttendance.mdr.js
 1. ~~avoid data fetching and mutions in comopnents; pass in handlers from parent page~~ no, maybe in future. nothing in /ui should do this
 
 # v0.8 UI Pass Basic
-1. fix the worst UI stuff
-1. consistenly use shadcn/ui
+1. ✔ fix the worst UI stuff
+1. ✔ consistenly use shadcn/ui
 
 # v1.0 Workable product
 1. write a proper readme

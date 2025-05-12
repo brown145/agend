@@ -16,7 +16,7 @@ export default function MeetingsNewPage() {
   }
 
   return (
-    <div className="py-2">
+    <div className="p-4">
       <AddMeeting onSubmit={handleSubmit} orgId={currentOrgId} />
     </div>
   );

@@ -1,5 +1,7 @@
 "use client";
 
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { useMutation } from "convex/react";
 import { useState } from "react";
 import { api } from "../../../../../convex/_generated/api";
@@ -26,20 +28,19 @@ export const AddMeeting = ({
   };
 
   return (
-    <form onSubmit={handleSubmit} className="flex gap-2">
-      <input
-        className="border-2 border-gray-300 rounded-md p-1"
+    <form onSubmit={handleSubmit} className="flex flex-col gap-2">
+      <Input
+        className="!text-6xl font-medium h-auto p-0 border-0 focus-visible:ring-0 focus-visible:ring-offset-0 shadow-none"
         onChange={(e) => setTitle(e.target.value)}
         placeholder="New meeting title"
-        type="text"
         value={title}
+        autoFocus
       />
-      <button
-        className="bg-emerald-800 text-white rounded-md p-1"
-        type="submit"
-      >
-        New Meeting
-      </button>
+      <div className="flex gap-2">
+        <Button type="submit" variant="default">
+          Save
+        </Button>
+      </div>
     </form>
   );
 };

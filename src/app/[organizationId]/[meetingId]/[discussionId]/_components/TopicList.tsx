@@ -1,9 +1,22 @@
 "use client";
 
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Combobox } from "@/components/ui/combobox";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
 import { api } from "@convex/_generated/api";
 import { Doc, Id } from "@convex/_generated/dataModel";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery } from "convex/react";
-import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
 import { TaskList } from "./TaskList";
 
 export const TopicList = ({
@@ -21,11 +34,11 @@ export const TopicList = ({
   });
 
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex flex-col gap-4">
       {topicList?.map((topic) => (
         <div
           key={topic._id}
-          className="border-l-2 border-solid border-emerald-500 pl-2"
+          className="border-l-2 border-solid border-gray-500 pl-2 flex flex-col gap-1"
         >
           <Topic topic={topic} orgId={orgId} />
           <TaskList orgId={orgId} topicId={topic._id} editable={editable} />
@@ -45,33 +58,61 @@ const Topic = ({ topic, orgId }: { topic: Doc<"topics">; orgId: string }) => {
     orgId: orgId as Id<"organizations">,
   });
 
+  const form = useForm({
+    defaultValues: {
+      completed: topic.completed,
+    },
+  });
+
+  const onSubmit = (values: { completed: boolean }) => {
+    updateTopic({
+      topicId: topic._id,
+      isCompleted: values.completed,
+      orgId: orgId as Id<"organizations">,
+    });
+  };
+
   return (
-    <div className="flex gap-2 items-center">
-      <input
-        checked={topic.completed}
-        onChange={() =>
-          updateTopic({
-            topicId: topic._id,
-            isCompleted: !topic.completed,
-            orgId: orgId as Id<"organizations">,
-          })
-        }
-        type="checkbox"
-      />
-      <div
-      // TODO:
-      // className={cn(
-      //   topic.completed &&
-      //     (topic.metadata?.tasksCompleted ?? false) &&
-      //     "line-through",
-      // )}
+    <Form {...form}>
+      <form
+        onChange={form.handleSubmit(onSubmit)}
+        className="flex gap-1 items-center"
       >
-        {topic.text}
-      </div>
-      <div className="text-muted-foreground">{owner?.name}</div>
-    </div>
+        <FormField
+          control={form.control}
+          name="completed"
+          render={({ field }) => (
+            <FormItem className="flex items-center space-x-2">
+              <FormControl>
+                <Checkbox
+                  checked={field.value}
+                  onCheckedChange={field.onChange}
+                />
+              </FormControl>
+            </FormItem>
+          )}
+        />
+        <div className="flex-1 flex flex-row gap-2 items-center">
+          <span
+            className={
+              topic.completed ? "line-through text-muted-foreground" : ""
+            }
+          >
+            {topic.text}
+          </span>
+          <div className="text-muted-foreground text-sm">{owner?.name}</div>
+        </div>
+      </form>
+    </Form>
   );
 };
+
+const formSchema = z.object({
+  text: z.string().min(1, "Topic description is required"),
+  owner: z.string().min(1, "Owner is required"),
+});
+
+type FormValues = z.infer<typeof formSchema>;
 
 const AddTopic = ({
   discussionId,
@@ -80,48 +121,72 @@ const AddTopic = ({
   discussionId: string;
   orgId: string;
 }) => {
-  const [text, setText] = useState("");
   const createTopic = useMutation(api.topics.mutations.create);
-
   const orgUsers = useQuery(api.users.queries.byOrgId, {
     orgId: orgId as Id<"organizations">,
   });
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const form = e.currentTarget;
-    const select = form.querySelector("select") as HTMLSelectElement;
-    const owner = select.value as Id<"users">;
+  const form = useForm<FormValues>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      text: "",
+      owner: "",
+    },
+  });
+
+  const onSubmit = (values: FormValues) => {
     createTopic({
-      text,
+      text: values.text,
       discussionId: discussionId as Id<"discussions">,
       orgId: orgId as Id<"organizations">,
-      owner,
+      owner: values.owner as Id<"users">,
     });
-    setText("");
+    form.reset();
   };
 
+  const userItems =
+    orgUsers?.map((user) => ({
+      value: user._id,
+      label: user.name,
+    })) ?? [];
+
   return (
-    <form onSubmit={handleSubmit} className="flex gap-2">
-      <input
-        className="border-2 border-gray-300 rounded-md p-1"
-        onChange={(e) => setText(e.target.value)}
-        type="text"
-        value={text}
-      />
-      <select className="border-2 border-gray-300 rounded-md p-1">
-        {orgUsers?.map((user) => (
-          <option key={user._id} value={user._id}>
-            {user.name}
-          </option>
-        ))}
-      </select>
-      <button
-        className="bg-emerald-500 text-white rounded-md p-1"
-        type="submit"
-      >
-        Add topic
-      </button>
-    </form>
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="flex gap-2">
+        <FormField
+          control={form.control}
+          name="text"
+          render={({ field }) => (
+            <FormItem className="flex-1">
+              <FormControl>
+                <Input placeholder="Enter topic" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="owner"
+          render={({ field }) => (
+            <FormItem className="w-[200px]">
+              <FormControl>
+                <Combobox
+                  items={userItems}
+                  value={field.value}
+                  onSelect={field.onChange}
+                  placeholder="Select owner"
+                  emptyText="No users found"
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <Button type="submit" disabled={!form.formState.isValid}>
+          Add topic
+        </Button>
+      </form>
+    </Form>
   );
 };
