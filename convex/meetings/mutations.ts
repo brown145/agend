@@ -15,17 +15,19 @@ async function createMeeting(
   {
     title,
     createdBy,
+    ownerId,
     orgId,
   }: {
     title: string;
     createdBy: Id<"users">;
+    ownerId: Id<"users">;
     orgId: Id<"organizations">;
   },
 ) {
   return await db.insert("meetings", {
     title: title.trim(),
     createdBy,
-    owner: createdBy,
+    owner: ownerId,
     orgId,
   });
 }
@@ -57,11 +59,13 @@ export const addAttendee = authedOrgMutation({
 export const create = authedOrgMutation({
   args: {
     title: v.string(),
+    ownerId: v.optional(v.id("users")),
   },
   handler: async (ctx, args) => {
     const meetingId = await createMeeting(ctx.db, {
       title: args.title,
       createdBy: ctx.user._id,
+      ownerId: args.ownerId ?? ctx.user._id,
       orgId: ctx.organization._id,
     });
 

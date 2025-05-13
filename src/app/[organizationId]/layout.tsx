@@ -18,8 +18,12 @@ export default function OrganizationLayout({
       <Authenticated>
         <UserInitalizationProvider>
           <UserInitalized>
-            <NavigationBar />
-            <div className="h-full">{children}</div>
+            <div className="h-full flex flex-col">
+              <NavigationBar />
+              <div className="flex-1 flex flex-col w-4xl mx-auto">
+                {children}
+              </div>
+            </div>
           </UserInitalized>
           <UserNotInitalized>
             {/* TODO: fix loading screen */}

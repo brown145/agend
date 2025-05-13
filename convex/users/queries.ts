@@ -60,7 +60,10 @@ export const byOrgId = authedOrgQuery({
       orgUsers.map(async (orgUser) => ctx.db.get(orgUser.userId)),
     );
 
-    return users.filter(isNonNull);
+    return users.filter(isNonNull).map((user) => ({
+      ...user,
+      isYou: user._id === ctx.user._id,
+    }));
   },
 });
 
