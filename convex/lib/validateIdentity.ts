@@ -1,7 +1,7 @@
 import { MutationCtx, QueryCtx } from "../_generated/server";
 import { convexInvariant } from "./convexInvariant";
 
-const doImpersonate = true;
+const doImpersonate = false;
 
 const mockIdentity = {
   email: "seth.milchick@lumon.com",
