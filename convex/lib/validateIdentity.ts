@@ -6,7 +6,7 @@ const doImpersonate = false;
 const mockIdentity = {
   email: "seth.milchick@lumon.com",
   name: "Seth Milchick",
-  tokenIdentifier: "mocks-seth-milchick",
+  tokenIdentifier: "mock-seth-milchick",
 };
 
 export async function validateIdentity(ctx: QueryCtx | MutationCtx) {
