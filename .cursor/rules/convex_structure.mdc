@@ -1,0 +1,52 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# Convex Structure and Conventions
+
+## Folder Structure
+Follow this structure for Convex functions:
+```
+convex/
+  users/
+    queries.ts
+    mutations.ts
+    schema.ts (optional)
+  meetings/
+    queries.ts
+    mutations.ts
+    schema.ts (optional)
+  schema.ts
+```
+
+## Function Naming
+- Use consistent naming patterns:
+  - Queries: `get`, `list`, or `details` (e.g., `getMeeting`, `listMeetings`, `userDetails`)
+  - Mutations: action verbs (e.g., `createMeeting`, `updateUser`, `deleteTask`)
+- Use `Id` suffix for ID parameters (e.g., `meetingId`, `userId`, `orgId`)
+- Use `organizationId` consistently (not `orgId` in function names)
+
+## Query Optimization
+- Combine related queries when possible to reduce round trips
+- Example of optimization:
+  ```typescript
+  // Instead of:
+  const meeting = useQuery(api.users.meeting, {...})
+  const meetingOwner = useQuery(api.users.details, {id: meeting.ownerId})
+
+  // Use:
+  const [meeting, meetingOwner] = useQuery(api.users.meetingWithOwner, {...})
+  ```
+- Exception: Keep frequently updated tables separate
+
+## Error Handling
+- Use `throw` for errors instead of returning error objects
+- Let the frontend handle error cases
+- Include descriptive error messages
+
+Rationale:
+- Consistent structure makes the codebase more maintainable
+- Standardized naming improves code readability
+- Optimized queries improve performance
+- Clear error handling improves debugging 

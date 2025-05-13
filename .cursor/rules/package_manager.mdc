@@ -1,0 +1,18 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# Package Manager
+
+Always use Bun instead of npm or yarn for package management. This includes:
+- Installing dependencies: `bun install` instead of `npm install`
+- Running scripts: `bun run` instead of `npm run`
+- Adding dependencies: `bun add` instead of `npm install`
+- Running the dev server: `bun dev` instead of `npm run dev`
+
+Rationale:
+- Bun is significantly faster than npm
+- Bun is the officially supported package manager for this project
+- Using Bun ensures consistent behavior across all developers
+- The project's package.json and lockfile are managed by Bun 

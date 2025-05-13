@@ -1,0 +1,32 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# UI Component Conventions
+
+## Component Structure
+- Use shadcn/ui components as the base UI library
+- Place reusable components in the `components/ui` directory
+- Keep page-specific components in their respective page directories
+
+## Data Fetching
+- Components can use `useParams` and `useParamIds` directly
+- Components can perform their own data fetching and mutations
+- Exception: Components in the `/ui` directory should not perform data fetching
+
+## Styling
+- Use Tailwind CSS for styling
+- Follow the project's color scheme and design system
+- Use consistent spacing and sizing variables
+
+## State Management
+- Use React's built-in state management (useState, useReducer)
+- Use Convex hooks for data fetching and mutations
+- Keep component state local when possible
+
+Rationale:
+- shadcn/ui provides a consistent and accessible component library
+- Direct data fetching in components simplifies the codebase
+- Consistent styling improves user experience
+- Local state management reduces complexity 

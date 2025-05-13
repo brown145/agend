@@ -1,0 +1,19 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# Node.js Version
+
+Always use Node.js version 23.1.0 for this project. This version is managed through asdf.
+
+To ensure you're using the correct version:
+1. Make sure asdf is installed
+2. Run `asdf shell nodejs 23.1.0` before starting development
+3. Verify the version with `node --version`
+
+Rationale:
+- The project is built and tested against Node.js 23.1.0
+- Using a different version may cause compatibility issues
+- asdf ensures consistent Node.js versions across all developers
+- The project's dependencies and features may not work correctly with other versions 
