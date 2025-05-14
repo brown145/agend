@@ -1,5 +1,6 @@
 "use client";
 
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import {
   Table,
   TableBody,
@@ -12,6 +13,7 @@ import { formatDiscussionDate } from "@/lib/utils/date";
 import { api } from "@convex/_generated/api";
 import { Id } from "@convex/_generated/dataModel";
 import { useQuery } from "convex/react";
+import { HeartCrack } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
@@ -20,6 +22,23 @@ export default function MeetingList({ orgId }: { orgId: string }) {
     orgId: orgId as Id<"organizations">,
   });
 
+  if (meetings?.length === 0) {
+    return (
+      <Alert>
+        <HeartCrack className="h-4 w-4" />
+        <AlertTitle>No meetings yet</AlertTitle>
+        <AlertDescription>
+          <div>
+            You can create a meeting by clicking the input below, or on the{" "}
+            <Link href={`/${orgId}/new`} className="underline">
+              new meeting
+            </Link>{" "}
+            page.
+          </div>
+        </AlertDescription>
+      </Alert>
+    );
+  }
   return (
     <Table>
       <TableHeader className="bg-background z-10 border-b">
