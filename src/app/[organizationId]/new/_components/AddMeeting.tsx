@@ -31,7 +31,7 @@ export const AddMeeting = ({
   onSubmit,
   orgId,
 }: {
-  onSubmit: (id: string) => void;
+  onSubmit: (id: string, title: string, owner: string) => void;
   orgId: string;
 }) => {
   const createMeeting = useMutation(api.meetings.mutations.create);
@@ -68,7 +68,7 @@ export const AddMeeting = ({
       orgId: orgId as Id<"organizations">,
       ownerId: values.owner as Id<"users">,
     });
-    onSubmit(id);
+    onSubmit(id, values.title, values.owner);
     form.reset();
     form.setValue("owner", values.owner ?? "");
   };
