@@ -19,8 +19,10 @@ export default function OrganizationLayout({
         <UserInitalizationProvider>
           <UserInitalized>
             <div className="h-full flex flex-col">
-              <NavigationBar />
-              <div className="flex-1 flex flex-col w-4xl mx-auto">
+              <div className="fixed top-0 left-0 right-0 z-10 bg-white">
+                <NavigationBar />
+              </div>
+              <div className="flex-1 flex flex-col w-4xl mx-auto pt-16">
                 {children}
               </div>
             </div>
