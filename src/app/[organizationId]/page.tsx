@@ -11,7 +11,7 @@ export default async function MeetingsPage({
   const { organizationId: orgId } = await params;
 
   return (
-    <div className="flex-1 flex flex-col h-full relative">
+    <div className="p-4 flex-1 flex flex-col h-full relative">
       <div className="flex items-start gap-2">
         <h1 className="text-6xl font-medium pb-2">Meetings</h1>
       </div>

@@ -22,9 +22,7 @@ export default function OrganizationLayout({
               <div className="fixed top-0 left-0 right-0 z-10 bg-white">
                 <NavigationBar />
               </div>
-              <div className="flex-1 flex flex-col w-4xl mx-auto pt-16">
-                {children}
-              </div>
+              <div className="flex-1 flex flex-col pt-14">{children}</div>
             </div>
           </UserInitalized>
           <UserNotInitalized>
