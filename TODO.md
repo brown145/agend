@@ -71,12 +71,12 @@
 
 ## v0.1.0 Workable product
 1. ✔ write a proper readme
-1. publish to github
-1. publish on Clerk / Convex / Vercel
+1. ✔ publish to github
+1. ✔ publish Convex / Vercel
 
 ## v0.1.1 Minor polish
-1. use toasts to confirm user actions
-1. Favicon
+1. ✔ use toasts to confirm user actions
+1. ✔ Favicon
 
 ## v0.1.2 properly designed TaskList TopicList
   _this is a key part of the UI and the primary user interaction; spend some time here_
@@ -115,6 +115,7 @@
 
 ## v0.1.8
 1. clerk webhooks to sync users 
+1. clert production (not dev plan)
 
 ## v0.1.9 SSR?
 1. https://docs.convex.dev/client/react/nextjs/server-rendering#server-side-authentication

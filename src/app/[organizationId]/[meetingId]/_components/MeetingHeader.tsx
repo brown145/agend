@@ -49,11 +49,14 @@ export function MeetingHeader({
 
   return (
     <div className="flex flex-col">
-      <h1 className="text-6xl font-medium" onClick={() => setEditMode(true)}>
+      <h1
+        className="text-6xl font-medium cursor-text"
+        onClick={() => setEditMode(true)}
+      >
         {meetingDetails?.title}
       </h1>
-      <div className="text-muted-foreground">
-        {meetingDetails?.isYours ? "Yours" : meetingDetails?.owner?.name}
+      <div className="text-muted-foreground cursor-default">
+        {meetingDetails?.owner?.name ?? "Unknown owner"}
       </div>
     </div>
   );

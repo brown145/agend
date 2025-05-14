@@ -7,6 +7,7 @@ import { api } from "@convex/_generated/api";
 import { Doc, Id } from "@convex/_generated/dataModel";
 import { useMutation, useQuery } from "convex/react";
 import { useParams } from "next/navigation";
+import { toast } from "sonner";
 
 export const AttendeesList = () => {
   const { meetingId, organizationId } = useParams();
@@ -68,7 +69,22 @@ const Attendee = ({
 }) => {
   const removeAttendee = useMutation(api.meetings.mutations.removeAttendee);
 
-  if (!attendee) return null;
+  const handleRemoveAttendee = () => {
+    if (!orgId) return;
+
+    toast.promise(
+      removeAttendee({
+        meetingId: meetingId as Id<"meetings">,
+        userId: attendee._id,
+        orgId: orgId as Id<"organizations">,
+      }),
+      {
+        loading: `Removing ${attendee.name}...`,
+        success: () => `${attendee.name} removed from meeting`,
+        error: () => `Failed to remove ${attendee.name} from meeting`,
+      },
+    );
+  };
 
   return (
     <div className="flex items-center justify-between">
@@ -78,15 +94,7 @@ const Attendee = ({
           className="text-muted-foreground"
           variant="ghost"
           size="sm"
-          onClick={() => {
-            if (orgId) {
-              removeAttendee({
-                meetingId: meetingId as Id<"meetings">,
-                userId: attendee._id,
-                orgId: orgId as Id<"organizations">,
-              });
-            }
-          }}
+          onClick={handleRemoveAttendee}
         >
           Remove
         </Button>
@@ -108,11 +116,22 @@ const AddAttendee = ({
 
   const handleUserSelect = (userId: string) => {
     if (!orgId) return;
-    addAttendee({
-      meetingId: meetingId as Id<"meetings">,
-      userId: userId as Id<"users">,
-      orgId: orgId as Id<"organizations">,
-    });
+
+    const selectedUser = users?.find((user) => user._id === userId);
+    if (!selectedUser) return;
+
+    toast.promise(
+      addAttendee({
+        meetingId: meetingId as Id<"meetings">,
+        userId: userId as Id<"users">,
+        orgId: orgId as Id<"organizations">,
+      }),
+      {
+        loading: `Adding ${selectedUser.name}...`,
+        success: () => `${selectedUser.name} added to meeting`,
+        error: () => `Failed to add ${selectedUser.name} to meeting`,
+      },
+    );
   };
 
   if (!users?.length) return null;
