@@ -3,7 +3,7 @@
 export default {
   providers: [
     {
-      domain: "https://clerk.agendry.com/.well-known/jwks.json",
+      domain: "https://clerk.agendry.com",
       // domain: "https://bold-rodent-16.clerk.accounts.dev",
       applicationID: "convex",
     },
