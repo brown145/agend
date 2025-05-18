@@ -3,9 +3,8 @@
 export default {
   providers: [
     {
-      domain:
-        process.env.CLERK_JWT_ISSUER_DOMAIN ??
-        "https://bold-rodent-16.clerk.accounts.dev",
+      domain: "https://clerk.agendry.com/.well-known/jwks.json",
+      // domain: "https://bold-rodent-16.clerk.accounts.dev",
       applicationID: "convex",
     },
   ],
