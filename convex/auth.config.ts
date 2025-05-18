@@ -1,9 +1,11 @@
+// This file is used for local development only
+// For production, use the deployment configuration in convex.json
 export default {
   providers: [
     {
-      // TODO: figurie out env issues later
-      // domain: process.env.NEXT_PUBLIC_CLERK_FRONTEND_API_URL,
-      domain: "https://relaxing-bunny-64.clerk.accounts.dev",
+      domain:
+        process.env.NEXT_PUBLIC_CLERK_JWT_ISSUER_DOMAIN ??
+        "https://bold-rodent-16.clerk.accounts.dev",
       applicationID: "convex",
     },
   ],

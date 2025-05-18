@@ -1,7 +1,13 @@
-import { Toaster } from "@/components/ui/sonner";
-import { ClerkProvider } from "@clerk/nextjs";
-import type { Metadata } from "next";
+import {
+  ClerkProvider,
+  SignIn,
+  SignedIn,
+  SignedOut,
+  UserButton,
+} from "@clerk/nextjs";
+import { type Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { Toaster } from "sonner";
 import { ConvexClientProvider } from "./ConvexClientProvider";
 import "./globals.css";
 
@@ -22,6 +28,10 @@ export const metadata: Metadata = {
 
 const clerkPublishableKey = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY;
 
+if (!clerkPublishableKey) {
+  throw new Error("NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY is not set");
+}
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -29,16 +39,26 @@ export default function RootLayout({
 }>) {
   return (
     <ClerkProvider publishableKey={clerkPublishableKey}>
-      <html lang="en" className="h-full">
-        <body
-          className={`${geistSans.variable} ${geistMono.variable} antialiased h-full flex flex-col`}
-        >
-          <ConvexClientProvider>
-            <main className="flex-1">{children}</main>
-            <Toaster />
-          </ConvexClientProvider>
-        </body>
-      </html>
+      <ConvexClientProvider>
+        <html lang="en">
+          <body
+            className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+          >
+            <SignedOut>
+              <div className="flex justify-center items-center h-screen">
+                <SignIn />
+              </div>
+            </SignedOut>
+            <SignedIn>
+              <header className="flex justify-end items-center p-4 gap-4 h-16">
+                <UserButton />
+              </header>
+              <main className="flex-1">{children}</main>
+              <Toaster />
+            </SignedIn>
+          </body>
+        </html>
+      </ConvexClientProvider>
     </ClerkProvider>
   );
 }
