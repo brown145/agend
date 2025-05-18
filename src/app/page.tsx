@@ -15,19 +15,14 @@ export default function Home() {
   return (
     <div className="flex justify-center items-center h-screen">
       <Unauthenticated>
-        Failed Convex Auth
         <SignIn />
       </Unauthenticated>
       <Authenticated>
-        Passed Convex Auth
         <UserInitalizationProvider>
-          Passed UserInitalizationProvider
           <UserInitalized>
-            Passed UserInitalized
             <RedirectToOrganization />
           </UserInitalized>
           <UserNotInitalized>
-            Failed UserNotInitalized
             {/* TODO: fix loading screen */}
             <div className="w-full h-full bg-lime-600">
               <Loader />
