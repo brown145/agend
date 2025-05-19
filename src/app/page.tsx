@@ -15,7 +15,7 @@ export default function Home() {
   return (
     <div className="flex justify-center items-center h-screen">
       <Unauthenticated>
-        <SignIn />
+        <SignIn withSignUp={true} transferable={true} />
       </Unauthenticated>
       <Authenticated>
         <UserInitalizationProvider>

@@ -46,7 +46,7 @@ export default function RootLayout({
           >
             <SignedOut>
               <div className="flex justify-center items-center h-screen">
-                <SignIn />
+                <SignIn withSignUp={true} transferable={true} />
               </div>
             </SignedOut>
             <SignedIn>
