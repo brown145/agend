@@ -1,8 +1,9 @@
 import {
   ClerkProvider,
-  SignIn,
   SignedIn,
   SignedOut,
+  SignInButton,
+  SignUpButton,
   UserButton,
 } from "@clerk/nextjs";
 import { type Metadata } from "next";
@@ -46,7 +47,10 @@ export default function RootLayout({
           >
             <SignedOut>
               <div className="flex justify-center items-center h-screen">
-                <SignIn withSignUp={true} transferable={true} />
+                <div className="flex flex-col gap-4">
+                  <SignInButton />
+                  <SignUpButton />
+                </div>
               </div>
             </SignedOut>
             <SignedIn>
