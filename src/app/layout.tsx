@@ -1,3 +1,4 @@
+import { Button } from "@/components/ui/button";
 import {
   ClerkProvider,
   SignedIn,
@@ -46,10 +47,14 @@ export default function RootLayout({
             className={`${geistSans.variable} ${geistMono.variable} antialiased`}
           >
             <SignedOut>
-              <div className="flex justify-center items-center h-screen">
-                <div className="flex flex-col gap-4">
-                  <SignInButton />
-                  <SignUpButton />
+              <div className="flex justify-center h-screen pt-16">
+                <div className="flex flex-row gap-4">
+                  <SignInButton mode="modal">
+                    <Button variant="outline">Sign in</Button>
+                  </SignInButton>
+                  <SignUpButton mode="modal">
+                    <Button variant="outline">Sign up</Button>
+                  </SignUpButton>
                 </div>
               </div>
             </SignedOut>
