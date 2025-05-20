@@ -13,6 +13,7 @@ export async function createTask(
   {
     completed,
     createdBy,
+    freeformOwner,
     orgId,
     owner,
     text,
@@ -20,6 +21,7 @@ export async function createTask(
   }: {
     completed: boolean;
     createdBy: Id<"users">;
+    freeformOwner: string | undefined;
     orgId: Id<"organizations">;
     owner: Id<"users">;
     text: string;
@@ -29,6 +31,7 @@ export async function createTask(
   return await db.insert("tasks", {
     completed,
     createdBy,
+    freeformOwner,
     orgId,
     owner,
     text,
@@ -52,15 +55,18 @@ export const complete = authedOrgMutation({
 
 export const create = authedOrgMutation({
   args: {
-    topicId: v.id("topics"),
-    text: v.string(),
+    freeformOwner: v.optional(v.string()),
     owner: v.id("users"),
+    text: v.string(),
+    topicId: v.id("topics"),
   },
   handler: async (ctx, args) => {
     const topic = await validateTopic(ctx.db, args.topicId);
+
     return createTask(ctx.db, {
       completed: false,
       createdBy: ctx.user._id,
+      freeformOwner: args.freeformOwner,
       orgId: ctx.organization._id,
       owner: args.owner,
       text: args.text,

@@ -14,6 +14,7 @@ export async function createTopic(
     completed,
     createdBy,
     discussionId,
+    freeformOwner,
     orgId,
     owner,
     text,
@@ -21,6 +22,7 @@ export async function createTopic(
     completed: boolean;
     createdBy: Id<"users">;
     discussionId: Id<"discussions">;
+    freeformOwner: string | undefined;
     orgId: Id<"organizations">;
     owner: Id<"users">;
     text: string;
@@ -29,6 +31,7 @@ export async function createTopic(
   return await db.insert("topics", {
     completed,
     createdBy,
+    freeformOwner,
     orgId,
     owner,
     text,
@@ -53,6 +56,7 @@ export const complete = authedOrgMutation({
 export const create = authedOrgMutation({
   args: {
     discussionId: v.id("discussions"),
+    freeformOwner: v.optional(v.string()),
     text: v.string(),
     owner: v.id("users"),
   },
@@ -68,6 +72,7 @@ export const create = authedOrgMutation({
       createdBy: ctx.user._id,
       discussionId: discussion._id,
       orgId: ctx.organization._id,
+      freeformOwner: args.freeformOwner,
       owner: args.owner,
       text: args.text,
     });

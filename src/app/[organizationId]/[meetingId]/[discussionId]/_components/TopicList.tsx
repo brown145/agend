@@ -1,22 +1,12 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Combobox } from "@/components/ui/combobox";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
+import { Form, FormControl, FormField, FormItem } from "@/components/ui/form";
 import { api } from "@convex/_generated/api";
 import { Doc, Id } from "@convex/_generated/dataModel";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery } from "convex/react";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
+import { AddTopic } from "./AddTopic";
 import { TaskList } from "./TaskList";
 
 export const TopicList = ({
@@ -100,92 +90,16 @@ const Topic = ({ topic, orgId }: { topic: Doc<"topics">; orgId: string }) => {
           >
             {topic.text}
           </span>
-          <div className="text-muted-foreground text-sm">{owner?.name}</div>
+          <div className="text-muted-foreground text-sm">
+            {topic.freeformOwner ? (
+              <>{topic.freeformOwner}</>
+            ) : owner?.name ? (
+              <>{owner?.name}</>
+            ) : (
+              <>unknown</>
+            )}
+          </div>
         </div>
-      </form>
-    </Form>
-  );
-};
-
-const formSchema = z.object({
-  text: z.string().min(1, "Topic description is required"),
-  owner: z.string().min(1, "Owner is required"),
-});
-
-type FormValues = z.infer<typeof formSchema>;
-
-const AddTopic = ({
-  discussionId,
-  orgId,
-}: {
-  discussionId: string;
-  orgId: string;
-}) => {
-  const createTopic = useMutation(api.topics.mutations.create);
-  const orgUsers = useQuery(api.users.queries.byOrgId, {
-    orgId: orgId as Id<"organizations">,
-  });
-
-  const form = useForm<FormValues>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      text: "",
-      owner: "",
-    },
-  });
-
-  const onSubmit = (values: FormValues) => {
-    createTopic({
-      text: values.text,
-      discussionId: discussionId as Id<"discussions">,
-      orgId: orgId as Id<"organizations">,
-      owner: values.owner as Id<"users">,
-    });
-    form.reset();
-  };
-
-  const userItems =
-    orgUsers?.map((user) => ({
-      value: user._id,
-      label: user.name,
-    })) ?? [];
-
-  return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="flex gap-2">
-        <FormField
-          control={form.control}
-          name="text"
-          render={({ field }) => (
-            <FormItem className="flex-1">
-              <FormControl>
-                <Input placeholder="Enter topic" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="owner"
-          render={({ field }) => (
-            <FormItem className="w-[200px]">
-              <FormControl>
-                <Combobox
-                  items={userItems}
-                  value={field.value}
-                  onSelect={field.onChange}
-                  placeholder="Select owner"
-                  emptyText="No users found"
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <Button type="submit" disabled={!form.formState.isValid}>
-          Add topic
-        </Button>
       </form>
     </Form>
   );

@@ -45,6 +45,7 @@ export default defineSchema({
   tasks: defineTable({
     completed: v.boolean(),
     createdBy: v.id("users"),
+    freeformOwner: v.optional(v.string()),
     orgId: v.id("organizations"),
     owner: v.id("users"),
     text: v.string(),
@@ -58,6 +59,7 @@ export default defineSchema({
     completed: v.boolean(),
     createdBy: v.id("users"),
     discussionId: v.id("discussions"),
+    freeformOwner: v.optional(v.string()),
     orgId: v.id("organizations"),
     owner: v.id("users"),
     text: v.string(),
