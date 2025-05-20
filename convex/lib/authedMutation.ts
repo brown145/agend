@@ -18,9 +18,7 @@ export const authedMutation = customMutation(mutation, {
     // Get the user document
     const user = await ctx.db
       .query("users")
-      .withIndex("by_token", (q) =>
-        q.eq("tokenIdentifier", identity.tokenIdentifier),
-      )
+      .withIndex("by_subject", (q) => q.eq("subject", identity.subject))
       .unique();
 
     convexInvariant(user, "User not found");

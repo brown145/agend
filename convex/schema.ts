@@ -71,10 +71,10 @@ export default defineSchema({
   users: defineTable({
     email: v.string(),
     name: v.string(),
-    tokenIdentifier: v.string(),
+    subject: v.string(),
   })
     .index("by_email", ["email"])
-    .index("by_token", ["tokenIdentifier"]),
+    .index("by_subject", ["subject"]),
 
   userOrganizations: defineTable({
     orgId: v.id("organizations"),

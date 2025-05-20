@@ -1,10 +1,8 @@
-import { Button } from "@/components/ui/button";
 import {
   ClerkProvider,
   SignedIn,
   SignedOut,
-  SignInButton,
-  SignUpButton,
+  SignIn,
   UserButton,
 } from "@clerk/nextjs";
 import { type Metadata } from "next";
@@ -12,6 +10,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { Toaster } from "sonner";
 import { ConvexClientProvider } from "./ConvexClientProvider";
 import "./globals.css";
+import Loading from "./loading";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -48,14 +47,7 @@ export default function RootLayout({
           >
             <SignedOut>
               <div className="flex justify-center h-screen pt-16">
-                <div className="flex flex-row gap-4">
-                  <SignInButton mode="modal">
-                    <Button variant="outline">Sign in</Button>
-                  </SignInButton>
-                  <SignUpButton mode="modal">
-                    <Button variant="outline">Sign up</Button>
-                  </SignUpButton>
-                </div>
+                <SignIn withSignUp={true} fallback={<Loading />} />
               </div>
             </SignedOut>
             <SignedIn>

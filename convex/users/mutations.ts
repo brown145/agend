@@ -11,9 +11,9 @@ export const ensureUser = mutation({
     const user = await getOneFrom(
       ctx.db,
       "users",
-      "by_token",
-      identity.tokenIdentifier,
-      "tokenIdentifier",
+      "by_subject",
+      identity.subject,
+      "subject",
     );
 
     let userId: Id<"users">;
@@ -29,7 +29,7 @@ export const ensureUser = mutation({
       userId = await ctx.db.insert("users", {
         name: identity.name ?? "Anonymous",
         email: identity.email ?? "",
-        tokenIdentifier: identity.tokenIdentifier,
+        subject: identity.subject,
       });
     }
 
