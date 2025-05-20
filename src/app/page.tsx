@@ -6,7 +6,7 @@ import UserInitalizationProvider, {
   useUserInitalization,
 } from "@/app/_components/UserInitalization";
 import Loader from "@/components/Loader";
-import { SignInButton, SignUpButton } from "@clerk/nextjs";
+import { SignIn } from "@clerk/nextjs";
 import { Authenticated, Unauthenticated } from "convex/react";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
@@ -15,10 +15,8 @@ export default function Home() {
   return (
     <div className="flex justify-center items-center h-screen">
       <Unauthenticated>
-        <div className="flex flex-col gap-4">
-          <SignInButton />
-          <SignUpButton />
-        </div>
+        {/* This should never happen if root layout is working */}
+        <SignIn withSignUp={true} />
       </Unauthenticated>
       <Authenticated>
         <UserInitalizationProvider>
