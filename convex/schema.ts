@@ -4,7 +4,7 @@ import { v } from "convex/values";
 export default defineSchema({
   // TODO: v.union for previous vs next vs actual discussions?
   discussions: defineTable({
-    activeStep: v.number(),
+    activeStep: v.optional(v.number()),
     completed: v.boolean(),
     createdBy: v.id("users"),
     date: v.optional(v.string() || "next"), // Format: YYYY-MM-DD
