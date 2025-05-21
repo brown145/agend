@@ -9,12 +9,14 @@ import { useForm } from "react-hook-form";
 import { AddTask } from "./AddTask";
 
 export const TaskList = ({
-  orgId,
+  disabled = false,
   editable,
+  orgId,
   topicId,
 }: {
-  orgId: string;
+  disabled?: boolean;
   editable?: boolean;
+  orgId: string;
   topicId: string;
 }) => {
   const taskList = useQuery(api.tasks.queries.byTopicId, {
@@ -28,18 +30,26 @@ export const TaskList = ({
           key={task._id}
           className="border-l-2 border-solid border-gray-300 pl-4"
         >
-          <Task task={task} orgId={orgId} />
+          <Task disabled={disabled} task={task} orgId={orgId} />
         </div>
       ))}
-      {editable && taskList?.length === 0 && (
+      {editable && !disabled && taskList?.length === 0 && (
         <div className="text-muted-foreground text-sm">No tasks</div>
       )}
-      {editable && <AddTask orgId={orgId} topicId={topicId} />}
+      {editable && !disabled && <AddTask orgId={orgId} topicId={topicId} />}
     </div>
   );
 };
 
-const Task = ({ task, orgId }: { task: Doc<"tasks">; orgId: string }) => {
+const Task = ({
+  disabled,
+  task,
+  orgId,
+}: {
+  disabled: boolean;
+  task: Doc<"tasks">;
+  orgId: string;
+}) => {
   const updateTask = useMutation(api.tasks.mutations.complete);
   const owner = useQuery(api.users.queries.byUserId, {
     userId: task.owner,
@@ -74,6 +84,7 @@ const Task = ({ task, orgId }: { task: Doc<"tasks">; orgId: string }) => {
               <FormControl>
                 <Checkbox
                   checked={field.value}
+                  disabled={disabled}
                   onCheckedChange={field.onChange}
                 />
               </FormControl>

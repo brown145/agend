@@ -37,6 +37,7 @@ export async function createDiscussion(
   }
 
   return await db.insert("discussions", {
+    activeStep: 0,
     completed,
     createdBy,
     date,
@@ -61,6 +62,24 @@ export const complete = authedOrgMutation({
 
     return ctx.db.patch(discussion._id, {
       completed: args.isCompleted,
+    });
+  },
+});
+
+export const updateActiveStep = authedOrgMutation({
+  args: {
+    discussionId: v.id("discussions"),
+    activeStep: v.number(),
+  },
+  handler: async (ctx, args) => {
+    const discussion = await validateDiscussion(
+      ctx.db,
+      args.discussionId,
+      ctx.organization._id,
+    );
+
+    return ctx.db.patch(discussion._id, {
+      activeStep: args.activeStep,
     });
   },
 });

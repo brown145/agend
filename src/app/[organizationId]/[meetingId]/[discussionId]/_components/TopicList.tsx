@@ -10,11 +10,13 @@ import { AddTopic } from "./AddTopic";
 import { TaskList } from "./TaskList";
 
 export const TopicList = ({
+  disabled = false,
   discussionId,
   editable = true,
   orgId,
 }: {
   discussionId: string;
+  disabled?: boolean;
   editable?: boolean;
   orgId: string;
 }) => {
@@ -30,18 +32,33 @@ export const TopicList = ({
           key={topic._id}
           className="border-l-2 border-solid border-gray-500 pl-2 flex flex-col gap-1"
         >
-          <Topic topic={topic} orgId={orgId} />
-          <TaskList orgId={orgId} topicId={topic._id} editable={editable} />
+          <Topic disabled={disabled} topic={topic} orgId={orgId} />
+          <TaskList
+            disabled={disabled}
+            orgId={orgId}
+            topicId={topic._id}
+            editable={editable && !disabled}
+          />
         </div>
       ))}
-      {editable && topicList?.length === 0 && <div>No topics</div>}
-      {editable && <AddTopic discussionId={discussionId} orgId={orgId} />}
+      {editable && !disabled && topicList?.length === 0 && <div>No topics</div>}
+      {editable && !disabled && (
+        <AddTopic discussionId={discussionId} orgId={orgId} />
+      )}
     </div>
   );
 };
 
 // TODO: use topicID to query for topic details
-const Topic = ({ topic, orgId }: { topic: Doc<"topics">; orgId: string }) => {
+const Topic = ({
+  disabled = false,
+  topic,
+  orgId,
+}: {
+  disabled?: boolean;
+  topic: Doc<"topics">;
+  orgId: string;
+}) => {
   const updateTopic = useMutation(api.topics.mutations.complete);
   const owner = useQuery(api.users.queries.byUserId, {
     userId: topic.owner,
@@ -76,6 +93,7 @@ const Topic = ({ topic, orgId }: { topic: Doc<"topics">; orgId: string }) => {
               <FormControl>
                 <Checkbox
                   checked={field.value}
+                  disabled={disabled}
                   onCheckedChange={field.onChange}
                 />
               </FormControl>

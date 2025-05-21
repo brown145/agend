@@ -1,7 +1,5 @@
+import { DiscussionClient } from "./_components/DiscussionClient";
 import DiscussionHeader from "./_components/DiscussionHeader";
-import DiscussionReview from "./_components/DiscussionReview";
-import DiscussionSummary from "./_components/DiscussionSummary";
-import { TopicList } from "./_components/TopicList";
 
 export default async function DiscussionPage({
   params,
@@ -21,13 +19,7 @@ export default async function DiscussionPage({
         organizationId={organizationId}
         meetingId={meetingId}
       />
-      <DiscussionReview
-        discussionId={discussionId}
-        organizationId={organizationId}
-      />
-      <h2 className="text-lg font-bold">Topics</h2>
-      <TopicList discussionId={discussionId} orgId={organizationId} />
-      <DiscussionSummary
+      <DiscussionClient
         discussionId={discussionId}
         organizationId={organizationId}
         meetingId={meetingId}

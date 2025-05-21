@@ -5,10 +5,13 @@ import { api } from "@convex/_generated/api";
 import { Id } from "@convex/_generated/dataModel";
 import { useQuery } from "convex/react";
 import { TopicList } from "./TopicList";
+
 export default function DiscussionReview({
+  disabled = false,
   discussionId,
   organizationId,
 }: {
+  disabled: boolean;
   discussionId: string;
   organizationId: string;
 }) {
@@ -22,20 +25,20 @@ export default function DiscussionReview({
   if (!discussion.previousDiscussionId) return null;
 
   return (
-    <div>
-      <h2 className="text-lg font-bold">Review</h2>
-      <PreviousReview
-        discussionId={discussion?.previousDiscussionId}
-        organizationId={organizationId}
-      />
-    </div>
+    <PreviousReview
+      disabled={disabled}
+      discussionId={discussion?.previousDiscussionId}
+      organizationId={organizationId}
+    />
   );
 }
 
 function PreviousReview({
+  disabled,
   discussionId,
   organizationId,
 }: {
+  disabled: boolean;
   discussionId: string;
   organizationId: string;
 }) {
@@ -45,10 +48,13 @@ function PreviousReview({
   });
 
   return (
-    <div className="text-sm text-gray-500">
-      From: {formatDiscussionDate(discussion?.date)}
+    <div>
+      <div className="text-sm text-gray-500">
+        From: {formatDiscussionDate(discussion?.date)}
+      </div>
       {organizationId && (
         <TopicList
+          disabled={disabled}
           discussionId={discussionId}
           editable={false}
           orgId={organizationId}

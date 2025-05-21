@@ -5,10 +5,12 @@ import { Id } from "@convex/_generated/dataModel";
 import { useQuery } from "convex/react";
 import { TopicList } from "./TopicList";
 export default function DiscussionReview({
+  disabled,
   discussionId,
   organizationId,
   meetingId,
 }: {
+  disabled: boolean;
   discussionId: string;
   organizationId: string;
   meetingId: string;
@@ -33,6 +35,7 @@ export default function DiscussionReview({
     <>
       <h2 className="text-lg font-bold">Summary</h2>
       <TopicList
+        disabled={disabled}
         discussionId={discussionId}
         editable={false}
         orgId={organizationId}
