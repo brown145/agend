@@ -34,6 +34,9 @@ export const byDiscussionId = authedOrgQuery({
   },
 });
 
+// TODO: is the really required or could I make more requests in client?
+//       I am unsure on the patters to use.. so thinking we should avoid joining till we need to
+//       joining does not seem very "convex"y
 type DiscussionWithTopics = Doc<"discussions"> & {
   topics: Doc<"topics">[];
 };
@@ -68,5 +71,43 @@ export const byMeetingId = authedOrgQuery({
     );
 
     return discussionsWithTopics;
+  },
+});
+
+export const previousIncompletedDiscussions = authedOrgQuery({
+  args: {
+    discussionId: v.id("discussions"),
+  },
+  handler: async (ctx, args) => {
+    // Get the current discussion to find its meeting and creation time
+    const currentDiscussion = await validateDiscussion(
+      ctx.db,
+      args.discussionId,
+      ctx.organization._id,
+    );
+
+    // Get all discussions for the same meeting
+    const meetingDiscussions = await getManyFrom(
+      ctx.db,
+      "discussions",
+      "by_meetingId",
+      currentDiscussion.meetingId,
+    );
+
+    // Filter for incomplete discussions created before the current one
+    // Exclude "next" discussions and the current discussion
+    const previousDiscussions = meetingDiscussions.filter(
+      (discussion) =>
+        !discussion.completed &&
+        discussion._id !== currentDiscussion._id &&
+        discussion._creationTime < currentDiscussion._creationTime &&
+        discussion.date !== "next",
+    );
+
+    // Sort by creation time descending to get the most recent previous discussion
+    previousDiscussions.sort((a, b) => b._creationTime - a._creationTime);
+
+    // Return the array of previous incomplete discussions
+    return previousDiscussions;
   },
 });

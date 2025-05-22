@@ -15,14 +15,12 @@ export async function createDiscussion(
     dateString,
     meetingId,
     orgId,
-    previousDiscussionId,
   }: {
     completed: boolean;
     createdBy: Id<"users">;
     dateString: string;
     meetingId: Id<"meetings">;
     orgId: Id<"organizations">;
-    previousDiscussionId?: Id<"discussions">;
   },
 ) {
   let date: string;
@@ -43,7 +41,6 @@ export async function createDiscussion(
     date,
     meetingId,
     orgId,
-    previousDiscussionId,
   });
 }
 // ------------------------------------------------------------

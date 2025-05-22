@@ -8,6 +8,15 @@
 1. "active" meeting concpet
 1. progress through meeting Recap > Topcis > Summary
 
+# helpers
+1. Triggers (cascading delete) -> https://youtu.be/lSw2Z_ra3XE?t=141&si=io9uzuDew-D_s_wb
+1. trigger to cascade complete up from task > topic > discussion
+1. trigger to create discussion when meeting is created
+1. trigger to create org userOrg when a user is created
+1. Query caching -> https://youtu.be/lSw2Z_ra3XE?t=85&si=32nVOZfPeSAKO5zS
+1. Stable Queries -> https://youtu.be/lSw2Z_ra3XE?si=nkm6EkkWpIsqdUOe&t=474
+1. Zod validation ??? -> https://youtu.be/lSw2Z_ra3XE?si=sHBtaUxeHf97pRsz&t=349
+
 ## v0.1.3 advanced topic / task management
 1. edit task/topic/meeting ownership
 1. postpone topic

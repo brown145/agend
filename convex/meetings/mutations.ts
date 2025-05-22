@@ -120,25 +120,6 @@ export const start = authedOrgMutation({
       args.meetingId,
       ctx.organization._id,
     );
-    const discussions = await getManyFrom(
-      ctx.db,
-      "discussions",
-      "by_meetingId",
-      meeting._id,
-    );
-
-    // TODO: could the "next" discussion track the previous discussion
-    //       and simplify this code so we dont need to find it every time?
-
-    // TODO: refactor this ???
-    const previousDiscussion = discussions
-      .filter(
-        (d): d is typeof d & { date: string } =>
-          d.date !== "next" && d.date !== null,
-      )
-      .sort((a, b) => {
-        return b.date.localeCompare(a.date);
-      })[0];
 
     const newDiscussionId = await createDiscussion(ctx.db, {
       completed: false,
@@ -146,7 +127,6 @@ export const start = authedOrgMutation({
       dateString: new Date().toISOString(),
       meetingId: args.meetingId,
       orgId: ctx.organization._id,
-      previousDiscussionId: previousDiscussion?._id,
     });
 
     if (meeting.nextDiscussionId) {

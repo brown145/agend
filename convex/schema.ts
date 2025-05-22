@@ -10,14 +10,13 @@ export default defineSchema({
     date: v.optional(v.string() || "next"), // Format: YYYY-MM-DD
     meetingId: v.id("meetings"),
     orgId: v.id("organizations"),
-    previousDiscussionId: v.optional(v.id("discussions")),
   })
+    // TODO: cleanup indexes
     .index("by_createdBy", ["createdBy"])
     .index("by_meetingId_date", ["meetingId", "date"])
     .index("by_meetingId", ["meetingId"])
     .index("by_orgId", ["orgId"])
-    .index("by_orgId_meetingId", ["orgId", "meetingId"])
-    .index("by_previousDiscussionId", ["previousDiscussionId"]),
+    .index("by_orgId_meetingId", ["orgId", "meetingId"]),
 
   // TODO: v.union for oneTime vs Recurring meetings?
   meetings: defineTable({
