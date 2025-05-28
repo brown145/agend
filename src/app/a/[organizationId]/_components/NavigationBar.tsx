@@ -71,14 +71,14 @@ export default function NavigationBar() {
             <DropdownMenuContent align="start">
               {orgs.map((org) => (
                 <DropdownMenuItem key={org._id} asChild>
-                  <Link href={`/${org._id}`} className="flex items-center">
+                  <Link href={`/a/${org._id}`} className="flex items-center">
                     {org.name}
                   </Link>
                 </DropdownMenuItem>
               ))}
               <DropdownMenuSeparator />
               <DropdownMenuItem asChild>
-                <Link href="/settings" className="flex items-center">
+                <Link href="/a/settings" className="flex items-center">
                   <Settings className="h-4 w-4 mr-2" />
                   Settings
                 </Link>
@@ -102,21 +102,24 @@ export default function NavigationBar() {
               <DropdownMenuContent align="start">
                 {meetings.map((mtg) => (
                   <DropdownMenuItem key={mtg._id} asChild>
-                    <Link href={`/${currentOrgId}/${mtg._id}`}>
+                    <Link href={`/a/${currentOrgId}/${mtg._id}`}>
                       {mtg.title}
                     </Link>
                   </DropdownMenuItem>
                 ))}
                 <DropdownMenuSeparator />
                 <DropdownMenuItem asChild>
-                  <Link href={`/${currentOrgId}`} className="flex items-center">
+                  <Link
+                    href={`/a/${currentOrgId}`}
+                    className="flex items-center"
+                  >
                     <List className="h-4 w-4" />
                     list
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
                   <Link
-                    href={`/${currentOrgId}/new`}
+                    href={`/a/${currentOrgId}/new`}
                     className="flex items-center"
                   >
                     <Plus className="h-4 w-4" />
@@ -125,35 +128,35 @@ export default function NavigationBar() {
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
+          </>
+        )}
 
-            {discussions && discussions.length > 0 && (
-              <>
-                <span className="text-muted-foreground">/</span>
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" className="h-8 px-2">
-                      <div className="flex items-center gap-0.5">
-                        {currentDiscussion
-                          ? formatDiscussionDate(currentDiscussion.date)
-                          : "Discussions"}
-                        <ChevronsUpDown className="h-4 w-4" />
-                      </div>
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="start">
-                    {discussions.map((disc) => (
-                      <DropdownMenuItem key={disc._id} asChild>
-                        <Link
-                          href={`/${currentOrgId}/${currentMeeting?._id}/${disc._id}`}
-                        >
-                          {formatDiscussionDate(disc.date)}
-                        </Link>
-                      </DropdownMenuItem>
-                    ))}
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </>
-            )}
+        {discussions && discussions.length > 0 && (
+          <>
+            <span className="text-muted-foreground">/</span>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" className="h-8 px-2">
+                  <div className="flex items-center gap-0.5">
+                    {currentDiscussion
+                      ? formatDiscussionDate(currentDiscussion.date)
+                      : "Discussions"}
+                    <ChevronsUpDown className="h-4 w-4" />
+                  </div>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start">
+                {discussions.map((disc) => (
+                  <DropdownMenuItem key={disc._id} asChild>
+                    <Link
+                      href={`/a/${currentOrgId}/${currentMeeting?._id}/${disc._id}`}
+                    >
+                      {formatDiscussionDate(disc.date)}
+                    </Link>
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
           </>
         )}
       </div>

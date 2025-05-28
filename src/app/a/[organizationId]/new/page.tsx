@@ -8,7 +8,7 @@ export default function MeetingsNewPage() {
   const currentOrgId = organizationId ? organizationId.toString() : null;
 
   const handleSubmit = (id: string) => {
-    redirect(`/${organizationId}/${id}`);
+    redirect(`/a/${organizationId}/${id}`);
   };
 
   if (!currentOrgId) {

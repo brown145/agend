@@ -53,7 +53,7 @@ export default function DiscussionList({
             {nextDiscussion && (
               <Button
                 onClick={() =>
-                  router.push(`/${orgId}/${meetingId}/${nextDiscussion._id}`)
+                  router.push(`/a/${orgId}/${meetingId}/${nextDiscussion._id}`)
                 }
               >
                 Start the discussion
@@ -78,13 +78,13 @@ export default function DiscussionList({
             key={discussion._id}
             className="cursor-pointer"
             onClick={() =>
-              router.push(`/${orgId}/${meetingId}/${discussion._id}`)
+              router.push(`/a/${orgId}/${meetingId}/${discussion._id}`)
             }
           >
             <TableCell>
               <Link
                 className="font-bold hover:underline"
-                href={`/${orgId}/${meetingId}/${discussion._id}`}
+                href={`/a/${orgId}/${meetingId}/${discussion._id}`}
               >
                 {formatDiscussionDate(discussion.date)}
               </Link>

@@ -1,6 +1,6 @@
 import { type Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import "./globals.css";
+import "../globals.css";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -13,15 +13,15 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "agendry",
-  description: "Manage your agendas and action items",
+  title: "Demo - agendry",
+  description: "Demo page for agendry",
 };
 
-export default function RootLayout({
+export default function DemoLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
     <html lang="en">
       <body

@@ -79,12 +79,12 @@ function MeetingListItem({
   return (
     <TableRow
       className="cursor-pointer"
-      onClick={() => router.push(`/${orgId}/${meetingId}`)}
+      onClick={() => router.push(`/a/${orgId}/${meetingId}`)}
     >
       <TableCell>
         <Link
           className="font-bold hover:underline"
-          href={`/${orgId}/${meetingId}`}
+          href={`/a/${orgId}/${meetingId}`}
         >
           {meetingDetails?.title}
         </Link>
@@ -93,7 +93,7 @@ function MeetingListItem({
         {meetingDetails?.nextDiscussionId && (
           <Link
             className="text-muted-foreground hover:underline"
-            href={`/${orgId}/${meetingId}/${meetingDetails?.nextDiscussionId}`}
+            href={`/a/${orgId}/${meetingId}/${meetingDetails?.nextDiscussionId}`}
           >
             Next
           </Link>
@@ -103,7 +103,7 @@ function MeetingListItem({
         {meetingDetails?.previousDiscussion ? (
           <Link
             className="text-muted-foreground hover:underline"
-            href={`/${orgId}/${meetingId}/${meetingDetails?.previousDiscussion?._id}`}
+            href={`/a/${orgId}/${meetingId}/${meetingDetails?.previousDiscussion?._id}`}
           >
             {formatDiscussionDate(meetingDetails?.previousDiscussion?.date)}
           </Link>

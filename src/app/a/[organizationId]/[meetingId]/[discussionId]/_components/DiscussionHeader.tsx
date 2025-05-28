@@ -42,7 +42,7 @@ export default function DiscussionHeader({
       orgId: organizationId as Id<"organizations">,
     });
 
-    router.push(`/${organizationId}/${meetingId}/${newDiscussionId}`);
+    router.push(`/a/${organizationId}/${meetingId}/${newDiscussionId}`);
   };
 
   return (

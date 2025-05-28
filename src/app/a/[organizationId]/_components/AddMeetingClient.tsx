@@ -15,7 +15,7 @@ export default function AddMeetingClient({ orgId }: { orgId: string }) {
       icon: <Calendar className="w-4 h-4 mr-2" />,
       action: {
         label: "View",
-        onClick: () => router.push(`/${orgId}/${id}`),
+        onClick: () => router.push(`/a/${orgId}/${id}`),
       },
     });
   };

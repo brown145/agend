@@ -1,4 +1,4 @@
-import SidePanel from "@/app/[organizationId]/[meetingId]/_components/SidePanel";
+import SidePanel from "@/app/a/[organizationId]/[meetingId]/_components/SidePanel";
 import React from "react";
 
 export default function MeetingsLayout({
