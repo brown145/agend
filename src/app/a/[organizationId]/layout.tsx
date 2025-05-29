@@ -3,7 +3,7 @@
 import UserInitalizationProvider, {
   UserInitalized,
   UserNotInitalized,
-} from "@/app/_components/UserInitalization";
+} from "@/app/a/_components/UserInitalizationProvider";
 import { Authenticated, Unauthenticated } from "convex/react";
 import React from "react";
 import NavigationBar from "./_components/NavigationBar";

@@ -2,12 +2,14 @@ import {
   ClerkProvider,
   SignedIn,
   SignedOut,
-  SignIn,
+  SignInButton,
+  SignUpButton,
   UserButton,
 } from "@clerk/nextjs";
 import { Toaster } from "sonner";
 import { ConvexClientProvider } from "./_components/ConvexClientProvider";
-import Loading from "./loading";
+import UserInitalizationProvider from "./_components/UserInitalizationProvider";
+import ClientLayout from "./clientLayout";
 
 const clerkPublishableKey = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY;
 
@@ -24,18 +26,24 @@ export default function AuthedLayout({
   return (
     <ClerkProvider publishableKey={clerkPublishableKey}>
       <ConvexClientProvider>
-        <SignedOut>
-          <div className="flex justify-center h-screen pt-16">
-            <SignIn withSignUp={true} fallback={<Loading />} />
-          </div>
-        </SignedOut>
-        <SignedIn>
-          <header className="flex justify-end items-center p-4 gap-4 h-16">
-            <UserButton />
-          </header>
-          <main className="flex-1">{children}</main>
-          <Toaster />
-        </SignedIn>
+        <UserInitalizationProvider>
+          <SignedOut>
+            {/* Should be protected by middleware */}
+            <div className="flex justify-center items-center h-screen">
+              <SignInButton />
+              <SignUpButton />
+            </div>
+          </SignedOut>
+          <SignedIn>
+            <ClientLayout>
+              <header className="flex justify-end items-center p-4 gap-4 h-16">
+                <UserButton />
+              </header>
+              <main className="flex-1">{children}</main>
+              <Toaster />
+            </ClientLayout>
+          </SignedIn>
+        </UserInitalizationProvider>
       </ConvexClientProvider>
     </ClerkProvider>
   );

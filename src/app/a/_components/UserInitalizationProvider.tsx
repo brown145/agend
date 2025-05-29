@@ -1,5 +1,8 @@
+"use client";
+
+import { useSignIn } from "@clerk/nextjs";
 import { api } from "@convex/_generated/api";
-import { useMutation } from "convex/react";
+import { useConvexAuth, useMutation } from "convex/react";
 import {
   createContext,
   ReactNode,
@@ -26,6 +29,9 @@ export default function UserInitalizationProvider({
   const ensureUser = useMutation(api.users.mutations.ensureUser);
   const [isInitialized, setIsInitialized] = useState(false);
   const [personalOrgId, setPersonalOrgId] = useState<string | null>(null);
+  const { isAuthenticated } = useConvexAuth();
+  const { isLoaded } = useSignIn();
+
   useEffect(() => {
     async function initializeUser() {
       try {
@@ -42,8 +48,10 @@ export default function UserInitalizationProvider({
       }
     }
 
-    initializeUser();
-  }, [ensureUser]);
+    if (!isInitialized && isLoaded && isAuthenticated) {
+      initializeUser();
+    }
+  }, [ensureUser, isLoaded, isAuthenticated, isInitialized]);
 
   return (
     <UserInitalizationContext.Provider value={{ isInitialized, personalOrgId }}>
