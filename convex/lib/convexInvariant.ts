@@ -5,6 +5,7 @@ export function convexInvariant(
   message: string,
 ): asserts condition {
   if (!condition) {
+    console.error(message);
     throw new ConvexError(message);
   }
 }

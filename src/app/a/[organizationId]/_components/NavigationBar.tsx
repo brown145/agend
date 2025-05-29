@@ -8,7 +8,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { formatDiscussionDate } from "@/lib/utils/date";
+import { formatDiscussionDate } from "@/lib/date";
 import { SignedIn, UserButton } from "@clerk/nextjs";
 import { api } from "@convex/_generated/api";
 import { Id } from "@convex/_generated/dataModel";

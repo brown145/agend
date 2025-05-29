@@ -5,19 +5,14 @@ import {
   SignIn,
   UserButton,
 } from "@clerk/nextjs";
-import { type Metadata } from "next";
 import { Toaster } from "sonner";
 import { ConvexClientProvider } from "./_components/ConvexClientProvider";
 import Loading from "./loading";
 
-export const metadata: Metadata = {
-  title: "agendry",
-  description: "Manage your agendas and action items",
-};
-
 const clerkPublishableKey = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY;
 
 if (!clerkPublishableKey) {
+  console.error("NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY is not set");
   throw new Error("NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY is not set");
 }
 

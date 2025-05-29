@@ -26,6 +26,7 @@ export const ensureUser = mutation({
         });
       }
     } else {
+      console.info("User does not exist, creating user", { identity });
       userId = await ctx.db.insert("users", {
         name: identity.name ?? "Anonymous",
         email: identity.email ?? "",
@@ -45,6 +46,10 @@ export const ensureUser = mutation({
     if (personalUserOrg) {
       personalOrgId = personalUserOrg.orgId;
     } else {
+      console.info("User does not have a personal organization, creating one", {
+        identity,
+        userId,
+      });
       // Create a personal organization for the user
       personalOrgId = await ctx.db.insert("organizations", {
         name: `Personal organization`,
@@ -62,6 +67,9 @@ export const ensureUser = mutation({
     // Get the final user document to return
     const finalUser = await ctx.db.get(userId);
     if (!finalUser) {
+      console.error("Failed to retrieve user after creation/update", {
+        userId,
+      });
       throw new Error("Failed to retrieve user after creation/update");
     }
 
