@@ -25,21 +25,23 @@ export interface ComboboxItem {
 }
 
 interface ComboboxProps {
+  className?: string;
+  disabled?: boolean;
+  emptyText?: string;
   items: ComboboxItem[];
-  value?: string;
   onSelect: (value: string) => void;
   placeholder?: string;
-  emptyText?: string;
-  className?: string;
+  value?: string;
 }
 
 export function Combobox({
+  className,
+  disabled,
+  emptyText = "No items found.",
   items,
-  value,
   onSelect,
   placeholder = "Select item...",
-  emptyText = "No items found.",
-  className,
+  value,
 }: ComboboxProps) {
   const [open, setOpen] = React.useState(false);
 
@@ -51,6 +53,7 @@ export function Combobox({
           role="combobox"
           aria-expanded={open}
           className={cn("w-full justify-between", className)}
+          disabled={disabled}
         >
           {value
             ? items.find((item) => item.value === value)?.label

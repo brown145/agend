@@ -14,7 +14,7 @@ import { api } from "@convex/_generated/api";
 import { Id } from "@convex/_generated/dataModel";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery } from "convex/react";
-import { Pencil, Users } from "lucide-react";
+import { Loader2, Pencil, Users } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -39,6 +39,7 @@ export const AddTask = ({
   const orgUsers = useQuery(api.users.queries.byOrgId, {
     orgId: orgId as Id<"organizations">,
   });
+  const isLoading = orgUsers === undefined;
 
   const currentUser = orgUsers?.find((user) => user.isYou);
 
@@ -52,9 +53,12 @@ export const AddTask = ({
   });
 
   useEffect(() => {
-    if (currentUser?._id && !form.getValues("owner")) {
-      form.setValue("owner", currentUser._id);
+    function setDefaultOwnerToCurrentUser() {
+      if (currentUser?._id && !form.getValues("owner")) {
+        form.setValue("owner", currentUser._id);
+      }
     }
+    setDefaultOwnerToCurrentUser();
   }, [currentUser?._id, form]);
 
   const onSubmit = (values: FormValues) => {
@@ -84,6 +88,12 @@ export const AddTask = ({
       label: user.name,
     })) ?? [];
 
+  if (!isLoading && (!orgUsers || orgUsers.length === 0)) {
+    return (
+      <div className="text-sm text-muted-foreground">Unable to add tasks</div>
+    );
+  }
+
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="flex gap-2">
@@ -93,7 +103,11 @@ export const AddTask = ({
           render={({ field }) => (
             <FormItem className="flex-1">
               <FormControl>
-                <Input placeholder="Enter task" {...field} />
+                <Input
+                  placeholder="Enter task"
+                  {...field}
+                  disabled={isLoading}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -108,7 +122,11 @@ export const AddTask = ({
                 return (
                   <FormItem className="w-[200px]">
                     <FormControl>
-                      <Input placeholder="Enter owner name" {...field} />
+                      <Input
+                        placeholder="Enter owner name"
+                        {...field}
+                        disabled={isLoading}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -131,6 +149,7 @@ export const AddTask = ({
                         onSelect={field.onChange}
                         placeholder="Select owner"
                         emptyText="No users found"
+                        disabled={isLoading}
                       />
                     </FormControl>
                     <FormMessage />
@@ -146,6 +165,7 @@ export const AddTask = ({
             size="icon"
             onClick={() => setIsFreeformOwner(!isFreeformOwner)}
             className="h-9 w-9"
+            disabled={isLoading}
           >
             {isFreeformOwner ? (
               <Users className="h-4 w-4" />
@@ -154,8 +174,12 @@ export const AddTask = ({
             )}
           </Button>
         </div>
-        <Button type="submit" disabled={!form.formState.isValid}>
-          Add task
+        <Button type="submit" disabled={!form.formState.isValid || isLoading}>
+          {isLoading ? (
+            <Loader2 className="h-4 w-4 animate-spin" />
+          ) : (
+            "Add task"
+          )}
         </Button>
       </form>
     </Form>
