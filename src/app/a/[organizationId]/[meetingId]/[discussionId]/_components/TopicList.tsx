@@ -34,10 +34,10 @@ export const TopicList = ({
         >
           <Topic disabled={disabled} topic={topic} orgId={orgId} />
           <TaskList
-            disabled={disabled}
+            addable={editable && !disabled}
+            completeable={!disabled}
             orgId={orgId}
             topicId={topic._id}
-            editable={editable && !disabled}
           />
         </div>
       ))}

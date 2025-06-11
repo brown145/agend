@@ -2,6 +2,7 @@
 
 import { Checkbox } from "@/components/ui/checkbox";
 import { Form, FormControl, FormField, FormItem } from "@/components/ui/form";
+import { Skeleton } from "@/components/ui/skeleton";
 import { api } from "@convex/_generated/api";
 import { Doc, Id } from "@convex/_generated/dataModel";
 import { useMutation, useQuery } from "convex/react";
@@ -9,13 +10,13 @@ import { useForm } from "react-hook-form";
 import { AddTask } from "./AddTask";
 
 export const TaskList = ({
-  disabled = false,
-  editable,
+  addable = false,
+  completeable = true,
   orgId,
   topicId,
 }: {
-  disabled?: boolean;
-  editable?: boolean;
+  addable?: boolean;
+  completeable?: boolean;
   orgId: string;
   topicId: string;
 }) => {
@@ -23,30 +24,42 @@ export const TaskList = ({
     topicId: topicId as Id<"topics">,
     orgId: orgId as Id<"organizations">,
   });
+
+  const isLoading = taskList === undefined;
+  const isEmpty = taskList?.length === 0;
+
   return (
-    <div className="flex flex-col gap-1">
-      {taskList?.map((task) => (
-        <div
-          key={task._id}
-          className="border-l-2 border-solid border-gray-300 pl-4"
-        >
-          <Task disabled={disabled} task={task} orgId={orgId} />
-        </div>
-      ))}
-      {editable && !disabled && taskList?.length === 0 && (
-        <div className="text-muted-foreground text-sm">No tasks</div>
+    <div className="flex flex-col border-l-2 border-solid border-gray-300">
+      {isLoading ? (
+        <>
+          <TaskSkeleton />
+          <TaskSkeleton />
+          <TaskSkeleton />
+        </>
+      ) : isEmpty && addable ? (
+        <div className="text-muted-foreground text-sm pl-4">No tasks</div>
+      ) : (
+        taskList?.map((task) => (
+          <div key={task._id} className="pl-4">
+            <Task completeable={completeable} task={task} orgId={orgId} />
+          </div>
+        ))
       )}
-      {editable && !disabled && <AddTask orgId={orgId} topicId={topicId} />}
+      {addable && (
+        <div key="add-task" className="pl-4 pt-2">
+          <AddTask orgId={orgId} topicId={topicId} />
+        </div>
+      )}
     </div>
   );
 };
 
 const Task = ({
-  disabled,
+  completeable,
   task,
   orgId,
 }: {
-  disabled: boolean;
+  completeable: boolean;
   task: Doc<"tasks">;
   orgId: string;
 }) => {
@@ -84,7 +97,7 @@ const Task = ({
               <FormControl>
                 <Checkbox
                   checked={field.value}
-                  disabled={disabled}
+                  disabled={!completeable}
                   onCheckedChange={field.onChange}
                 />
               </FormControl>
@@ -113,3 +126,13 @@ const Task = ({
     </Form>
   );
 };
+
+const TaskSkeleton = () => (
+  <div className="pl-4 py-1 flex items-center gap-2">
+    <Skeleton className="size-4 rounded-[4px]" />
+    <div className="flex-1 flex flex-row gap-2 items-center">
+      <Skeleton className="h-4 w-48" />
+      <Skeleton className="h-4 w-16" />
+    </div>
+  </div>
+);

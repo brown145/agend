@@ -61,9 +61,7 @@ export class ConvexClientProviderMock extends ConvexReactClient {
       onUpdate: () => () => ({
         unsubscribe: () => null,
       }),
-      journal: () => {
-        throw new Error("Pagination is not implemented");
-      },
+      journal: () => "",
     };
   }
 
