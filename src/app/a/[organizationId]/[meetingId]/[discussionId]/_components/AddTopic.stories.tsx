@@ -1,10 +1,10 @@
 import { LumonDecorator } from "@/storybook/LumonDecorator";
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-import { AddTask } from "./AddTask";
+import { AddTopic } from "./AddTopic";
 
-const meta: Meta<typeof AddTask> = {
-  title: "Task/Add",
-  component: AddTask,
+const meta: Meta<typeof AddTopic> = {
+  title: "Topic/Add",
+  component: AddTopic,
   parameters: {
     layout: "centered",
   },
@@ -13,11 +13,11 @@ const meta: Meta<typeof AddTask> = {
 };
 
 export default meta;
-type Story = StoryObj<typeof AddTask>;
+type Story = StoryObj<typeof AddTopic>;
 
 export const Default: Story = {
   args: {
-    topicId: "topic1",
+    discussionId: "discussion1",
     orgId: "org1",
   },
 };

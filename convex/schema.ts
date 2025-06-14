@@ -53,7 +53,8 @@ export default defineSchema({
   })
     .index("by_createdBy", ["createdBy"])
     .index("by_orgId_topicId", ["orgId", "topicId"])
-    .index("by_owner", ["owner"]),
+    .index("by_owner", ["owner"])
+    .index("by_topicId", ["topicId"]),
 
   topics: defineTable({
     completed: v.boolean(),

@@ -29,26 +29,28 @@ export const TaskList = ({
   const isEmpty = taskList?.length === 0;
 
   return (
-    <div className="flex flex-col border-l-2 border-solid border-gray-300">
+    <div className="flex flex-col border-l border-solid border-gray-300 ml-2">
       {isLoading ? (
         <>
           <TaskSkeleton />
           <TaskSkeleton />
           <TaskSkeleton />
         </>
-      ) : isEmpty && addable ? (
-        <div className="text-muted-foreground text-sm pl-4">No tasks</div>
+      ) : !addable && isEmpty ? (
+        <div className="text-muted-foreground text-sm pl-6">No tasks</div>
       ) : (
-        taskList?.map((task) => (
-          <div key={task._id} className="pl-4">
-            <Task completeable={completeable} task={task} orgId={orgId} />
-          </div>
-        ))
-      )}
-      {addable && (
-        <div key="add-task" className="pl-4 pt-2">
-          <AddTask orgId={orgId} topicId={topicId} />
-        </div>
+        <ol className="pl-8 list-decimal">
+          {taskList?.map((task) => (
+            <li key={task._id} className="pl-2">
+              <Task completeable={completeable} task={task} orgId={orgId} />
+            </li>
+          ))}
+          {addable && (
+            <li key="add-task" className="pl-2">
+              <AddTask orgId={orgId} topicId={topicId} />
+            </li>
+          )}
+        </ol>
       )}
     </div>
   );
@@ -127,7 +129,7 @@ const Task = ({
   );
 };
 
-const TaskSkeleton = () => (
+export const TaskSkeleton = () => (
   <div className="pl-4 py-1 flex items-center gap-2">
     <Skeleton className="size-4 rounded-[4px]" />
     <div className="flex-1 flex flex-row gap-2 items-center">

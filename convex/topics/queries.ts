@@ -29,3 +29,19 @@ export const byDiscussionId = authedOrgQuery({
     return getManyFrom(ctx.db, "topics", "by_discussionId", discussion._id);
   },
 });
+
+export const byTopicId = authedOrgQuery({
+  args: {
+    topicId: v.id("topics"),
+  },
+  handler: async (ctx, args) => {
+    const topic = await validateTopic(ctx.db, args.topicId);
+    const tasks = await getManyFrom(ctx.db, "tasks", "by_topicId", topic._id);
+    const done = topic.completed && tasks.every((task) => task.completed);
+
+    return {
+      ...topic,
+      done,
+    };
+  },
+});

@@ -2,88 +2,131 @@
 
 import { Checkbox } from "@/components/ui/checkbox";
 import { Form, FormControl, FormField, FormItem } from "@/components/ui/form";
+import { Skeleton } from "@/components/ui/skeleton";
+import { cn } from "@/lib/utils";
 import { api } from "@convex/_generated/api";
-import { Doc, Id } from "@convex/_generated/dataModel";
+import { Id } from "@convex/_generated/dataModel";
 import { useMutation, useQuery } from "convex/react";
 import { useForm } from "react-hook-form";
 import { AddTopic } from "./AddTopic";
-import { TaskList } from "./TaskList";
+import { TaskList, TaskSkeleton } from "./TaskList";
 
 export const TopicList = ({
-  disabled = false,
+  addable = true,
+  completeable = true,
   discussionId,
-  editable = true,
   orgId,
 }: {
   discussionId: string;
-  disabled?: boolean;
-  editable?: boolean;
+  addable?: boolean;
+  completeable?: boolean;
   orgId: string;
 }) => {
-  const topicList = useQuery(api.topics.queries.byDiscussionId, {
+  const topicIds = useQuery(api.topics.queries.byDiscussionId, {
     discussionId: discussionId as Id<"discussions">,
     orgId: orgId as Id<"organizations">,
-  });
+  })?.map((topic) => topic._id);
+
+  const isLoading = topicIds === undefined;
 
   return (
-    <div className="flex flex-col gap-4">
-      {topicList?.map((topic) => (
-        <div
-          key={topic._id}
-          className="border-l-2 border-solid border-gray-500 pl-2 flex flex-col gap-1"
-        >
-          <Topic disabled={disabled} topic={topic} orgId={orgId} />
-          <TaskList
-            addable={editable && !disabled}
-            completeable={!disabled}
-            orgId={orgId}
-            topicId={topic._id}
-          />
+    <div className="flex flex-col gap-2">
+      {isLoading ? (
+        <>
+          <TopicSkeleton />
+          <TopicSkeleton />
+        </>
+      ) : (
+        topicIds?.map((topicId) => (
+          <div key={topicId} className="flex flex-col gap-2 py-3">
+            <Topic
+              completeable={completeable}
+              topicId={topicId}
+              orgId={orgId}
+            />
+            <TaskList
+              addable={addable}
+              completeable={completeable}
+              orgId={orgId}
+              topicId={topicId}
+            />
+          </div>
+        ))
+      )}
+      {addable && topicIds?.length === 0 && <div>No topics</div>}
+      {addable && (
+        <div className="pt-2">
+          <AddTopic discussionId={discussionId} orgId={orgId} />
         </div>
-      ))}
-      {editable && !disabled && topicList?.length === 0 && <div>No topics</div>}
-      {editable && !disabled && (
-        <AddTopic discussionId={discussionId} orgId={orgId} />
       )}
     </div>
   );
 };
 
-// TODO: use topicID to query for topic details
 const Topic = ({
-  disabled = false,
-  topic,
+  completeable = true,
+  topicId,
   orgId,
 }: {
-  disabled?: boolean;
-  topic: Doc<"topics">;
+  completeable?: boolean;
+  topicId: string;
   orgId: string;
 }) => {
-  const updateTopic = useMutation(api.topics.mutations.complete);
-  const owner = useQuery(api.users.queries.byUserId, {
-    userId: topic.owner,
+  const topicData = useQuery(api.topics.queries.byTopicId, {
+    topicId: topicId as Id<"topics">,
     orgId: orgId as Id<"organizations">,
   });
 
+  const updateTopic = useMutation(api.topics.mutations.complete);
+  const owner = useQuery(
+    api.users.queries.byUserId,
+    topicData?.owner
+      ? {
+          userId: topicData.owner,
+          orgId: orgId as Id<"organizations">,
+        }
+      : "skip",
+  );
+
   const form = useForm({
     defaultValues: {
-      completed: topic.completed,
+      completed: topicData?.completed ?? false,
     },
   });
 
+  // TODO: is this needed?
+  if (topicData && form.getValues("completed") !== topicData.completed) {
+    console.log(">> updating form", topicData.completed);
+    form.setValue("completed", topicData.completed);
+  }
+
   const onSubmit = (values: { completed: boolean }) => {
+    if (!topicData) return;
     updateTopic({
-      topicId: topic._id,
+      topicId: topicData._id,
       isCompleted: values.completed,
       orgId: orgId as Id<"organizations">,
     });
   };
 
+  // TODO: is this needed?
+  if (!topicData) {
+    console.log(">> topicData is undefined");
+    return (
+      <div className="flex gap-2 items-center text-xl font-bold leading-tight min-h-[2.5rem]">
+        foobar
+        <Skeleton className="h-5 w-5" />
+        <Skeleton className="h-6 w-48" />
+        <Skeleton className="h-4 w-24" />
+      </div>
+    );
+  }
+
   return (
     <Form {...form}>
       <form
         onChange={form.handleSubmit(onSubmit)}
-        className="flex gap-1 items-center"
+        className="flex gap-2 items-center text-xl font-bold leading-tight min-h-[2.5rem]"
       >
         <FormField
           control={form.control}
@@ -93,24 +136,25 @@ const Topic = ({
               <FormControl>
                 <Checkbox
                   checked={field.value}
-                  disabled={disabled}
+                  disabled={!completeable}
                   onCheckedChange={field.onChange}
                 />
               </FormControl>
             </FormItem>
           )}
         />
-        <div className="flex-1 flex flex-row gap-2 items-center">
+        <div className="flex-1 flex flex-row gap-2 items-baseline">
           <span
-            className={
-              topic.completed ? "line-through text-muted-foreground" : ""
-            }
+            className={cn(
+              "text-xl font-semibold leading-tight",
+              topicData.done && "line-through text-muted-foreground",
+            )}
           >
-            {topic.text}
+            {topicData.text}
           </span>
-          <div className="text-muted-foreground text-sm">
-            {topic.freeformOwner ? (
-              <>{topic.freeformOwner}</>
+          <div className="text-muted-foreground text-sm font-normal">
+            {topicData.freeformOwner ? (
+              <>{topicData.freeformOwner}</>
             ) : owner?.name ? (
               <>{owner?.name}</>
             ) : (
@@ -122,3 +166,17 @@ const Topic = ({
     </Form>
   );
 };
+
+const TopicSkeleton = () => (
+  <div className="border-l-2 border-solid border-gray-500 pl-2 flex flex-col gap-1">
+    <div className="flex gap-1 items-center">
+      <div className="flex-1 flex flex-row gap-2 items-center">
+        <Skeleton className="h-4 w-32" />
+        <Skeleton className="h-4 w-16" />
+      </div>
+    </div>
+    <TaskSkeleton />
+    <TaskSkeleton />
+    <TaskSkeleton />
+  </div>
+);
