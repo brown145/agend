@@ -28,6 +28,8 @@ export const TaskList = ({
   const isLoading = taskList === undefined;
   const isEmpty = taskList?.length === 0;
 
+  console.log(">> taskList", taskList);
+
   return (
     <div className="flex flex-col border-l border-solid border-gray-300 ml-2">
       {isLoading ? (

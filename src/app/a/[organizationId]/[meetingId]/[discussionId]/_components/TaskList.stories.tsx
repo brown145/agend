@@ -3,7 +3,7 @@ import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { TaskList } from "./TaskList";
 
 const meta: Meta<typeof TaskList> = {
-  title: "Task/List",
+  title: "Components/Task/List",
   component: TaskList,
   parameters: {
     layout: "centered",
@@ -44,14 +44,15 @@ export const Loading: Story = {
   },
 };
 
-// TODO: fix this story
 export const Empty: Story = {
   args: {
     ...Default.args,
   },
   parameters: {
     mockData: {
-      "tasks.queries.byTopicId": [],
+      "tasks.queries.byTopicId": {
+        topic1: [],
+      },
     },
   },
 };

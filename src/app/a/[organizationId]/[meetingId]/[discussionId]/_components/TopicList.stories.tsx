@@ -2,11 +2,8 @@ import { LumonDecorator } from "@/storybook/LumonDecorator";
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { TopicList } from "./TopicList";
 
-// TODO:
-// 5. Fix strikethrough for completed topics (only rollup if all tasks are completed)
-
 const meta: Meta<typeof TopicList> = {
-  title: "Topic/List",
+  title: "Components/Topic/List",
   component: TopicList,
   parameters: {
     layout: "centered",
