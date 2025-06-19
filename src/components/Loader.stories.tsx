@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import Loader from "./Loader";
 
 const meta: Meta<typeof Loader> = {
-  title: "Components/UI/Loader",
+  title: "Components/Loader",
   component: Loader,
   parameters: {
     layout: "centered",

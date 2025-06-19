@@ -30,7 +30,7 @@ export const TopicList = ({
   const isLoading = topicIds === undefined;
 
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex flex-col gap-4">
       {isLoading ? (
         <>
           <TopicSkeleton />
@@ -38,7 +38,7 @@ export const TopicList = ({
         </>
       ) : (
         topicIds?.map((topicId) => (
-          <div key={topicId} className="flex flex-col gap-2 py-3">
+          <div key={topicId} className="flex flex-col gap-2">
             <Topic
               completeable={completeable}
               topicId={topicId}
@@ -167,7 +167,7 @@ const Topic = ({
   );
 };
 
-const TopicSkeleton = () => (
+export const TopicSkeleton = () => (
   <div className="border-l-2 border-solid border-gray-500 pl-2 flex flex-col gap-1">
     <div className="flex gap-1 items-center">
       <div className="flex-1 flex flex-row gap-2 items-center">

@@ -11,22 +11,17 @@ import { formatDiscussionDate } from "@/lib/date";
 import { api } from "@convex/_generated/api";
 import { Id } from "@convex/_generated/dataModel";
 import { useQuery } from "convex/react";
-import { TopicList } from "./TopicList";
+import { TopicList, TopicSkeleton } from "./TopicList";
 
 export default function DiscussionReview({
-  disabled = false,
+  editable = true,
   discussionId,
   organizationId,
 }: {
-  disabled: boolean;
+  editable: boolean;
   discussionId: string;
   organizationId: string;
 }) {
-  const discussion = useQuery(api.discussions.queries.byDiscussionId, {
-    discussionId: discussionId as Id<"discussions">,
-    orgId: organizationId as Id<"organizations">,
-  });
-
   const previousDiscussions = useQuery(
     api.discussions.queries.previousIncompletedDiscussions,
     {
@@ -35,34 +30,48 @@ export default function DiscussionReview({
     },
   );
 
-  if (!discussion) return null;
-
-  if (!previousDiscussions?.length) return null;
+  const isLoading = previousDiscussions === undefined;
+  const defaultValue = previousDiscussions?.[0]?._id ?? "default";
 
   return (
     <div className="space-y-4">
-      <Accordion type="multiple" defaultValue={[previousDiscussions[0]._id]}>
-        {previousDiscussions.map((prevDiscussion) => (
-          <AccordionItem key={prevDiscussion._id} value={prevDiscussion._id}>
-            <AccordionTrigger>
-              <CardTitle>{formatDiscussionDate(prevDiscussion.date)}</CardTitle>
-            </AccordionTrigger>
+      <Accordion type="multiple" defaultValue={[defaultValue]}>
+        {isLoading ? (
+          <AccordionItem key={defaultValue} value={defaultValue}>
+            <CardTitle className="text-2xl">Loading...</CardTitle>
             <AccordionContent>
-              {organizationId ? (
-                <div className="pt-2">
-                  <TopicList
-                    disabled={disabled}
-                    discussionId={prevDiscussion._id}
-                    editable={false}
-                    orgId={organizationId}
-                  />
-                </div>
-              ) : (
-                <div>could not find organization</div>
-              )}
+              <TopicSkeleton />
             </AccordionContent>
           </AccordionItem>
-        ))}
+        ) : !previousDiscussions?.length ? (
+          <AccordionItem key={defaultValue} value={defaultValue}>
+            <CardTitle className="text-2xl">No previous discussions</CardTitle>
+          </AccordionItem>
+        ) : (
+          previousDiscussions.map((prevDiscussion) => (
+            <AccordionItem key={prevDiscussion._id} value={prevDiscussion._id}>
+              <AccordionTrigger>
+                <CardTitle className="text-2xl">
+                  {formatDiscussionDate(prevDiscussion.date)}
+                </CardTitle>
+              </AccordionTrigger>
+              <AccordionContent>
+                {organizationId ? (
+                  <div>
+                    <TopicList
+                      addable={false}
+                      completeable={editable}
+                      discussionId={prevDiscussion._id}
+                      orgId={organizationId}
+                    />
+                  </div>
+                ) : (
+                  <div>could not find organization</div>
+                )}
+              </AccordionContent>
+            </AccordionItem>
+          ))
+        )}
       </Accordion>
     </div>
   );

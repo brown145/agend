@@ -52,14 +52,15 @@ export const DiscussionClient = ({
       stepContents={{
         recap: (disabled) => (
           <DiscussionReview
-            disabled={disabled}
+            editable={!disabled}
             discussionId={discussionId}
             organizationId={organizationId}
           />
         ),
         discussion: (disabled) => (
           <TopicList
-            disabled={disabled}
+            addable={!disabled}
+            completeable={!disabled}
             discussionId={discussionId}
             orgId={organizationId}
           />

@@ -35,9 +35,9 @@ export default function DiscussionReview({
     <>
       <h2 className="text-lg font-bold">Summary</h2>
       <TopicList
-        disabled={disabled}
+        addable={false}
+        completeable={!disabled}
         discussionId={discussionId}
-        editable={false}
         orgId={organizationId}
       />
     </>
