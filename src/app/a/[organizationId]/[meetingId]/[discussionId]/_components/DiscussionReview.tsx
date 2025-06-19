@@ -7,6 +7,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { CardTitle } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
 import { formatDiscussionDate } from "@/lib/date";
 import { api } from "@convex/_generated/api";
 import { Id } from "@convex/_generated/dataModel";
@@ -38,7 +39,9 @@ export default function DiscussionReview({
       <Accordion type="multiple" defaultValue={[defaultValue]}>
         {isLoading ? (
           <AccordionItem key={defaultValue} value={defaultValue}>
-            <CardTitle className="text-2xl">Loading...</CardTitle>
+            <CardTitle className="text-2xl">
+              <Skeleton className="h-6 w-48 mb-2" />
+            </CardTitle>
             <AccordionContent>
               <TopicSkeleton />
             </AccordionContent>

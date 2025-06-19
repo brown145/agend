@@ -65,9 +65,8 @@ export const DiscussionClient = ({
             orgId={organizationId}
           />
         ),
-        review: (disabled) => (
+        review: () => (
           <DiscussionSummary
-            disabled={disabled}
             discussionId={discussionId}
             organizationId={organizationId}
             meetingId={meetingId}
