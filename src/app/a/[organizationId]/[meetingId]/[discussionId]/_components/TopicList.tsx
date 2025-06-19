@@ -16,11 +16,13 @@ export const TopicList = ({
   completeable = true,
   discussionId,
   orgId,
+  showEmptyState = true,
 }: {
   discussionId: string;
   addable?: boolean;
   completeable?: boolean;
   orgId: string;
+  showEmptyState?: boolean;
 }) => {
   const topicIds = useQuery(api.topics.queries.byDiscussionId, {
     discussionId: discussionId as Id<"discussions">,
@@ -53,7 +55,7 @@ export const TopicList = ({
           </div>
         ))
       )}
-      {addable && topicIds?.length === 0 && <div>No topics</div>}
+      {showEmptyState && topicIds?.length === 0 && <div>No topics</div>}
       {addable && (
         <div className="pt-2">
           <AddTopic discussionId={discussionId} orgId={orgId} />

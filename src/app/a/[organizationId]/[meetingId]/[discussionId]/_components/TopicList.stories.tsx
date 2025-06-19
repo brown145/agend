@@ -56,6 +56,18 @@ export const Empty: Story = {
   },
 };
 
+export const EmptyWithoutFallback: Story = {
+  args: {
+    ...Default.args,
+    showEmptyState: false,
+  },
+  parameters: {
+    mockData: {
+      "topics.queries.byDiscussionId": [],
+    },
+  },
+};
+
 export const NotAddable: Story = {
   args: {
     ...Default.args,

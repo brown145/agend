@@ -84,6 +84,34 @@ type MockData = {
         orgId: Id<"organizations">;
       }>
     | "loading";
+  "meetings.queries.byMeetingId"?:
+    | {
+        _id: Id<"meetings">;
+        _creationTime: number;
+        nextDiscussionId?: Id<"discussions">;
+        orgId: Id<"organizations">;
+        isYours: boolean;
+        owner: {
+          _id: Id<"users">;
+          _creationTime: number;
+          name: string;
+          email: string;
+          subject: string;
+        } | null;
+        previousDiscussion: {
+          _id: Id<"discussions">;
+          _creationTime: number;
+          date: string;
+          activeStep: number;
+          completed: boolean;
+          createdBy: Id<"users">;
+          meetingId: Id<"meetings">;
+          orgId: Id<"organizations">;
+        };
+        createdBy: Id<"users">;
+        title: string;
+      }
+    | "loading";
   "users.queries.byUserId"?:
     | {
         _id: Id<"users">;
@@ -548,6 +576,18 @@ export const mockPreviousDiscussions = [
   },
 ];
 
+export const mockMeetingById = {
+  _id: "meeting1" as Id<"meetings">,
+  _creationTime: 1673825000000,
+  orgId: "org1" as Id<"organizations">,
+  isYours: true,
+  owner: mockUsersByOrgId[0],
+  previousDiscussion: mockPreviousDiscussions[0],
+  createdBy: "user1" as Id<"users">,
+  title: "Weekly Team Sync",
+  nextDiscussionId: undefined,
+};
+
 export function createMockClient(
   mockData: MockData = {},
   mockActions: MockActions = {},
@@ -638,6 +678,21 @@ export function createMockClient(
     mockClient.registerQueryFake(
       api.discussions.queries.previousIncompletedDiscussions,
       () => previousDiscussions,
+    );
+  }
+
+  // Register meeting query mocks
+  const meetingById =
+    mockData["meetings.queries.byMeetingId"] || mockMeetingById;
+  if (meetingById === "loading") {
+    mockClient.registerQueryFake(
+      api.meetings.queries.byMeetingId,
+      () => undefined,
+    );
+  } else {
+    mockClient.registerQueryFake(
+      api.meetings.queries.byMeetingId,
+      () => meetingById,
     );
   }
 

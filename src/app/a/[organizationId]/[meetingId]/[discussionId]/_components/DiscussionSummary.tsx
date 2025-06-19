@@ -4,13 +4,12 @@ import { api } from "@convex/_generated/api";
 import { Id } from "@convex/_generated/dataModel";
 import { useQuery } from "convex/react";
 import { TopicList } from "./TopicList";
-export default function DiscussionReview({
-  disabled,
+
+export default function DiscussionSummary({
   discussionId,
   organizationId,
   meetingId,
 }: {
-  disabled: boolean;
   discussionId: string;
   organizationId: string;
   meetingId: string;
@@ -32,14 +31,12 @@ export default function DiscussionReview({
   if (isNextDiscussion) return null;
 
   return (
-    <>
-      <h2 className="text-lg font-bold">Summary</h2>
-      <TopicList
-        addable={false}
-        completeable={!disabled}
-        discussionId={discussionId}
-        orgId={organizationId}
-      />
-    </>
+    <TopicList
+      addable={false}
+      completeable={false}
+      discussionId={discussionId}
+      orgId={organizationId}
+      showEmptyState={true}
+    />
   );
 }
