@@ -6,7 +6,7 @@ import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import DiscussionReview from "./DiscussionReview";
 
 const meta: Meta<typeof DiscussionReview> = {
-  title: "Components/Discussion/Review",
+  title: "Features/Discussion/Review",
   component: DiscussionReview,
   parameters: {
     layout: "centered",

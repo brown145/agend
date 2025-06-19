@@ -3,7 +3,7 @@ import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { TopicList } from "./TopicList";
 
 const meta: Meta<typeof TopicList> = {
-  title: "Components/Topic/List",
+  title: "Features/Topic/List",
   component: TopicList,
   parameters: {
     layout: "centered",

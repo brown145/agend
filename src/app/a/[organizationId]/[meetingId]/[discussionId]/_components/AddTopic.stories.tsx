@@ -3,7 +3,7 @@ import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { AddTopic } from "./AddTopic";
 
 const meta: Meta<typeof AddTopic> = {
-  title: "Components/Topic/Add",
+  title: "Features/Topic/Add",
   component: AddTopic,
   parameters: {
     layout: "centered",

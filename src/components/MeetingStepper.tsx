@@ -73,8 +73,8 @@ export const MeetingStepper: React.FC<MeetingStepperProps> = ({
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 mb-2">
               <span
-                className={`text-lg font-semibold leading-7 ${
-                  idx === activeStep ? "text-gray-900" : "text-gray-400"
+                className={`text-3xl font-semibold leading-7 ${
+                  idx === activeStep ? "text-gray-900" : "text-gray-500"
                 }`}
               >
                 {step.label}

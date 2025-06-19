@@ -3,7 +3,7 @@ import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import DiscussionSummary from "./DiscussionSummary";
 
 const meta: Meta<typeof DiscussionSummary> = {
-  title: "Components/Discussion/Summary",
+  title: "Features/Discussion/Summary",
   component: DiscussionSummary,
   parameters: {
     layout: "centered",
