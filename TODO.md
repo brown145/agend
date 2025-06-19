@@ -1,13 +1,5 @@
 # Development Roadmap
 
-## v0.1.2 properly designed TaskList TopicList
-  _this is a key part of the UI and the primary user interaction; spend some time here_
-1. summary
-1. recap
-1. active / next discussion
-1. "active" meeting concpet
-1. progress through meeting Recap > Topcis > Summary
-
 # helpers
 1. Triggers (cascading delete) -> https://youtu.be/lSw2Z_ra3XE?t=141&si=io9uzuDew-D_s_wb
 1. trigger to cascade complete up from task > topic > discussion
@@ -23,6 +15,8 @@
 1. postpone topic
 1. topic ordering / reordering
 1. focused topic (add tasks for focused topic only)
+1. active / next discussion
+1. "active" meeting concpet
 
 ## v0.1.4 Make in Juicy
 1. https://roughnotation.com/
