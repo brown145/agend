@@ -20,30 +20,33 @@
 1. copy button / (future: slack integration?)
 1. AI summary? OR progromatic text summary?
 
-## v0.1.5 Make in Juicy
+## v0.1.5 evergreen topics
+1. ex Error Corner
+
+## v0.1.6 Make in Juicy
 1. https://roughnotation.com/
 1. react transitions
 1. handwriting font???
 1. rough js???
 1. drag and drop re-ordering
 
-## v0.1.6 perf / useability 
+## v0.1.7 perf / useability 
 1. loading.tsx
 1. error.tsx
 1. metadata?
 1. trunkation for titles and stuff
 
-## v0.1.7 urls
+## v0.1.8 urls
 1. slugs for url
 
-## v0.1.8 advanced org management
+## v0.1.9 advanced org management
 1. create org
 1. invite to org
 1. request to join org
 
-## v0.1.9
+## v0.1.10
 1. clerk webhooks to sync users 
 1. clert production (not dev plan)
 
-## v0.1.10 SSR?
+## v0.1.11 SSR?
 1. https://docs.convex.dev/client/react/nextjs/server-rendering#server-side-authentication
