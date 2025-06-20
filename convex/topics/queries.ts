@@ -35,13 +35,6 @@ export const byTopicId = authedOrgQuery({
     topicId: v.id("topics"),
   },
   handler: async (ctx, args) => {
-    const topic = await validateTopic(ctx.db, args.topicId);
-    const tasks = await getManyFrom(ctx.db, "tasks", "by_topicId", topic._id);
-    const done = topic.completed && tasks.every((task) => task.completed);
-
-    return {
-      ...topic,
-      done,
-    };
+    return await validateTopic(ctx.db, args.topicId);
   },
 });

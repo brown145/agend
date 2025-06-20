@@ -65,7 +65,7 @@ const Task = ({
   task: Doc<"tasks">;
   orgId: string;
 }) => {
-  const updateTask = useMutation(api.tasks.mutations.complete);
+  const updateTask = useMutation(api.tasks.mutations.close);
   const owner = useQuery(api.users.queries.byUserId, {
     userId: task.owner,
     orgId: orgId as Id<"organizations">,
@@ -73,14 +73,14 @@ const Task = ({
 
   const form = useForm({
     defaultValues: {
-      completed: task.completed,
+      isClosed: task.isClosed,
     },
   });
 
-  const onSubmit = (values: { completed: boolean }) => {
+  const onSubmit = (values: { isClosed: boolean }) => {
     updateTask({
       taskId: task._id,
-      isCompleted: values.completed,
+      isClosed: values.isClosed,
       orgId: orgId as Id<"organizations">,
     });
   };
@@ -93,7 +93,7 @@ const Task = ({
       >
         <FormField
           control={form.control}
-          name="completed"
+          name="isClosed"
           render={({ field }) => (
             <FormItem className="flex items-center space-x-2">
               <FormControl>
@@ -109,7 +109,7 @@ const Task = ({
         <div className="flex-1 flex flex-row gap-2 items-center">
           <span
             className={
-              task.completed ? "line-through text-muted-foreground" : ""
+              task.isClosed ? "line-through text-muted-foreground" : ""
             }
           >
             {task.text}

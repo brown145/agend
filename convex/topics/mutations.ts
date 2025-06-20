@@ -11,44 +11,47 @@ import { validateTopic } from "./queries";
 export async function createTopic(
   db: DatabaseWriter,
   {
-    completed,
     createdBy,
     discussionId,
     freeformOwner,
+    isClosed,
+    isResolved,
     orgId,
     owner,
     text,
   }: {
-    completed: boolean;
     createdBy: Id<"users">;
     discussionId: Id<"discussions">;
     freeformOwner: string | undefined;
+    isClosed: boolean;
+    isResolved: boolean;
     orgId: Id<"organizations">;
     owner: Id<"users">;
     text: string;
   },
 ) {
   return await db.insert("topics", {
-    completed,
     createdBy,
+    discussionId,
     freeformOwner,
+    isClosed,
+    isResolved,
     orgId,
     owner,
     text,
-    discussionId,
   });
 }
 // ------------------------------------------------------------
 
-export const complete = authedOrgMutation({
+export const close = authedOrgMutation({
   args: {
     topicId: v.id("topics"),
-    isCompleted: v.boolean(),
+    isClosed: v.boolean(),
   },
   handler: async (ctx, args) => {
     const topic = await validateTopic(ctx.db, args.topicId);
     return ctx.db.patch(topic._id, {
-      completed: args.isCompleted,
+      isClosed: args.isClosed,
     });
   },
 });
@@ -68,11 +71,12 @@ export const create = authedOrgMutation({
     );
 
     return createTopic(ctx.db, {
-      completed: false,
       createdBy: ctx.user._id,
       discussionId: discussion._id,
-      orgId: ctx.organization._id,
       freeformOwner: args.freeformOwner,
+      isClosed: false,
+      isResolved: false,
+      orgId: ctx.organization._id,
       owner: args.owner,
       text: args.text,
     });

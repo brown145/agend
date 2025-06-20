@@ -79,7 +79,7 @@ const Topic = ({
     orgId: orgId as Id<"organizations">,
   });
 
-  const updateTopic = useMutation(api.topics.mutations.complete);
+  const updateTopic = useMutation(api.topics.mutations.close);
   const owner = useQuery(
     api.users.queries.byUserId,
     topicData?.owner
@@ -92,21 +92,21 @@ const Topic = ({
 
   const form = useForm({
     defaultValues: {
-      completed: topicData?.completed ?? false,
+      isClosed: topicData?.isClosed ?? false,
     },
   });
 
   // TODO: is this needed?
-  if (topicData && form.getValues("completed") !== topicData.completed) {
-    console.log(">> updating form", topicData.completed);
-    form.setValue("completed", topicData.completed);
+  if (topicData && form.getValues("isClosed") !== topicData.isClosed) {
+    console.log(">> updating form", topicData.isClosed);
+    form.setValue("isClosed", topicData.isClosed);
   }
 
-  const onSubmit = (values: { completed: boolean }) => {
+  const onSubmit = (values: { isClosed: boolean }) => {
     if (!topicData) return;
     updateTopic({
       topicId: topicData._id,
-      isCompleted: values.completed,
+      isClosed: values.isClosed,
       orgId: orgId as Id<"organizations">,
     });
   };
@@ -132,7 +132,7 @@ const Topic = ({
       >
         <FormField
           control={form.control}
-          name="completed"
+          name="isClosed"
           render={({ field }) => (
             <FormItem className="flex items-center space-x-2">
               <FormControl>
@@ -149,7 +149,7 @@ const Topic = ({
           <span
             className={cn(
               "text-xl font-semibold leading-tight",
-              topicData.done && "line-through text-muted-foreground",
+              topicData.isResolved && "line-through text-muted-foreground",
             )}
           >
             {topicData.text}

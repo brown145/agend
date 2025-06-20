@@ -21,6 +21,8 @@ import type * as lib_authedOrgMutation from "../lib/authedOrgMutation.js";
 import type * as lib_authedOrgQuery from "../lib/authedOrgQuery.js";
 import type * as lib_authedQuery from "../lib/authedQuery.js";
 import type * as lib_convexInvariant from "../lib/convexInvariant.js";
+import type * as lib_functions from "../lib/functions.js";
+import type * as lib_triggers from "../lib/triggers.js";
 import type * as lib_validateIdentity from "../lib/validateIdentity.js";
 import type * as meetings_mutations from "../meetings/mutations.js";
 import type * as meetings_queries from "../meetings/queries.js";
@@ -49,6 +51,8 @@ declare const fullApi: ApiFromModules<{
   "lib/authedOrgQuery": typeof lib_authedOrgQuery;
   "lib/authedQuery": typeof lib_authedQuery;
   "lib/convexInvariant": typeof lib_convexInvariant;
+  "lib/functions": typeof lib_functions;
+  "lib/triggers": typeof lib_triggers;
   "lib/validateIdentity": typeof lib_validateIdentity;
   "meetings/mutations": typeof meetings_mutations;
   "meetings/queries": typeof meetings_queries;

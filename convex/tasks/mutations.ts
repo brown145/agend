@@ -11,17 +11,17 @@ import { validateTask } from "./queries";
 export async function createTask(
   db: DatabaseWriter,
   {
-    completed,
     createdBy,
     freeformOwner,
+    isClosed,
     orgId,
     owner,
     text,
     topicId,
   }: {
-    completed: boolean;
     createdBy: Id<"users">;
     freeformOwner: string | undefined;
+    isClosed: boolean;
     orgId: Id<"organizations">;
     owner: Id<"users">;
     text: string;
@@ -29,9 +29,9 @@ export async function createTask(
   },
 ) {
   return await db.insert("tasks", {
-    completed,
     createdBy,
     freeformOwner,
+    isClosed,
     orgId,
     owner,
     text,
@@ -40,15 +40,15 @@ export async function createTask(
 }
 // ------------------------------------------------------------
 
-export const complete = authedOrgMutation({
+export const close = authedOrgMutation({
   args: {
     taskId: v.id("tasks"),
-    isCompleted: v.boolean(),
+    isClosed: v.boolean(),
   },
   handler: async (ctx, args) => {
     const task = await validateTask(ctx.db, args.taskId);
     return ctx.db.patch(task._id, {
-      completed: args.isCompleted,
+      isClosed: args.isClosed,
     });
   },
 });
@@ -64,9 +64,9 @@ export const create = authedOrgMutation({
     const topic = await validateTopic(ctx.db, args.topicId);
 
     return createTask(ctx.db, {
-      completed: false,
       createdBy: ctx.user._id,
       freeformOwner: args.freeformOwner,
+      isClosed: false,
       orgId: ctx.organization._id,
       owner: args.owner,
       text: args.text,

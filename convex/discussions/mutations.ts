@@ -10,15 +10,17 @@ import { validateDiscussion } from "./queries";
 export async function createDiscussion(
   db: DatabaseWriter,
   {
-    completed,
     createdBy,
     dateString,
+    isClosed,
+    isResolved,
     meetingId,
     orgId,
   }: {
-    completed: boolean;
     createdBy: Id<"users">;
-    dateString: string;
+    dateString: string | "next";
+    isClosed: boolean;
+    isResolved: boolean;
     meetingId: Id<"meetings">;
     orgId: Id<"organizations">;
   },
@@ -36,19 +38,20 @@ export async function createDiscussion(
 
   return await db.insert("discussions", {
     activeStep: 0,
-    completed,
     createdBy,
     date,
+    isClosed,
+    isResolved,
     meetingId,
     orgId,
   });
 }
 // ------------------------------------------------------------
 
-export const complete = authedOrgMutation({
+export const close = authedOrgMutation({
   args: {
     discussionId: v.id("discussions"),
-    isCompleted: v.boolean(),
+    isClosed: v.boolean(),
   },
   handler: async (ctx, args) => {
     const discussion = await validateDiscussion(
@@ -58,7 +61,7 @@ export const complete = authedOrgMutation({
     );
 
     return ctx.db.patch(discussion._id, {
-      completed: args.isCompleted,
+      isClosed: args.isClosed,
     });
   },
 });

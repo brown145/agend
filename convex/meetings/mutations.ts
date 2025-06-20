@@ -75,9 +75,10 @@ export const create = authedOrgMutation({
     });
 
     const nextDiscussionId = await createDiscussion(ctx.db, {
-      completed: false,
       createdBy: ctx.user._id,
       dateString: "next",
+      isClosed: false,
+      isResolved: false,
       meetingId,
       orgId: ctx.organization._id,
     });
@@ -122,9 +123,10 @@ export const start = authedOrgMutation({
     );
 
     const newDiscussionId = await createDiscussion(ctx.db, {
-      completed: false,
       createdBy: ctx.user._id,
       dateString: new Date().toISOString(),
+      isClosed: false,
+      isResolved: false,
       meetingId: args.meetingId,
       orgId: ctx.organization._id,
     });
