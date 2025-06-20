@@ -27,7 +27,8 @@ export default defineSchema({
     title: v.string(),
   })
     .index("by_createdBy", ["createdBy"])
-    .index("by_orgId_owner", ["orgId", "owner"]),
+    .index("by_orgId_owner", ["orgId", "owner"])
+    .index("by_orgId", ["orgId"]),
 
   meetingAttendance: defineTable({
     meetingId: v.id("meetings"),

@@ -1,8 +1,9 @@
 import { customMutation } from "convex-helpers/server/customFunctions";
 import { UserIdentity } from "convex/server";
 import { Doc } from "../_generated/dataModel";
-import { mutation, MutationCtx } from "../_generated/server";
+import { MutationCtx } from "../_generated/server";
 import { convexInvariant } from "./convexInvariant";
+import { mutation } from "./functions";
 import { validateIdentity } from "./validateIdentity";
 
 export type AuthedMutationCtx = MutationCtx & {

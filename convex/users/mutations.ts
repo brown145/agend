@@ -1,7 +1,7 @@
 import { validateIdentity } from "@convex/lib/validateIdentity";
 import { getOneFrom } from "convex-helpers/server/relationships";
 import { Id } from "../_generated/dataModel";
-import { mutation } from "../_generated/server";
+import { mutation } from "../lib/functions";
 
 export const ensureUser = mutation({
   args: {},
