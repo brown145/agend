@@ -11,7 +11,8 @@ type MockData = {
         _id: Id<"tasks">;
         _creationTime: number;
         text: string;
-        completed: boolean;
+        isClosed: boolean;
+        isResolved: boolean;
         owner: Id<"users">;
         createdBy: Id<"users">;
         orgId: Id<"organizations">;
@@ -24,7 +25,8 @@ type MockData = {
         _id: Id<"topics">;
         _creationTime: number;
         text: string;
-        completed: boolean;
+        isClosed: boolean;
+        isResolved: boolean;
         owner: Id<"users">;
         createdBy: Id<"users">;
         orgId: Id<"organizations">;
@@ -37,7 +39,8 @@ type MockData = {
           _id: Id<"topics">;
           _creationTime: number;
           text: string;
-          completed: boolean;
+          isClosed: boolean;
+          isResolved: boolean;
           owner: Id<"users">;
           createdBy: Id<"users">;
           orgId: Id<"organizations">;
@@ -51,7 +54,8 @@ type MockData = {
         _id: Id<"topics">;
         _creationTime: number;
         text: string;
-        completed: boolean;
+        isClosed: boolean;
+        isResolved: boolean;
         owner: Id<"users">;
         createdBy: Id<"users">;
         orgId: Id<"organizations">;
@@ -66,7 +70,8 @@ type MockData = {
         _creationTime: number;
         date?: string;
         activeStep: number;
-        completed: boolean;
+        isClosed: boolean;
+        isResolved: boolean;
         createdBy: Id<"users">;
         meetingId: Id<"meetings">;
         orgId: Id<"organizations">;
@@ -78,7 +83,8 @@ type MockData = {
         _creationTime: number;
         date?: string;
         activeStep: number;
-        completed: boolean;
+        isClosed: boolean;
+        isResolved: boolean;
         createdBy: Id<"users">;
         meetingId: Id<"meetings">;
         orgId: Id<"organizations">;
@@ -103,7 +109,8 @@ type MockData = {
           _creationTime: number;
           date: string;
           activeStep: number;
-          completed: boolean;
+          isClosed: boolean;
+          isResolved: boolean;
           createdBy: Id<"users">;
           meetingId: Id<"meetings">;
           orgId: Id<"organizations">;
@@ -134,7 +141,7 @@ type MockData = {
 };
 
 type MockActions = {
-  "tasks.mutations.complete"?: ReturnType<typeof action>;
+  "tasks.mutations.close"?: ReturnType<typeof action>;
   "tasks.mutations.create"?: ReturnType<typeof action>;
 };
 
@@ -179,7 +186,8 @@ export const mockTasksByTopicId = {
       _id: "task1" as Id<"tasks">,
       _creationTime: 1,
       text: "Complete project documentation",
-      completed: false,
+      isClosed: false,
+      isResolved: false,
       owner: "user1" as Id<"users">,
       createdBy: "user1" as Id<"users">,
       orgId: "org1" as Id<"organizations">,
@@ -189,7 +197,8 @@ export const mockTasksByTopicId = {
       _id: "task2" as Id<"tasks">,
       _creationTime: 2,
       text: "Review pull requests",
-      completed: true,
+      isClosed: true,
+      isResolved: true,
       owner: "user2" as Id<"users">,
       createdBy: "user1" as Id<"users">,
       orgId: "org1" as Id<"organizations">,
@@ -199,7 +208,8 @@ export const mockTasksByTopicId = {
       _id: "task3" as Id<"tasks">,
       _creationTime: 3,
       text: "Schedule team meeting",
-      completed: false,
+      isClosed: false,
+      isResolved: false,
       owner: "user1" as Id<"users">,
       createdBy: "user1" as Id<"users">,
       orgId: "org1" as Id<"organizations">,
@@ -212,7 +222,8 @@ export const mockTasksByTopicId = {
       _id: "task4" as Id<"tasks">,
       _creationTime: 4,
       text: "Add some Lumon specific tasks",
-      completed: false,
+      isClosed: false,
+      isResolved: false,
       owner: "user1" as Id<"users">,
       createdBy: "user1" as Id<"users">,
       orgId: "org1" as Id<"organizations">,
@@ -225,7 +236,8 @@ export const mockTasksByTopicId = {
       _id: "task5" as Id<"tasks">,
       _creationTime: 5,
       text: "Collect team feedback from last sprint",
-      completed: true,
+      isClosed: true,
+      isResolved: true,
       owner: "user3" as Id<"users">,
       createdBy: "user1" as Id<"users">,
       orgId: "org1" as Id<"organizations">,
@@ -235,7 +247,8 @@ export const mockTasksByTopicId = {
       _id: "task6" as Id<"tasks">,
       _creationTime: 6,
       text: "Analyze retrospective insights and create action items",
-      completed: true,
+      isClosed: true,
+      isResolved: true,
       owner: "user1" as Id<"users">,
       createdBy: "user3" as Id<"users">,
       orgId: "org1" as Id<"organizations">,
@@ -247,7 +260,8 @@ export const mockTasksByTopicId = {
       _id: "task7" as Id<"tasks">,
       _creationTime: 7,
       text: "Review current project timeline accuracy",
-      completed: false,
+      isClosed: false,
+      isResolved: false,
       owner: "user1" as Id<"users">,
       createdBy: "user2" as Id<"users">,
       orgId: "org1" as Id<"organizations">,
@@ -257,7 +271,8 @@ export const mockTasksByTopicId = {
       _id: "task8" as Id<"tasks">,
       _creationTime: 8,
       text: "Update milestone dates and dependencies",
-      completed: false,
+      isClosed: false,
+      isResolved: false,
       owner: "user2" as Id<"users">,
       createdBy: "user1" as Id<"users">,
       orgId: "org1" as Id<"organizations">,
@@ -268,7 +283,8 @@ export const mockTasksByTopicId = {
       _id: "task9" as Id<"tasks">,
       _creationTime: 9,
       text: "Publish updated timeline to project wiki",
-      completed: false,
+      isClosed: false,
+      isResolved: false,
       owner: "user1" as Id<"users">,
       createdBy: "user2" as Id<"users">,
       orgId: "org1" as Id<"organizations">,
@@ -281,7 +297,8 @@ export const mockTasksByTopicId = {
       _id: "task10" as Id<"tasks">,
       _creationTime: 10,
       text: "Gather Q1 performance data from analytics dashboard",
-      completed: false,
+      isClosed: false,
+      isResolved: false,
       owner: "user4" as Id<"users">,
       createdBy: "user1" as Id<"users">,
       orgId: "org1" as Id<"organizations">,
@@ -291,7 +308,8 @@ export const mockTasksByTopicId = {
       _id: "task11" as Id<"tasks">,
       _creationTime: 11,
       text: "Create executive summary slides",
-      completed: false,
+      isClosed: false,
+      isResolved: false,
       owner: "user4" as Id<"users">,
       createdBy: "user1" as Id<"users">,
       orgId: "org1" as Id<"organizations">,
@@ -303,7 +321,8 @@ export const mockTasksByTopicId = {
       _id: "task12" as Id<"tasks">,
       _creationTime: 12,
       text: "Schedule kickoff meeting with marketing team",
-      completed: true,
+      isClosed: true,
+      isResolved: true,
       owner: "user2" as Id<"users">,
       createdBy: "user3" as Id<"users">,
       orgId: "org1" as Id<"organizations">,
@@ -313,7 +332,8 @@ export const mockTasksByTopicId = {
       _id: "task13" as Id<"tasks">,
       _creationTime: 13,
       text: "Share product specifications and launch timeline",
-      completed: true,
+      isClosed: true,
+      isResolved: true,
       owner: "user1" as Id<"users">,
       createdBy: "user2" as Id<"users">,
       orgId: "org1" as Id<"organizations">,
@@ -324,7 +344,8 @@ export const mockTasksByTopicId = {
       _id: "task14" as Id<"tasks">,
       _creationTime: 14,
       text: "Review marketing campaign materials for accuracy",
-      completed: true,
+      isClosed: true,
+      isResolved: true,
       owner: "user3" as Id<"users">,
       createdBy: "user2" as Id<"users">,
       orgId: "org1" as Id<"organizations">,
@@ -336,7 +357,8 @@ export const mockTasksByTopicId = {
       _id: "task15" as Id<"tasks">,
       _creationTime: 15,
       text: "Review vendor contract terms and pricing",
-      completed: false,
+      isClosed: false,
+      isResolved: false,
       owner: "user1" as Id<"users">,
       createdBy: "user4" as Id<"users">,
       orgId: "org1" as Id<"organizations">,
@@ -346,7 +368,8 @@ export const mockTasksByTopicId = {
       _id: "task16" as Id<"tasks">,
       _creationTime: 16,
       text: "Get legal approval for contract modifications",
-      completed: false,
+      isClosed: false,
+      isResolved: false,
       owner: "user4" as Id<"users">,
       createdBy: "user1" as Id<"users">,
       orgId: "org1" as Id<"organizations">,
@@ -362,7 +385,8 @@ export const mockTopicsByDiscussionId = {
       _id: "topic1" as Id<"topics">,
       _creationTime: 1,
       text: "Discuss Q2 goals",
-      completed: false,
+      isClosed: false,
+      isResolved: false,
       owner: "user1" as Id<"users">,
       createdBy: "user1" as Id<"users">,
       orgId: "org1" as Id<"organizations">,
@@ -372,7 +396,8 @@ export const mockTopicsByDiscussionId = {
       _id: "topic2" as Id<"topics">,
       _creationTime: 2,
       text: "Budget review",
-      completed: true,
+      isClosed: true,
+      isResolved: true,
       owner: "user2" as Id<"users">,
       createdBy: "user1" as Id<"users">,
       orgId: "org1" as Id<"organizations">,
@@ -383,7 +408,8 @@ export const mockTopicsByDiscussionId = {
       _id: "topic3" as Id<"topics">,
       _creationTime: 3,
       text: "No Tasks",
-      completed: false,
+      isClosed: false,
+      isResolved: false,
       owner: "user2" as Id<"users">,
       createdBy: "user1" as Id<"users">,
       orgId: "org1" as Id<"organizations">,
@@ -395,7 +421,8 @@ export const mockTopicsByDiscussionId = {
       _id: "topic4" as Id<"topics">,
       _creationTime: 4,
       text: "Review sprint retrospective feedback",
-      completed: true,
+      isClosed: true,
+      isResolved: true,
       owner: "user3" as Id<"users">,
       createdBy: "user1" as Id<"users">,
       orgId: "org1" as Id<"organizations">,
@@ -405,7 +432,8 @@ export const mockTopicsByDiscussionId = {
       _id: "topic5" as Id<"topics">,
       _creationTime: 5,
       text: "Update project timeline documentation",
-      completed: false,
+      isClosed: false,
+      isResolved: false,
       owner: "user1" as Id<"users">,
       createdBy: "user2" as Id<"users">,
       orgId: "org1" as Id<"organizations">,
@@ -416,7 +444,8 @@ export const mockTopicsByDiscussionId = {
       _id: "topic6" as Id<"topics">,
       _creationTime: 6,
       text: "Prepare Q1 performance metrics presentation",
-      completed: false,
+      isClosed: false,
+      isResolved: false,
       owner: "user4" as Id<"users">,
       createdBy: "user1" as Id<"users">,
       orgId: "org1" as Id<"organizations">,
@@ -428,7 +457,8 @@ export const mockTopicsByDiscussionId = {
       _id: "topic7" as Id<"topics">,
       _creationTime: 7,
       text: "Coordinate with marketing team on product launch",
-      completed: true,
+      isClosed: true,
+      isResolved: true,
       owner: "user2" as Id<"users">,
       createdBy: "user3" as Id<"users">,
       orgId: "org1" as Id<"organizations">,
@@ -439,7 +469,8 @@ export const mockTopicsByDiscussionId = {
       _id: "topic8" as Id<"topics">,
       _creationTime: 8,
       text: "Finalize vendor contract negotiations",
-      completed: false,
+      isClosed: false,
+      isResolved: false,
       owner: "user1" as Id<"users">,
       createdBy: "user4" as Id<"users">,
       orgId: "org1" as Id<"organizations">,
@@ -453,7 +484,8 @@ export const mockTopicsByTopicId = {
     _id: "topic1" as Id<"topics">,
     _creationTime: 1,
     text: "Discuss Q2 goals",
-    completed: false,
+    isClosed: false,
+    isResolved: false,
     owner: "user1" as Id<"users">,
     createdBy: "user1" as Id<"users">,
     orgId: "org1" as Id<"organizations">,
@@ -464,7 +496,8 @@ export const mockTopicsByTopicId = {
     _id: "topic2" as Id<"topics">,
     _creationTime: 2,
     text: "Budget review",
-    completed: true,
+    isClosed: true,
+    isResolved: true,
     owner: "user2" as Id<"users">,
     createdBy: "user1" as Id<"users">,
     orgId: "org1" as Id<"organizations">,
@@ -476,7 +509,8 @@ export const mockTopicsByTopicId = {
     _id: "topic3" as Id<"topics">,
     _creationTime: 3,
     text: "No Tasks",
-    completed: false,
+    isClosed: false,
+    isResolved: false,
     owner: "user2" as Id<"users">,
     createdBy: "user1" as Id<"users">,
     orgId: "org1" as Id<"organizations">,
@@ -487,7 +521,8 @@ export const mockTopicsByTopicId = {
     _id: "topic4" as Id<"topics">,
     _creationTime: 4,
     text: "Review sprint retrospective feedback",
-    completed: true,
+    isClosed: true,
+    isResolved: true,
     owner: "user3" as Id<"users">,
     createdBy: "user1" as Id<"users">,
     orgId: "org1" as Id<"organizations">,
@@ -498,7 +533,8 @@ export const mockTopicsByTopicId = {
     _id: "topic5" as Id<"topics">,
     _creationTime: 5,
     text: "Update project timeline documentation",
-    completed: false,
+    isClosed: false,
+    isResolved: false,
     owner: "user1" as Id<"users">,
     createdBy: "user2" as Id<"users">,
     orgId: "org1" as Id<"organizations">,
@@ -510,7 +546,8 @@ export const mockTopicsByTopicId = {
     _id: "topic6" as Id<"topics">,
     _creationTime: 6,
     text: "Prepare Q1 performance metrics presentation",
-    completed: false,
+    isClosed: false,
+    isResolved: false,
     owner: "user4" as Id<"users">,
     createdBy: "user1" as Id<"users">,
     orgId: "org1" as Id<"organizations">,
@@ -521,7 +558,8 @@ export const mockTopicsByTopicId = {
     _id: "topic7" as Id<"topics">,
     _creationTime: 7,
     text: "Coordinate with marketing team on product launch",
-    completed: true,
+    isClosed: true,
+    isResolved: true,
     owner: "user2" as Id<"users">,
     createdBy: "user3" as Id<"users">,
     orgId: "org1" as Id<"organizations">,
@@ -533,7 +571,8 @@ export const mockTopicsByTopicId = {
     _id: "topic8" as Id<"topics">,
     _creationTime: 8,
     text: "Finalize vendor contract negotiations",
-    completed: false,
+    isClosed: false,
+    isResolved: false,
     owner: "user1" as Id<"users">,
     createdBy: "user4" as Id<"users">,
     orgId: "org1" as Id<"organizations">,
@@ -547,7 +586,8 @@ export const mockDiscussionById = {
   _creationTime: 1673825000000,
   date: "2024-01-15",
   activeStep: 0,
-  completed: false,
+  isClosed: false,
+  isResolved: false,
   createdBy: "user1" as Id<"users">,
   meetingId: "meeting1" as Id<"meetings">,
   orgId: "org1" as Id<"organizations">,
@@ -559,7 +599,8 @@ export const mockPreviousDiscussions = [
     _creationTime: 1673220000000,
     date: "2024-01-10",
     activeStep: 1,
-    completed: false,
+    isClosed: false,
+    isResolved: false,
     createdBy: "user1" as Id<"users">,
     meetingId: "meeting1" as Id<"meetings">,
     orgId: "org1" as Id<"organizations">,
@@ -569,7 +610,8 @@ export const mockPreviousDiscussions = [
     _creationTime: 1672620000000,
     date: "2024-01-05",
     activeStep: 0,
-    completed: false,
+    isClosed: false,
+    isResolved: false,
     createdBy: "user2" as Id<"users">,
     meetingId: "meeting1" as Id<"meetings">,
     orgId: "org1" as Id<"organizations">,
@@ -697,9 +739,8 @@ export function createMockClient(
   }
 
   // Register mutation mocks
-  mockClient.registerMutationFake(api.tasks.mutations.complete, (args) => {
-    const func =
-      mockActions["tasks.mutations.complete"] || action("completeTask");
+  mockClient.registerMutationFake(api.tasks.mutations.close, (args) => {
+    const func = mockActions["tasks.mutations.close"] || action("closeTask");
     func(args);
     return null;
   });
