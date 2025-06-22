@@ -2,7 +2,8 @@ import { ConvexClientProviderMock } from "@/app/a/_components/ConvexClientProvid
 import { api } from "@convex/_generated/api";
 import { Id } from "@convex/_generated/dataModel";
 import { Decorator } from "@storybook/nextjs-vite";
-import { ConvexProvider } from "convex/react";
+import { ConvexQueryCacheProvider } from "convex-helpers/react/cache/provider";
+import { ConvexProviderWithAuth } from "convex/react";
 import { action } from "storybook/actions";
 
 type MockData = {
@@ -761,8 +762,17 @@ export const LumonDecorator: Decorator = (Story, context) => {
   );
 
   return (
-    <ConvexProvider client={mockClient}>
-      <Story />
-    </ConvexProvider>
+    <ConvexProviderWithAuth
+      client={mockClient}
+      useAuth={() => ({
+        isLoading: false,
+        isAuthenticated: true,
+        fetchAccessToken: async () => "test-token",
+      })}
+    >
+      <ConvexQueryCacheProvider>
+        <Story />
+      </ConvexQueryCacheProvider>
+    </ConvexProviderWithAuth>
   );
 };

@@ -22,7 +22,7 @@ export class ConvexClientProviderMock extends ConvexReactClient {
   private actions: Record<string, ActionFunction>;
 
   constructor() {
-    super("https://mock.convex.cloud");
+    super("https://mock-1234.convex.cloud");
     this.queries = {};
     this.mutations = {};
     this.actions = {};
@@ -96,6 +96,15 @@ export class ConvexClientProviderMock extends ConvexReactClient {
     throw new Error(
       `Unexpected action: ${name}. Try providing a function for this action in the mock client constructor.`,
     );
+  }
+
+  setAuth() {
+    // We don't need to do anything here.
+    return Promise.resolve();
+  }
+
+  clearAuth() {
+    // We don't need to do anything here.
   }
 
   connectionState() {

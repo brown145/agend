@@ -8,11 +8,14 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  useAuthedQuery as useQuery,
+  useAuthedQueryWithCache as useQueryWithCache,
+} from "@/hooks/convex";
 import { formatDiscussionDate } from "@/lib/date";
 import { SignedIn, UserButton } from "@clerk/nextjs";
 import { api } from "@convex/_generated/api";
 import { Id } from "@convex/_generated/dataModel";
-import { useQuery } from "convex/react";
 import { ChevronsUpDown, List, Plus, Settings, Squirrel } from "lucide-react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
@@ -20,13 +23,13 @@ import { useParams } from "next/navigation";
 export default function NavigationBar() {
   const { organizationId, meetingId, discussionId } = useParams();
 
-  const orgs = useQuery(api.organizations.queries.list);
+  const { data: orgs } = useQueryWithCache(api.organizations.queries.list, {});
   const currentOrgId = organizationId ? organizationId.toString() : null;
   const currentOrganization = orgs
     ? orgs.find((org) => org._id.toString() === currentOrgId)
     : null;
 
-  const meetings = useQuery(
+  const { data: meetings } = useQueryWithCache(
     api.meetings.queries.list,
     currentOrgId
       ? {
@@ -37,7 +40,7 @@ export default function NavigationBar() {
   const currentMeetingId = meetingId ? meetingId.toString() : null;
   const currentMeeting = meetings?.find((mtg) => mtg._id === currentMeetingId);
 
-  const discussions = useQuery(
+  const { data: discussions } = useQuery(
     api.discussions.queries.byMeetingId,
     currentMeetingId && currentOrgId
       ? {

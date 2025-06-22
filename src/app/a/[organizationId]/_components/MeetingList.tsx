@@ -9,16 +9,16 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { useAuthedQueryWithCache as useQueryWithCache } from "@/hooks/convex";
 import { formatDiscussionDate } from "@/lib/date";
 import { api } from "@convex/_generated/api";
 import { Id } from "@convex/_generated/dataModel";
-import { useQuery } from "convex/react";
 import { HeartCrack } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 export default function MeetingList({ orgId }: { orgId: string }) {
-  const meetings = useQuery(api.meetings.queries.list, {
+  const { data: meetings } = useQueryWithCache(api.meetings.queries.list, {
     orgId: orgId as Id<"organizations">,
   });
 
@@ -71,10 +71,13 @@ function MeetingListItem({
 }) {
   const router = useRouter();
 
-  const meetingDetails = useQuery(api.meetings.queries.byMeetingId, {
-    meetingId: meetingId as Id<"meetings">,
-    orgId: orgId as Id<"organizations">,
-  });
+  const { data: meetingDetails } = useQueryWithCache(
+    api.meetings.queries.byMeetingId,
+    {
+      meetingId: meetingId as Id<"meetings">,
+      orgId: orgId as Id<"organizations">,
+    },
+  );
 
   return (
     <TableRow

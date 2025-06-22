@@ -3,9 +3,13 @@
 import { Checkbox } from "@/components/ui/checkbox";
 import { Form, FormControl, FormField, FormItem } from "@/components/ui/form";
 import { Skeleton } from "@/components/ui/skeleton";
+import {
+  useAuthedMutation as useMutation,
+  useAuthedQuery as useQuery,
+  useAuthedQueryWithCache as useQueryWithCache,
+} from "@/hooks/convex";
 import { api } from "@convex/_generated/api";
 import { Doc, Id } from "@convex/_generated/dataModel";
-import { useMutation, useQuery } from "convex/react";
 import { useForm } from "react-hook-form";
 import { AddTask } from "./AddTask";
 
@@ -20,17 +24,16 @@ export const TaskList = ({
   orgId: string;
   topicId: string;
 }) => {
-  const taskList = useQuery(api.tasks.queries.byTopicId, {
+  const { data: taskList, isPending } = useQuery(api.tasks.queries.byTopicId, {
     topicId: topicId as Id<"topics">,
     orgId: orgId as Id<"organizations">,
   });
 
-  const isLoading = taskList === undefined;
   const isEmpty = taskList?.length === 0;
 
   return (
     <div className="flex flex-col border-l border-solid border-gray-300 ml-2">
-      {isLoading ? (
+      {isPending ? (
         <>
           <TaskSkeleton />
           <TaskSkeleton />
@@ -66,7 +69,7 @@ const Task = ({
   orgId: string;
 }) => {
   const updateTask = useMutation(api.tasks.mutations.close);
-  const owner = useQuery(api.users.queries.byUserId, {
+  const { data: owner } = useQueryWithCache(api.users.queries.byUserId, {
     userId: task.owner,
     orgId: orgId as Id<"organizations">,
   });

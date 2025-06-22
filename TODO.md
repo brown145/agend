@@ -1,11 +1,5 @@
 # Development Roadmap
 
-# helpers
-1. Query helper -> https://stack.convex.dev/authentication-best-practices-convex-clerk-and-nextjs#using-usequerywithstatus-for-enhanced-query-information
-1. Query caching -> https://youtu.be/lSw2Z_ra3XE?t=85&si=32nVOZfPeSAKO5zS
-1. Stable Queries -> https://youtu.be/lSw2Z_ra3XE?si=nkm6EkkWpIsqdUOe&t=474
-1. Zod validation ??? -> https://youtu.be/lSw2Z_ra3XE?si=sHBtaUxeHf97pRsz&t=349
-
 ## v0.1.3 advanced topic / task management
 1. edit task/topic/meeting ownership
 1. postpone topic
@@ -50,3 +44,7 @@
 
 ## v0.1.11 SSR?
 1. https://docs.convex.dev/client/react/nextjs/server-rendering#server-side-authentication
+
+# helpers (again???)
+1. Stable Queries -> https://youtu.be/lSw2Z_ra3XE?si=nkm6EkkWpIsqdUOe&t=474
+1. Zod validation ??? -> https://youtu.be/lSw2Z_ra3XE?si=sHBtaUxeHf97pRsz&t=349

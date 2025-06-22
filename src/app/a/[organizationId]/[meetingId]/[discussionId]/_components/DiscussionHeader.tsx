@@ -1,10 +1,14 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import {
+  useAuthedMutation as useMutation,
+  useAuthedQuery as useQuery,
+  useAuthedQueryWithCache as useQueryWithCache,
+} from "@/hooks/convex";
 import { formatDiscussionDate } from "@/lib/date";
 import { api } from "@convex/_generated/api";
 import { Id } from "@convex/_generated/dataModel";
-import { useMutation, useQuery } from "convex/react";
 import { useRouter } from "next/navigation";
 
 export default function DiscussionHeader({
@@ -18,15 +22,21 @@ export default function DiscussionHeader({
 }) {
   const router = useRouter();
 
-  const meetingDetails = useQuery(api.meetings.queries.byMeetingId, {
-    meetingId: meetingId as Id<"meetings">,
-    orgId: organizationId as Id<"organizations">,
-  });
+  const { data: meetingDetails } = useQueryWithCache(
+    api.meetings.queries.byMeetingId,
+    {
+      meetingId: meetingId as Id<"meetings">,
+      orgId: organizationId as Id<"organizations">,
+    },
+  );
 
-  const discussion = useQuery(api.discussions.queries.byDiscussionId, {
-    discussionId: discussionId as Id<"discussions">,
-    orgId: organizationId as Id<"organizations">,
-  });
+  const { data: discussion } = useQuery(
+    api.discussions.queries.byDiscussionId,
+    {
+      discussionId: discussionId as Id<"discussions">,
+      orgId: organizationId as Id<"organizations">,
+    },
+  );
 
   const startMeeting = useMutation(api.meetings.mutations.start);
 

@@ -8,10 +8,10 @@ import {
 } from "@/components/ui/accordion";
 import { CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useAuthedQuery as useQuery } from "@/hooks/convex";
 import { formatDiscussionDate } from "@/lib/date";
 import { api } from "@convex/_generated/api";
 import { Id } from "@convex/_generated/dataModel";
-import { useQuery } from "convex/react";
 import { TopicList, TopicSkeleton } from "./TopicList";
 
 export default function DiscussionReview({
@@ -23,7 +23,7 @@ export default function DiscussionReview({
   discussionId: string;
   organizationId: string;
 }) {
-  const previousDiscussions = useQuery(
+  const { data: previousDiscussions, isPending } = useQuery(
     api.discussions.queries.previousIncompletedDiscussions,
     {
       discussionId: discussionId as Id<"discussions">,
@@ -31,13 +31,12 @@ export default function DiscussionReview({
     },
   );
 
-  const isLoading = previousDiscussions === undefined;
   const defaultValue = previousDiscussions?.[0]?._id ?? "default";
 
   return (
     <div className="space-y-4">
       <Accordion type="multiple" defaultValue={[defaultValue]}>
-        {isLoading ? (
+        {isPending ? (
           <AccordionItem key={defaultValue} value={defaultValue}>
             <CardTitle className="text-2xl">
               <Skeleton className="h-6 w-48 mb-2" />

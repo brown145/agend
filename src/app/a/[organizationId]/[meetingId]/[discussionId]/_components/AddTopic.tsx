@@ -10,10 +10,13 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import {
+  useAuthedMutation as useMutation,
+  useAuthedQueryWithCache as useQueryWithCache,
+} from "@/hooks/convex";
 import { api } from "@convex/_generated/api";
 import { Id } from "@convex/_generated/dataModel";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation, useQuery } from "convex/react";
 import { Loader2, Pencil, Users } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -36,10 +39,12 @@ export const AddTopic = ({
 }) => {
   const [isFreeformOwner, setIsFreeformOwner] = useState(false);
   const createTopic = useMutation(api.topics.mutations.create);
-  const orgUsers = useQuery(api.users.queries.byOrgId, {
-    orgId: orgId as Id<"organizations">,
-  });
-  const isLoading = orgUsers === undefined;
+  const { data: orgUsers, isPending } = useQueryWithCache(
+    api.users.queries.byOrgId,
+    {
+      orgId: orgId as Id<"organizations">,
+    },
+  );
 
   const currentUser = orgUsers?.find((user) => user.isYou);
 
@@ -85,7 +90,7 @@ export const AddTopic = ({
       label: user.name,
     })) ?? [];
 
-  if (!isLoading && (!orgUsers || orgUsers.length === 0)) {
+  if (!isPending && (!orgUsers || orgUsers.length === 0)) {
     return (
       <div className="text-sm text-muted-foreground">Unable to add topics</div>
     );
@@ -103,7 +108,7 @@ export const AddTopic = ({
                 <Input
                   placeholder="Enter topic"
                   {...field}
-                  disabled={isLoading}
+                  disabled={isPending}
                 />
               </FormControl>
               <FormMessage />
@@ -122,7 +127,7 @@ export const AddTopic = ({
                       <Input
                         placeholder="Enter owner name"
                         {...field}
-                        disabled={isLoading}
+                        disabled={isPending}
                       />
                     </FormControl>
                     <FormMessage />
@@ -146,7 +151,7 @@ export const AddTopic = ({
                         onSelect={field.onChange}
                         placeholder="Select owner"
                         emptyText="No users found"
-                        disabled={isLoading}
+                        disabled={isPending}
                       />
                     </FormControl>
                     <FormMessage />
@@ -162,7 +167,7 @@ export const AddTopic = ({
             size="icon"
             onClick={() => setIsFreeformOwner(!isFreeformOwner)}
             className="h-9 w-9"
-            disabled={isLoading}
+            disabled={isPending}
           >
             {isFreeformOwner ? (
               <Users className="h-4 w-4" />
@@ -171,8 +176,8 @@ export const AddTopic = ({
             )}
           </Button>
         </div>
-        <Button type="submit" disabled={!form.formState.isValid || isLoading}>
-          {isLoading ? (
+        <Button type="submit" disabled={!form.formState.isValid || isPending}>
+          {isPending ? (
             <Loader2 className="h-4 w-4 animate-spin" />
           ) : (
             "Add topic"

@@ -2,17 +2,21 @@
 
 import { Button } from "@/components/ui/button";
 import { Combobox } from "@/components/ui/combobox";
+import {
+  useAuthedMutation as useMutation,
+  useAuthedQuery as useQuery,
+  useAuthedQueryWithCache as useQueryWithCache,
+} from "@/hooks/convex";
 import { isNonNull } from "@/lib/isNotNull";
 import { api } from "@convex/_generated/api";
 import { Doc, Id } from "@convex/_generated/dataModel";
-import { useMutation, useQuery } from "convex/react";
 import { useParams } from "next/navigation";
 import { toast } from "sonner";
 
 export const AttendeesList = () => {
   const { meetingId, organizationId } = useParams();
 
-  const attendees = useQuery(
+  const { data: attendees } = useQuery(
     api.users.queries.byMeetingId,
     meetingId && organizationId
       ? {
@@ -20,37 +24,39 @@ export const AttendeesList = () => {
           orgId: organizationId as Id<"organizations">,
         }
       : "skip",
-  )?.filter(isNonNull);
+  );
 
-  const allOrgUsers = useQuery(
+  const { data: allOrgUsers } = useQueryWithCache(
     api.users.queries.byOrgId,
     organizationId
       ? {
           orgId: organizationId as Id<"organizations">,
         }
       : "skip",
-  )?.filter(isNonNull);
+  );
 
   return (
     <main className="space-y-4">
       <div className="space-y-2">
-        {attendees?.map((attendee) => (
-          <Attendee
-            attendee={attendee}
-            isLast={attendees.length === 1}
-            key={attendee._id}
-            meetingId={meetingId as string}
-            orgId={organizationId as string}
-          />
-        ))}
+        {attendees
+          ?.filter(isNonNull)
+          .map((attendee) => (
+            <Attendee
+              attendee={attendee}
+              isLast={(attendees?.filter(isNonNull).length ?? 0) === 1}
+              key={attendee._id}
+              meetingId={meetingId as string}
+              orgId={organizationId as string}
+            />
+          ))}
         {attendees?.length === 0 && <div>No attendees</div>}
       </div>
       <AddAttendee
         meetingId={meetingId as string}
         orgId={organizationId as string}
-        users={allOrgUsers?.filter(
-          (user) => !attendees?.some((a) => a._id === user._id),
-        )}
+        users={allOrgUsers
+          ?.filter(isNonNull)
+          .filter((user) => !attendees?.some((a) => a?._id === user._id))}
       />
     </main>
   );

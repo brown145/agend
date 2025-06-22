@@ -11,8 +11,11 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import {
+  useAuthedMutation as useMutation,
+  useAuthedQueryWithCache as useQueryWithCache,
+} from "@/hooks/convex";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation, useQuery } from "convex/react";
 import { CalendarPlus } from "lucide-react";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
@@ -36,7 +39,7 @@ export const AddMeeting = ({
 }) => {
   const createMeeting = useMutation(api.meetings.mutations.create);
 
-  const orgUsers = useQuery(api.users.queries.byOrgId, {
+  const { data: orgUsers } = useQueryWithCache(api.users.queries.byOrgId, {
     orgId: orgId as Id<"organizations">,
   });
 

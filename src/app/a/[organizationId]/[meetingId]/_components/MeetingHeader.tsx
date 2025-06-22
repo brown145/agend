@@ -1,8 +1,8 @@
 "use client";
 
+import { useAuthedQueryWithCache as useQueryWithCache } from "@/hooks/convex";
 import { api } from "@convex/_generated/api";
 import { Id } from "@convex/_generated/dataModel";
-import { useQuery } from "convex/react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { EditMeeting } from "./EditMeeting";
 
@@ -13,10 +13,13 @@ export function MeetingHeader({
   orgId: string;
   meetingId: string;
 }) {
-  const meetingDetails = useQuery(api.meetings.queries.byMeetingId, {
-    meetingId: meetingId as Id<"meetings">,
-    orgId: orgId as Id<"organizations">,
-  });
+  const { data: meetingDetails } = useQueryWithCache(
+    api.meetings.queries.byMeetingId,
+    {
+      meetingId: meetingId as Id<"meetings">,
+      orgId: orgId as Id<"organizations">,
+    },
+  );
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();

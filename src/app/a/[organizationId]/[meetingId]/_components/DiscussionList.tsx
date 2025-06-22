@@ -10,10 +10,10 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { useAuthedQuery as useQuery } from "@/hooks/convex";
 import { formatDiscussionDate } from "@/lib/date";
 import { api } from "@convex/_generated/api";
 import { Id } from "@convex/_generated/dataModel";
-import { useQuery } from "convex/react";
 import { HeartCrack } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -26,7 +26,7 @@ export default function DiscussionList({
   meetingId: string;
 }) {
   const router = useRouter();
-  const discussions = useQuery(api.discussions.queries.byMeetingId, {
+  const { data: discussions } = useQuery(api.discussions.queries.byMeetingId, {
     meetingId: meetingId as Id<"meetings">,
     orgId: orgId as Id<"organizations">,
   });

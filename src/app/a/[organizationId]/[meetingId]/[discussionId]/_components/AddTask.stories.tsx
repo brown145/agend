@@ -27,6 +27,9 @@ export const Loading: Story = {
     ...Default.args,
   },
   parameters: {
+    clerk: {
+      user: {},
+    },
     mockData: {
       "users.queries.byOrgId": "loading",
     },
@@ -38,6 +41,9 @@ export const NoUsers: Story = {
     ...Default.args,
   },
   parameters: {
+    clerk: {
+      user: {},
+    },
     mockData: {
       "users.queries.byOrgId": [],
     },

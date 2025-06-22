@@ -1,9 +1,13 @@
 "use client";
 
 import { MeetingStepper } from "@/components/MeetingStepper";
+import {
+  useAuthedMutation as useMutation,
+  useAuthedQuery as useQuery,
+  useAuthedQueryWithCache as useQueryWithCache,
+} from "@/hooks/convex";
 import { api } from "@convex/_generated/api";
 import { Id } from "@convex/_generated/dataModel";
-import { useMutation, useQuery } from "convex/react";
 import DiscussionReview from "./DiscussionReview";
 import DiscussionSummary from "./DiscussionSummary";
 import { TopicList } from "./TopicList";
@@ -17,15 +21,21 @@ export const DiscussionClient = ({
   organizationId: string;
   meetingId: string;
 }) => {
-  const meetingDetails = useQuery(api.meetings.queries.byMeetingId, {
-    meetingId: meetingId as Id<"meetings">,
-    orgId: organizationId as Id<"organizations">,
-  });
+  const { data: meetingDetails } = useQueryWithCache(
+    api.meetings.queries.byMeetingId,
+    {
+      meetingId: meetingId as Id<"meetings">,
+      orgId: organizationId as Id<"organizations">,
+    },
+  );
 
-  const discussion = useQuery(api.discussions.queries.byDiscussionId, {
-    discussionId: discussionId as Id<"discussions">,
-    orgId: organizationId as Id<"organizations">,
-  });
+  const { data: discussion } = useQuery(
+    api.discussions.queries.byDiscussionId,
+    {
+      discussionId: discussionId as Id<"discussions">,
+      orgId: organizationId as Id<"organizations">,
+    },
+  );
 
   const updateActiveStep = useMutation(
     api.discussions.mutations.updateActiveStep,

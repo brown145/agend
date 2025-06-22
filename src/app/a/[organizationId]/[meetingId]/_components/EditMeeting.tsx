@@ -2,9 +2,12 @@
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import {
+  useAuthedMutation as useMutation,
+  useAuthedQueryWithCache as useQueryWithCache,
+} from "@/hooks/convex";
 import { api } from "@convex/_generated/api";
 import { Id } from "@convex/_generated/dataModel";
-import { useMutation, useQuery } from "convex/react";
 
 export const EditMeeting = ({
   orgId,
@@ -15,10 +18,13 @@ export const EditMeeting = ({
   meetingId: string;
   onCancel: () => void;
 }) => {
-  const meetingDetails = useQuery(api.meetings.queries.byMeetingId, {
-    meetingId: meetingId as Id<"meetings">,
-    orgId: orgId as Id<"organizations">,
-  });
+  const { data: meetingDetails } = useQueryWithCache(
+    api.meetings.queries.byMeetingId,
+    {
+      meetingId: meetingId as Id<"meetings">,
+      orgId: orgId as Id<"organizations">,
+    },
+  );
   const updateMeeting = useMutation(api.meetings.mutations.update);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {

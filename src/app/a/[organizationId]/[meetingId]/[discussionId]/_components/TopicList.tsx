@@ -3,10 +3,14 @@
 import { Checkbox } from "@/components/ui/checkbox";
 import { Form, FormControl, FormField, FormItem } from "@/components/ui/form";
 import { Skeleton } from "@/components/ui/skeleton";
+import {
+  useAuthedMutation as useMutation,
+  useAuthedQuery as useQuery,
+  useAuthedQueryWithCache as useQueryWithCache,
+} from "@/hooks/convex";
 import { cn } from "@/lib/utils";
 import { api } from "@convex/_generated/api";
 import { Id } from "@convex/_generated/dataModel";
-import { useMutation, useQuery } from "convex/react";
 import { useForm } from "react-hook-form";
 import { AddTopic } from "./AddTopic";
 import { TaskList, TaskSkeleton } from "./TaskList";
@@ -24,16 +28,18 @@ export const TopicList = ({
   orgId: string;
   showEmptyState?: boolean;
 }) => {
-  const topicIds = useQuery(api.topics.queries.byDiscussionId, {
-    discussionId: discussionId as Id<"discussions">,
-    orgId: orgId as Id<"organizations">,
-  })?.map((topic) => topic._id);
-
-  const isLoading = topicIds === undefined;
+  const { data: topics, isPending } = useQuery(
+    api.topics.queries.byDiscussionId,
+    {
+      discussionId: discussionId as Id<"discussions">,
+      orgId: orgId as Id<"organizations">,
+    },
+  );
+  const topicIds = topics?.map((topic) => topic._id);
 
   return (
     <div className="flex flex-col gap-4">
-      {isLoading ? (
+      {isPending ? (
         <>
           <TopicSkeleton />
           <TopicSkeleton />
@@ -74,13 +80,13 @@ const Topic = ({
   topicId: string;
   orgId: string;
 }) => {
-  const topicData = useQuery(api.topics.queries.byTopicId, {
+  const { data: topicData } = useQuery(api.topics.queries.byTopicId, {
     topicId: topicId as Id<"topics">,
     orgId: orgId as Id<"organizations">,
   });
 
   const updateTopic = useMutation(api.topics.mutations.close);
-  const owner = useQuery(
+  const { data: owner } = useQueryWithCache(
     api.users.queries.byUserId,
     topicData?.owner
       ? {
