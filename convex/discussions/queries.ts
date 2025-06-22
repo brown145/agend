@@ -98,7 +98,7 @@ export const previousIncompletedDiscussions = authedOrgQuery({
     // Exclude "next" discussions and the current discussion
     const previousDiscussions = meetingDiscussions.filter(
       (discussion) =>
-        !discussion.completed &&
+        !discussion.isClosed &&
         discussion._id !== currentDiscussion._id &&
         discussion._creationTime < currentDiscussion._creationTime &&
         discussion.date !== "next",

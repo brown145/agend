@@ -15,7 +15,7 @@
 1. AI summary? OR progromatic text summary?
 
 ## v0.1.5 evergreen topics
-1. ex Error Corner
+1. ex Error Corner, RGY checkin
 
 ## v0.1.6 Make in Juicy
 1. https://roughnotation.com/
